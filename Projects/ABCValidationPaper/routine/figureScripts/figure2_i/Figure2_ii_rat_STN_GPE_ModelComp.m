@@ -22,7 +22,8 @@ R = ABCsetup_partI_STNGPe(R);
 
 %% Do the model probability computations
 R.comptype = 1;
-modelCompMaster_160620(R,1:3,[])
+modelCompMaster_160620(R,1:3,[]);
+
 %% Plot the modComp results
 R.modcomp.modN = 1:3;
 R.modcompplot.NPDsel = [1:3];

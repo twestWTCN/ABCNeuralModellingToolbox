@@ -57,7 +57,12 @@ end
 
 
 DKL = 0.5*(trace(sig2\sig1) + ((mu2-mu1)'*sig2)'\(mu2-mu1) - size(mu1,1) + log(det(sig2)/det(sig1)));
-Mfit.DKL = DKL;
+if any(imag(DKL))
+    warning('DKL is returning complex values; numerical issue detected. Using sum of univariate DKLs')
+    Mfit.DKL = KL;
+else
+    Mfit.DKL = DKL;
+end
 Mfit.KL = KL;
 Mfit.npflag = npflag;
 R.Mfit = Mfit;

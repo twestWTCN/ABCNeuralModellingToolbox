@@ -31,7 +31,7 @@ R.plot.flag= 0;
 
 while wfstr(end)>0
     parfor (jj = 1:N, parforArg)
-        %     parfor jj = 1:N
+        %     for jj = 1:N
         pnew = par{jj};
         u = innovate_timeseries(Rmod,m);
         [r2,pnew,feat_sim,xsims,xsims_gl,wflag] = computeSimData_160620(Rmod,m,u,pnew,0);

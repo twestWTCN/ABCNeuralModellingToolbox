@@ -1,4 +1,4 @@
-function [Rout,m,p,parBank,permMod] = loadABCData_160620(R)
+function [Rout,m,p,parBank,permMod,parHist,bankSave,kldHist] = loadABCData_160620(R)
 % Load Options
 load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\' R.out.dag '\R_' R.out.tag '_' R.out.dag '.mat'])
 Rout = varo;
@@ -25,7 +25,24 @@ if nargout>3
     parBank =  varo;
 end
 if nargout>4
+    try
         load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_'  R.out.dag '.mat'])
-    permMod = varo; %i.e. permMod
+        permMod = varo; %i.e. permMod
+    catch
+        warning('ModelProbs was not available')
+        permMod = [];
+    end
+end
+if nargout>5
+    load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\' R.out.dag '\parHist_' R.out.tag '_' R.out.dag '.mat'])
+    parHist = varo;
+end
+if nargout>6
+    load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\' R.out.dag '\bankSave_' R.out.tag '_' R.out.dag '.mat'])
+    bankSave = varo;
+end
+if nargout>7
+    load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\' R.out.dag '\klHist_' R.out.tag '_' R.out.dag '.mat'])
+    kldHist = varo;
 end
 

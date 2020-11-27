@@ -23,9 +23,10 @@ end
 
 % Set up MAP estimate
 base = spm_vec(pOrg);
-MAP = nan(size(base));
-MAP(pIndMap,1) = mapq;
-MAP(pSigMap,1) = diag(Mfit.Sigma);
+MAP = base;
+
+MAP(pIndMap) = mapq;
+MAP(pSigMap) = diag(Mfit.Sigma);
 MAP = spm_unvec(MAP,pOrg);
 
 if R.plot.flag == 1

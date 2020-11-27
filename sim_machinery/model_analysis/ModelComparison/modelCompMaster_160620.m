@@ -65,14 +65,11 @@ for modID = modlist
         
         R.analysis.modEvi.eps = parBank(end,R.SimAn.minRank);
         R.analysis.BAA.flag = 0; % Turn off BAA flag (time-locked analysis)
-        parOptBank = parBank(1:end-1,parBank(end,:)>R.analysis.modEvi.eps);
+        %         parOptBank = parBank(1:end-1,parBank(end,:)>R.analysis.modEvi.eps);
         
-        if  size(parOptBank,2)>1
-            R.parOptBank = parOptBank;
-            permMod = modelProbs_160620(R,m.x,m,p,Rmod);
-        else
-            permMod = [];
-        end
+        % R.parOptBank = parOptBank;
+        permMod = modelProbs_160620(R,m.x,m,p,Rmod);
+        
         saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_' R.out.dag '.mat'],permMod)
         pause(10)
         closeMessageBoxes

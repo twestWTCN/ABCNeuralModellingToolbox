@@ -1,4 +1,4 @@
-function [R,parBank] = SimAn_ABC_250320(R,p,m,parBank)
+function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 %%%% APROXIMATE BAYESIAN COMPUTATION for
 %%%% HIGH DIMENSIONAL DYNAMICAL MODELS
 % ---- 25/03/20---------------------------
@@ -27,6 +27,7 @@ function [R,parBank] = SimAn_ABC_250320(R,p,m,parBank)
 % Timothy West (2018) - UCL CoMPLEX
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %% Setup for annealing
 if nargin<4
     parBank = [];
@@ -97,9 +98,11 @@ while ii <= R.SimAn.searchMax
             %         xsims_rep{jj} = xsims_gl; % This takes too much memory: !Modified to store last second only!
             feat_sim_rep{jj} = feat_sim;
             
-            disp(['Iterate ' num2str(parl) ' temperature ' num2str(ii)])
+%             fprintf(1,'\b\b%.0f',jj/parnum);
         end % End of batch replicates
-        
+        if rem(ji,4)
+        disp(['Batch ' num2str(ji) ' proposal ' num2str(ii)])
+        end
         % Retrieve fits
         
         r2loop = r2rep; %ACCrep;
@@ -186,7 +189,7 @@ while ii <= R.SimAn.searchMax
             disp('Bank is large taking new subset to form eps')
             parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
             ACClocbank = computeObjective(R,parOptBank(end,:));
-            eps_act = prctile(ACClocbank,75);
+            eps_act = prctile(ACClocbank,50);
             cflag = 1; % copula flag (enough samples)
             itry = 0;  % set counter to 0
         end
@@ -201,7 +204,7 @@ while ii <= R.SimAn.searchMax
         disp('Recomputing eps from parbank')
         parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
         ACClocbank = computeObjective(R,parOptBank(end,:));
-        eps_act = prctile(ACClocbank,75);
+        eps_act = prctile(ACClocbank,50);
         cflag = 1;
         itry = 0;
         

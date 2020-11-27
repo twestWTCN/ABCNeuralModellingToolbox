@@ -22,7 +22,7 @@ R = ABCsetup_partI_STNGPe(R);
 R = prepareRatData_STN_GPe_NPD(R);
 
 %% Prepare Model
-for M = 1:3
+for M = 3
 modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(M)]);
 [R,p,m] = modelspec(R);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,8 +30,6 @@ R.out.dag = sprintf([R.out.tag '_M%.0f'],M); % 'All Cross'
 R = setSimTime(R,28);
 R.Bcond = 0;
 R.plot.flag = 1;
-R.plot.save = 1;
-R.SimAn.convIt.dEps = 1e-8;
-% R.SimAn.rep = 64;
+R.plot.save = 0;
 [p] = SimAn_ABC_201120(R,p,m);
 end
