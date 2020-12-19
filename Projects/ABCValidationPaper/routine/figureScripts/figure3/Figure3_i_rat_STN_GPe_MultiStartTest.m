@@ -3,7 +3,7 @@ clear ; close all; closeMessageBoxes
 % FIGURE 3- (I) Multistart Fitting
 %%%%%%%%%%%%%%%%%%%%%%%%
 % IF FRESH!
-%  delete([R.rootn 'outputs\' R.out.tag '\MultiStartList.mat'])
+%      delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartListWML.mat'])
 
 %This should link to your repo folder
 repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
@@ -30,7 +30,6 @@ R = ABCsetup_partI_STNGPe(R);
 % save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartDataFeatures'],'pMAP','feat_sim')
 load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartDataFeatures'],'pMAP','feat_sim')
 
-
 try
     load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartListWML'])
     disp('Loaded Mod List!!')
@@ -40,7 +39,7 @@ catch
     save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartListWML'],'WML')
     disp('Making Mod List!!')
 end
-N = 4; % number of starts
+N = 3; % number of starts
 %% Prepare Model
 for multiStart = 1:2*N
     load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartListWML'])
@@ -69,8 +68,8 @@ for multiStart = 1:2*N
         delete([R.path.rootn 'outputs\' R.out.tag '\' R.out.dag '\*'])
         R.SimAn.rep = 256;
         R = setSimTime(R,32);
-        R.Bcond = 0;
         R.plot.save = 0;
+        R.Bcond = 0;
         R.plot.flag = 0;
         R.SimAn.jitter = 1;
         SimAn_ABC_201120(R,p,m);

@@ -25,7 +25,7 @@ for condsel = 1:numel(R.condnames)
         switch R.obs.gainmeth{i}
             case 'obsnoise'
                 CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
-                xsims = xsims + CN.*randn(size(xsims)).*mean(xsims,2); % SNR of target
+                xsims = xsims + randn(size(xsims)).*CN.*std(xsims,[],2); % SNR of target
             case 'leadfield'
                 LF = R.obs.LF.*exp(p.obs.LF);
                 LFF = zeros(m.m);

@@ -15,7 +15,7 @@ R.out.dag = sprintf('NPD_STN_GPe_MultiStart_M%.0f',1); % 'All Cross'
 load([R.path.rootn '\outputs\' R.path.projectn '\MultiStartAnalysis\MSAsave1.mat'])
 format short g
 
-N = 3;
+N = 10;
 % Perform CMD
 T = [parWeighted{:}];
 D = pdist(T','euclidean');

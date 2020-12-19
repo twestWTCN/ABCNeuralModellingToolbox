@@ -64,15 +64,15 @@ R.objfx.feattype = 'magnitude'; %%'ForRev'; %
 R.objfx.specspec = 'npd'; %%'auto'; % which part of spectra to fit
 
 %% OPTIMISATION
-R.SimAn.pOptList = {'.int{src}.T','.int{src}.G','.int{src}.S','.C','.A','.D'}; %,'.S','.int{src}.G','.int{src}.S','.D','.A',,'.int{src}.BG','.int{src}.S','.S','.D','.obs.LF'};  %,'.C','.obs.LF'}; % ,'.obs.mixing','.C','.D',
+R.SimAn.pOptList = {'.int{src}.T','.int{src}.G','.int{src}.S','.C','.A','.D','.obs.Cnoise'}; %,'.S','.int{src}.G','.int{src}.S','.D','.A',,'.int{src}.BG','.int{src}.S','.S','.D','.obs.LF'};  %,'.C','.obs.LF'}; % ,'.obs.mixing','.C','.D',
 R.SimAn.pOptBound = [-12 12];
 R.SimAn.pOptRange = R.SimAn.pOptBound(1):.1:R.SimAn.pOptBound(2);
 R.SimAn.searchMax = 200;
-R.SimAn.convIt.dEps = 1e-6;
+R.SimAn.convIt.dEps = 2e-3;
 R.SimAn.convIt.eqN = 5;
 R.analysis.modEvi.N  = 500;
-R.SimAn.scoreweight = [1 1e-6];
-R.SimAn.rep = 256; %512; % Repeats per temperature
+R.SimAn.scoreweight = [1 0];
+R.SimAn.rep = 512; %512; % Repeats per temperature
 % R.SimAn.saveout = 'xobs1';
 R.SimAn.jitter = 1; % Global precision
 %% PLOTTING

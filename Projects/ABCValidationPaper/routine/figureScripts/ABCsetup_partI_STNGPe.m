@@ -39,7 +39,7 @@ disp(sprintf('The actual simulation df is %.2f Hz',dfact));
 %% OBSERVATION
 % observation function
 R.obs.obsFx = @observe_data;
-R.obs.gainmeth = {'unitvar'}; %,'boring'}; %,'submixing'}; %,'lowpass'}; ,'leadfield' %unitvar'mixing'
+R.obs.gainmeth = {'obsnoise','unitvar'}; %,'submixing'}; %,'lowpass'}; ,'leadfield' %unitvar'mixing'
 R.obs.glist =0; %linspace(-5,5,12);  % gain sweep optimization range [min max listn] (log scaling)
 R.obs.brn =2; % 2; % burn in time
 LF = [1 1]*10; % Fit visually and for normalised data
@@ -68,7 +68,7 @@ R.SimAn.pOptList = {'.int{src}.T','.int{src}.S','.C','.A','.D','.obs.Cnoise'}; %
 R.SimAn.pOptBound = [-12 12];
 R.SimAn.pOptRange = R.SimAn.pOptBound(1):.1:R.SimAn.pOptBound(2);
 R.SimAn.searchMax = 200;
-R.SimAn.convIt.dEps = 2e-3;
+R.SimAn.convIt.dEps = 5e-2;
 R.SimAn.convIt.eqN = 5;
 R.analysis.modEvi.N  = 500;
 R.SimAn.scoreweight = [1 0]; %1e-8];

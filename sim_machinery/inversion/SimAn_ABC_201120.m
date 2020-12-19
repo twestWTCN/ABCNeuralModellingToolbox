@@ -54,7 +54,7 @@ delta_act = 0.05;
 pIndMap = spm_vec(pInd); % in flat form
 pMuMap = spm_vec(pMu);
 pSigMap = spm_vec(pSig);
-R.SimAn.minRank = ceil(size(pIndMap,1)*2); %Ensure rank of sample is large enough to compute copula
+R.SimAn.minRank = ceil(size(pIndMap,1)*4); %Ensure rank of sample is large enough to compute copula
 
 % set initial batch of parameters from gaussian priors
 if isfield(R,'Mfit')
@@ -176,18 +176,18 @@ while ii <= R.SimAn.searchMax
         B = eig(cov(A'));
         C = B/sum(B);
         eRank = sum(cumsum(C)>0.01);
-        R.SimAn.minRank = ceil(eRank*2);
+        R.SimAn.minRank = ceil(eRank*4);
         fprintf('effective rank of optbank is %.0f\n',eRank)
     end
     if size(parOptBank,2)> R.SimAn.minRank-1
-        if size(parOptBank,2) < (R.SimAn.minRank-1)
+        if size(parOptBank,2) <= (2*R.SimAn.minRank-1)
             disp('Bank satisfies current eps')
             eps_act = eps_exp;
             cflag = 1; % copula flag (enough samples)
             itry = 0;  % set counter to 0
         else % if the bank is very large than take subset
             disp('Bank is large taking new subset to form eps')
-            parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+            parOptBank = parBank(:,intersect(1:2*R.SimAn.minRank,1:size(parBank,2)));
             ACClocbank = computeObjective(R,parOptBank(end,:));
             eps_act = prctile(ACClocbank,50);
             cflag = 1; % copula flag (enough samples)
@@ -202,7 +202,7 @@ while ii <= R.SimAn.searchMax
         itry = itry + 1;
     elseif itry >= 1
         disp('Recomputing eps from parbank')
-        parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+        parOptBank = parBank(:,intersect(1:4*R.SimAn.minRank,1:size(parBank,2)));
         ACClocbank = computeObjective(R,parOptBank(end,:));
         eps_act = prctile(ACClocbank,50);
         cflag = 1;
@@ -232,7 +232,7 @@ while ii <= R.SimAn.searchMax
         [Mfit,cflag] = postEstCopula(parOptBank,Mfit,pIndMap,pOrg);
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
         Mfit.DKL = DKL;
-    elseif cflag == 0 && (size(parBank,2) >= (R.SimAn.minRank-1))% estimate mv Normal Distribution
+    elseif cflag == 0 && itry == 0; %(size(parBank,2) >= (R.SimAn.minRank-1))% estimate mv Normal Distribution
         % Set Weights
         if size(parOptBank,2)>R.SimAn.minRank
             s = parOptBank(end,:);
@@ -247,11 +247,7 @@ while ii <= R.SimAn.searchMax
         Ws = repmat(W,size(xs,1),1); % added 03/2020 as below wasnt right dim (!)
         Mfit.Mu = wmean(xs,Ws,2);
         Mfit.Sigma = weightedcov(xs',W);
-        R.Mfit = Mfit;
-        
-        %             Mfit.Mu = mean(parBank(pMuMap,intersect(1:1.5*R.SimAn.minRank,1:size(parBank,2))),2);
-        %             Mfit.Sigma = cov(parBank(pMuMap,intersect(1:1.5*R.SimAn.minRank,1:size(parBank,2)))');
-        
+        R.Mfit = Mfit;       
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,0);
         Mfit.DKL = DKL;
     end

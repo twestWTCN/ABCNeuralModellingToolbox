@@ -14,7 +14,7 @@ R = ABCsetup_partI_STNGPe(R);
 
 modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(1)]);
 [R,p,m] = modelspec(R);
-N = 3; % Number of multistarts
+N = 10; % Number of multistarts
 
 
 [pInd,parMu,parSigMap] = parOptInds_110817(R,p,m.m); % in structure form
