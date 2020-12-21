@@ -3,7 +3,9 @@ close all; clear
 % FIGURE 3- (II) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox'
+
 %This should be your projectname
 projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
@@ -14,7 +16,7 @@ R = ABCsetup_partI_STNGPe(R);
 
 modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(1)]);
 [R,p,m] = modelspec(R);
-N = 10; % Number of multistarts
+N = 3; % Number of multistarts
 
 
 [pInd,parMu,parSigMap] = parOptInds_110817(R,p,m.m); % in structure form
@@ -69,5 +71,6 @@ T = [parWeighted{:}];
 
 D = pdist(T','euclidean');
 [Y,eigvals] = cmdscale(squareform(D));
+mkdir([R.path.rootn '\outputs\' R.path.projectn '\MultiStartAnalysis'])
 save([R.path.rootn '\outputs\' R.path.projectn '\MultiStartAnalysis\MSAsave1.mat'])
 % save('C:\Users\twest\Documents\Work\GitHub\SimAnneal_NeuroModel\Projects\Rat_NPD\routine\rat_STN_GPe\Model_Validation\MultiStartAnalysis\MSAsave3.mat')

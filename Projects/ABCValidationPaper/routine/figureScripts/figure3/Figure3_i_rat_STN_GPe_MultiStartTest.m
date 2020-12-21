@@ -72,7 +72,7 @@ for multiStart = 1:2*N
         R = setSimTime(R,32);
         R.plot.save = 0;
         R.Bcond = 0;
-        R.plot.flag = 0;
+        R.plot.flag = 1;
         R.SimAn.jitter = 1;
         SimAn_ABC_201120(R,p,m);
         closeMessageBoxes

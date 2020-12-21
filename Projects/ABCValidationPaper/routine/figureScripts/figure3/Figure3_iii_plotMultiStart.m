@@ -3,7 +3,9 @@ close all; clear
 % FIGURE 3- (II) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox'
+% 
 %This should be your projectname
 projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
@@ -15,7 +17,7 @@ R.out.dag = sprintf('NPD_STN_GPe_MultiStart_M%.0f',1); % 'All Cross'
 load([R.path.rootn '\outputs\' R.path.projectn '\MultiStartAnalysis\MSAsave1.mat'])
 format short g
 
-N = 10;
+N = 3;
 % Perform CMD
 T = [parWeighted{:}];
 D = pdist(T','euclidean');
@@ -39,8 +41,8 @@ figure
 subplot(2,2,4)
 for multiStart = convMods
     CMD_A = CMDscaled{multiStart}(1:3:end,1);
-    CMD_B = CMDscaled{multiStart}(1:3:end,2);
-    CMD_C = CMDscaled{multiStart}(1:3:end,3);
+    CMD_B = CMDscaled{multiStart}(1:3:end,3);
+    CMD_C = CMDscaled{multiStart}(1:3:end,2);
     cscl = linspace(10,300,size(CMD_A,1));
     i = i +1;
     sc(i) = scatter(CMD_A,CMD_B,cscl,cmap(multiStart,:),'.');

@@ -7,7 +7,7 @@ Rmod = setSimTime(Rmod,256);
 u = innovate_timeseries(Rmod,m);
 pMAP = permMod.MAP;
 if multiswitch == 2
-    rng(231)
+    rng(5342)
     x = spm_vec(pMAP);
     [pInd,pMu,pSig] = parOptInds_110817(R,p,m.m); % in structure form
     xMu = x(spm_vec(pMu));
