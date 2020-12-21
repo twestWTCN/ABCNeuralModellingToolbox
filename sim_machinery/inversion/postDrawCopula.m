@@ -20,7 +20,7 @@ for i = 1:rep
     base(pSigMap,i) = diag(Mfit.Sigma);
     par{i} = spm_unvec(base(:,i),pOrg);
 end
-
+baseSave = base;
 % Set up MAP estimate
 base = spm_vec(pOrg);
 MAP = base;
@@ -33,7 +33,7 @@ if R.plot.flag == 1
     figure(3)
     clf
     cflag= 1;
-    pardraw = base(pIndMap,:);
+    pardraw = baseSave(pIndMap,:);
     plotProposalDist(R,Mfit,pardraw,pIndMap,cflag)
 end
 

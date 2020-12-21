@@ -19,7 +19,7 @@ switch getenv('computername')
     case 'DESKTOP-1QJTIMO'
         gitpath = 'C:\Users\Tim West\Documents\GitHub';
         spmpath = 'C:\Users\Tim West\Documents\GitHub\spm12';
-        R.path.datapath = 'C:\Users\Tim West\OneDrive - Nexus365\Meaghan_project\Meaghan_stuff';
+        R.path.datapath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox\Projects\ABCValidationPaper\data\Storage';
     case 'DESKTOP-4VATHIO'
         gitpath = 'D:\GITHUB';
         spmpath = 'D:\GITHUB\spm12';
@@ -69,8 +69,7 @@ addpath(genpath([repopath '\priors']));
 addpath(genpath([repopath '\plotting']));
 addpath(genpath([repopath '\routine\' routname]))
 addpath(genpath([repopath '\statsfx']))
-addpath(genpath([repopath '\external_dependencies']))
-addpath(genpath([repopath '\external_dependencies']))
+addpath(genpath([repopath '\ABC_dependencies']))
 addpath(genpath(R.path.projpath))
 
 

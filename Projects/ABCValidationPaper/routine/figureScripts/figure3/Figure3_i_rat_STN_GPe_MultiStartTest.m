@@ -1,4 +1,4 @@
-clear ; close all; closeMessageBoxes
+clear ; close all; %closeMessageBoxes
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 3- (I) Multistart Fitting
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -6,7 +6,8 @@ clear ; close all; closeMessageBoxes
 %      delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartListWML.mat'])
 
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox'
 addpath(repopath)
 %This should be your projectname
 projname = 'ABCValidationPaper';
@@ -20,14 +21,14 @@ R.out.tag = 'figure3_MultiStart'; % Task tag
 R = ABCsetup_partI_STNGPe(R);
 
 %% Create Datasets
-% for DS = 1:2
-%     if DS == 1
-%         [~,pMAP{DS},feat_sim{DS}] = getModelData(R,'figure2_FitDemo',1);
-%     else
-%         [~,pMAP{DS},feat_sim{DS}] = getModelData(R,'figure2_FitDemo',3);
-%     end
-% end
-% save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartDataFeatures'],'pMAP','feat_sim')
+for DS = 1:2
+    if DS == 1
+        [~,pMAP{DS},feat_sim{DS}] = getModelData(R,'figure2_FitDemo',1);
+    else
+        [~,pMAP{DS},feat_sim{DS}] = getModelData(R,'figure2_FitDemo',3);
+    end
+end
+save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartDataFeatures'],'pMAP','feat_sim')
 load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartDataFeatures'],'pMAP','feat_sim')
 
 try

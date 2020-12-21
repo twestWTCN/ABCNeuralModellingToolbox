@@ -4,7 +4,9 @@
 
 clear ; close all
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
+
 addpath(repopath)
 %This should be your projectname
 projname = 'ABCValidationPaper';
@@ -22,7 +24,7 @@ R = ABCsetup_partI_STNGPe(R);
 R = prepareRatData_STN_GPe_NPD(R);
 
 %% Prepare Model
-for M = 3
+for M = 1:3
 modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(M)]);
 [R,p,m] = modelspec(R);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

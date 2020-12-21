@@ -189,12 +189,12 @@ while ii <= R.SimAn.searchMax
             disp('Bank is large taking new subset to form eps')
             parOptBank = parBank(:,intersect(1:2*R.SimAn.minRank,1:size(parBank,2)));
             ACClocbank = computeObjective(R,parOptBank(end,:));
-            eps_act = prctile(ACClocbank,50);
+            eps_act = min(ACClocbank(end,:));
             cflag = 1; % copula flag (enough samples)
             itry = 0;  % set counter to 0
         end
     elseif (itry < 1) || (size(parBank,2) < (R.SimAn.minRank-1))
-        fprintf('Trying for the %.0f\n time with the current eps \n',itry)
+        fprintf('Trying for the %.0f\n time with the current eps \n',itry+1)
         disp('Trying once more with current eps')
         if isfield(Mfit,'Rho')
             cflag = 1;
@@ -202,16 +202,11 @@ while ii <= R.SimAn.searchMax
         itry = itry + 1;
     elseif itry >= 1
         disp('Recomputing eps from parbank')
-        parOptBank = parBank(:,intersect(1:4*R.SimAn.minRank,1:size(parBank,2)));
+        parOptBank = parBank(:,intersect(1:2*R.SimAn.minRank,1:size(parBank,2)));
         ACClocbank = computeObjective(R,parOptBank(end,:));
-        eps_act = prctile(ACClocbank,50);
+        eps_act = prctile(ACClocbank,75);
         cflag = 1;
         itry = 0;
-        
-        % Stop getting stuck
-        %         if (eps_act-eps_prior) == 0
-        %             eps_act = eps_act./2;
-        %         end
     end
     
     if itry==0
@@ -232,7 +227,7 @@ while ii <= R.SimAn.searchMax
         [Mfit,cflag] = postEstCopula(parOptBank,Mfit,pIndMap,pOrg);
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
         Mfit.DKL = DKL;
-    elseif cflag == 0 && itry == 0; %(size(parBank,2) >= (R.SimAn.minRank-1))% estimate mv Normal Distribution
+    elseif cflag == 0 && itry == 0% estimate mv Normal Distribution
         % Set Weights
         if size(parOptBank,2)>R.SimAn.minRank
             s = parOptBank(end,:);
@@ -242,7 +237,6 @@ while ii <= R.SimAn.searchMax
             xs = parBank(pIndMap,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
         end
         W = ((s(end,:)-1).^-1);
-        W = W;%.^2;
         W = W./sum(W);
         Ws = repmat(W,size(xs,1),1); % added 03/2020 as below wasnt right dim (!)
         Mfit.Mu = wmean(xs,Ws,2);
