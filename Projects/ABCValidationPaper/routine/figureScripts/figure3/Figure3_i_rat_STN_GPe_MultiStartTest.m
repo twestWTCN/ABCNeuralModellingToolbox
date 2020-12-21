@@ -19,13 +19,14 @@ closeMessageBoxes
 %% Set Routine Pars
 R.out.tag = 'figure3_MultiStart'; % Task tag
 R = ABCsetup_partI_STNGPe(R);
+R.SimAn.pOptList = {'.int{src}.T','.int{src}.S','.C','.A','.D'}; %,'.S','.int{src}.G','.int{src}.S','.D','.A',,'.int{src}.BG','.int{src}.S','.S','.D','.obs.LF'};  %,'.C','.obs.LF'}; % ,'.obs.mixing','.C','.D',
 
 %% Create Datasets
 for DS = 1:2
     if DS == 1
-        [~,pMAP{DS},feat_sim{DS}] = getModelData(R,'figure2_FitDemo',1);
+        [~,pMAP{DS},feat_sim{DS}] = getMultiStartData(R,'figure2_FitDemo',1);
     else
-        [~,pMAP{DS},feat_sim{DS}] = getModelData(R,'figure2_FitDemo',3);
+        [~,pMAP{DS},feat_sim{DS}] = getMultiStartData(R,'figure2_FitDemo',2);
     end
 end
 save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\MultiStartDataFeatures'],'pMAP','feat_sim')
