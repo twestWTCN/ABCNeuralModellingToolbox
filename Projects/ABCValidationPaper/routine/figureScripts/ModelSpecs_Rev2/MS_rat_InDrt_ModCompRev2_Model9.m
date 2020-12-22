@@ -47,6 +47,9 @@ p.obs.LF_s = repmat(1/4,size(p.obs.LF));
 p.obs.mixing = [1]; %zeros(size(R.obs.mixing));
 p.obs.mixing_s = repmat(0,size(p.obs.mixing));
 
+p.obs.Cnoise = zeros(1,m.m);
+p.obs.Cnoise_s = repmat(1,size(p.obs.Cnoise));
+
 % Delays
 p.D = repmat(-32,size(p.A{1})).*~((p.A{1}>-32) | (p.A{2}>-32)) ;
 p.D_s = repmat(1/16,size(p.D));
