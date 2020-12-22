@@ -3,6 +3,7 @@ function [R p m uc] = MS_rat_InDrt_ModCompRev2_Model10(R)
 % Model 5.2
 %% MODEL 10 %%%
 %% Prepare Model
+% Null-Model
 [R,m] = getStateDetails(R);
 
 % setup exogenous noise

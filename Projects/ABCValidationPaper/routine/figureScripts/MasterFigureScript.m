@@ -16,6 +16,8 @@ Figure3_iv_MultiStartStats
 %% Figure 4
 Figure4_i_rat_STN_GPe_Validation_ConfusionMat
 
+%% Figure 5
+Figure5_i_modelfitting
 
 
 % Figure SI1 - Investigating the effect of sensor noise

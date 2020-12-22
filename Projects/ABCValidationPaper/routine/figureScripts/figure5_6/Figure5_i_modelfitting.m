@@ -15,7 +15,7 @@ R.out.tag = 'figure5_ModelComp'; % Task tag
 R = ABCsetup_partII_FullModel(R);
 
 % IF FRESH START
-delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList.mat'])
+% delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList.mat'])
 %% Prepare the data
 R = prepareRatData_InDirect_Group_NPD(R);
 WML = [];
@@ -30,7 +30,7 @@ catch
     disp('Making Mod List!!')
 end
 
-for modID = 10; %1:12
+for modID =1:12
     if modID>= 7
         R.obs.LF = [1 1 1 1 1 1].*10; % Fit visually and for normalised data
         R.obs.Cnoise = [0.2 0.2 0.2 0.2 0.2 0.2];

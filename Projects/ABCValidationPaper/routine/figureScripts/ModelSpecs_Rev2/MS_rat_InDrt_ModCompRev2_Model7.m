@@ -3,43 +3,14 @@ function [R p m uc] = MS_rat_InDrt_ModCompRev2_Model7(R)
 % Model 4.1
 %% MODEL 7 %%%
 %% Prepare Model
-m.m = 6; % # of sources
-m.x = {[0 0 0 0 0 0 0 0]  [0 0]  [0 0]  [0 0]  [0 0]  [0 0]}; % Initial states
-m.Gint = [14 1 1 1 1 1];
-m.Tint = [4 1 1 1 1 1];
-m.Sint = [9 2 2 1 2 2];
-m.n =  size([m.x{:}],2); % Number of states
-% These outline the models to be used in compile function
-for i = 1:numel(R.chsim_name)
-    m.dipfit.model(i).source = R.chsim_name{i};
-end
-
-m.outstates = {[0 0 0 0 0 0 1 0]  [1 0]  [1 0]  [1 0]  [1 0]  [1 0]};
-R.obs.outstates = find([m.outstates{:}]);
-for i=1:numel(R.chloc_name)
-    R.obs.obsstates(i) = find(strcmp(R.chloc_name{i},R.chsim_name));
-end
-
-% Precompute xinds to make things easier with indexing
-% Compute X inds (removes need to spm_unvec which is slow)
-xinds = zeros(size(m.x,2),2);
-for i = 1:size(m.x,2)
-    if i == 1
-        xinds(i,1) = 1;
-        xinds(i,2) = size(m.x{i},2);
-    else
-        xinds(i,1) = xinds(i-1,2)+1;
-        xinds(i,2) = xinds(i,1) + (size(m.x{i},2)-1);
-    end
-end
-m.xinds = xinds;
+% Null-Model
+[R,m] = getStateDetails(R);
 
 % setup exogenous noise
 % m.uset.p = DCM.Ep;
 m.uset.p.covar = eye(m.m);
-m.uset.p.scale = 5e1; %.*R.InstP.dt;
+m.uset.p.scale = 1e-3; %.*R.InstP.dt;
 uc = innovate_timeseries(R,m);
-
 
 %% Prepare Priors
 % 1 MMC
