@@ -20,15 +20,15 @@ delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList.
 R = prepareRatData_InDirect_Group_NPD(R);
 WML = [];
 
-% try
-%     load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList'])
-%     disp('Loaded Mod List!!')
-% catch
+try
+    load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList'])
+    disp('Loaded Mod List!!')
+catch
     WML = [];
     mkdir([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag]);
     save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList'],'WML')
     disp('Making Mod List!!')
-% end
+end
 
 for modID = 10; %1:12
     if modID>= 7
