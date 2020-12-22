@@ -4,7 +4,7 @@ close all; clear
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
 % repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox'
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
 
 %This should be your projectname
 projname = 'ABCValidationPaper';
@@ -16,7 +16,10 @@ R = ABCsetup_partI_STNGPe(R);
 
 modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(1)]);
 [R,p,m] = modelspec(R);
-N = 3; % Number of multistarts
+N = 8; % Number of multistarts
+
+% Load Priors
+load([R.path.rootn '\outputs\' R.path.projectn '\figure3_MultiStart\MultiStartDataFeatures.mat'])
 
 
 [pInd,parMu,parSigMap] = parOptInds_110817(R,p,m.m); % in structure form
@@ -24,18 +27,31 @@ N = 3; % Number of multistarts
 parNames = getParFieldNames(p,m);
 
 parSel = 1:12;
-% Form descriptives
+% Form parameter indicies
 pMuMap = spm_vec(parMu); % in flat form
 pMuMap = pMuMap(parSel);
 pSigMap = spm_vec(parSigMap); % in flat form
 pSigMap = pSigMap(parSel);
 parNames = parNames(pMuMap);
+
+% Get priors
+for ds = 1:2
+    pAct = spm_vec(pMAP{ds});
+    pMuAct{ds} = pAct(pMuMap);
+    pSigAct{ds} = pAct(pSigMap);
+    A = 1-( pSigAct{ds}.^(1/2));
+    pMuAct{ds} = pMuAct{ds}.*A;
+    pMuAct{ds}(end-1:end) = 0;
+end
+
+% Run through multistarts
 Inds(1,1) = 0; Inds(2,1) = 0;
 for multiStart = 1:(2*N)
     R.out.dag = sprintf('NPD_STN_GPe_MultiStart_M%.0f',multiStart); % 'All Cross'
     [Rout,m,p,parBank,~,parHist,bankSave,kldHist] = loadABCData_160620(R);
-
     
+   
+    % parameter history
     parTT = []; r2 = [];
     for i = 1:size(parHist,2)
         parTT(:,i) = spm_vec(parHist(i));
@@ -43,14 +59,13 @@ for multiStart = 1:(2*N)
     end
     parT = parTT(pMuMap,:);
     parSig{multiStart} = parTT(pSigMap,:);
-    %     parSig = parT(pIndMap,:);
-    %     A = 1./parSig;
-    %     A = A./sum(A,1);
+    
+    
+    % Precision
     A = 1-( parSig{multiStart}.^(1/2));
-    %     A = 1/(parSig{multiStart}./parSig{multiStart}(:,1));
-    %     A(A<0) = 0
-    %     A = 1;
-    wParT = A.*parT;
+    
+    % Save variables
+    wParT = parT.*A;
     parWeighted{multiStart} = wParT;
     parMS{multiStart} = parT;
     parConv(:,multiStart) = wParT(:,end);
@@ -59,18 +74,14 @@ for multiStart = 1:(2*N)
     R2track{multiStart} = r2;
     Its(multiStart) = size(parT,2);
     kldTrack{multiStart} = kldHist;
+    if multiStart<=N
+    pwpe{multiStart} = (wParT-pMuAct{1}).^2;
+    elseif multiStart>N
+    pwpe{multiStart} = (wParT-pMuAct{1}).^2;
+    end
 end
 Inds(:,1) = [];
-T = [parWeighted{:}];
 
-% T1 = [parWeighted{1:10}];
-% T2 = [parWeighted{11:20}];
-% 
-% [A,B,r,U,V,stats] = canoncorr(T1,T2) 
-
-
-D = pdist(T','euclidean');
-[Y,eigvals] = cmdscale(squareform(D));
-mkdir([R.path.rootn '\outputs\' R.path.projectn '\MultiStartAnalysis'])
-save([R.path.rootn '\outputs\' R.path.projectn '\MultiStartAnalysis\MSAsave1.mat'])
+mkdir([R.path.rootn '\outputs\' R.path.projectn '\figure3_MultiStart'])
+save([R.path.rootn '\outputs\' R.path.projectn '\figure3_MultiStart\MSAsave1.mat'])
 % save('C:\Users\twest\Documents\Work\GitHub\SimAnneal_NeuroModel\Projects\Rat_NPD\routine\rat_STN_GPe\Model_Validation\MultiStartAnalysis\MSAsave3.mat')
