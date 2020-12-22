@@ -13,6 +13,10 @@ Figure3_ii_analyseMultiStart
 Figure3_iii_plotMultiStart
 Figure3_iv_MultiStartStats
 
+%% Figure 4
+Figure4_i_rat_STN_GPe_Validation_ConfusionMat
+
+
 
 % Figure SI1 - Investigating the effect of sensor noise
 FigureSI_sensorNoise

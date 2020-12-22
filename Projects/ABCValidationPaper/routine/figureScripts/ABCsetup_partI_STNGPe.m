@@ -72,7 +72,7 @@ R.SimAn.convIt.dEps = 5e-2;
 R.SimAn.convIt.eqN = 5;
 R.analysis.modEvi.N  = 500;
 R.SimAn.scoreweight = [1 0]; %1e-8];
-R.SimAn.rep = 128; % Repeats per temperature
+R.SimAn.rep = 512; % Repeats per temperature
 % R.SimAn.saveout = 'xobs1';
 R.SimAn.jitter = 1; % Global precision
 %% PLOTTING
