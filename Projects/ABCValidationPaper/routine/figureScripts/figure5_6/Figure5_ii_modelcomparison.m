@@ -1,25 +1,34 @@
-% COMPUTE MODEL RELATIVE PROBABILITIES AND PLOT RESULTS
-clear; close all
-closeMessageBoxes
+clear ; close all; closeMessageBoxes
+%%%%%%%%%%%%%%%%%%%%%%%%
+% FIGURE 5/6- (II) MODEL COMPARISON
+%%%%%%%%%%%%%%%%%%%%%%%%
 
-R = ABCAddPaths('Rat_NPD','rat_InDirect_ModelComp');
-R.projectn = 'Rat_NPD';
-R.out.tag = 'rat_InDirect_ModelComp'; % Task tag
-R = simannealsetup_InDirect_ModelComp(R)
+%This should link to your repo folder
+repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+addpath(repopath)
+%This should be your projectname
+projname = 'ABCValidationPaper';
+R = ABCAddPaths(repopath,projname);
 
-% Get empirical data
-R = prepareRatData_InDirect_Group_NPD(R); 
+%% Set Routine Pars
+R.out.tag = 'figure5_ModelComp'; % Task tag
+R = ABCsetup_partII_FullModel(R);
+
+% IF FRESH START
+% delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WorkingModList.mat'])
+%% Prepare the data
+R = prepareRatData_InDirect_Group_NPD(R);
 
 %% Do the model probability computations
 R.comptype = 1;
-modelCompMaster(R,1:12) %,[1:8 10:12]
-
+% R.out.tag2 = 'NPD_InDrt_ModCompRev2';
+% modelCompMaster_160620(R,1:12,[]) %,[1:8 10:12]
 %% Plot the modComp results
 R.modcomp.modN = [1:12];
-R.modcompplot.NPDsel = [2 8 10]; %[6 9 10];
+R.modcompplot.NPDsel = []; %[8 10]; %[6 9 10];
 R.plot.confint = 'yes';
 cmap = linspecer(numel(R.modcomp.modN));
 cmap = cmap(end:-1:1,:);
-plotModComp_091118(R,cmap)
+plotModCompABCValidationPaper(R,cmap)
 figure(2)
 subplot(3,1,1); ylim([-2 1])
