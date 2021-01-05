@@ -27,8 +27,11 @@ for modID = modlist
         f = msgbox(sprintf('Probabilities for Model %.0f',modID));
         
         % Get Model Name
+        if isfield(R.out,'tag2')
+        R.out.dag = sprintf([R.out.tag2 '_M%.0f'],modID); % bugfix
+        else
         R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
-        
+        end
         % Load Config
         load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\R_' R.out.tag '_' R.out.dag  '.mat'])
         
@@ -68,8 +71,8 @@ for modID = modlist
         %         parOptBank = parBank(1:end-1,parBank(end,:)>R.analysis.modEvi.eps);
         
         % R.parOptBank = parOptBank;
+                 R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
         permMod = modelProbs_160620(R,m.x,m,p,Rmod);
-        
         saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_' R.out.dag '.mat'],permMod)
         pause(10)
         closeMessageBoxes

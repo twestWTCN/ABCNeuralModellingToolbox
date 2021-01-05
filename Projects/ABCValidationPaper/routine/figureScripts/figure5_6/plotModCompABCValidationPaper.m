@@ -1,4 +1,4 @@
-function plotModComp_310520(R,cmap)
+function plotModCompABCValidationPaper(R,cmap)
 % addpath('C:\Users\Tim\Documents\MATLAB_ADDONS\violin')
 % R.plot.confint = 'none';
 if nargin<2
@@ -92,6 +92,10 @@ for modID = 1:numel(R.modcomp.modN)
         r2repSave{modID} = nan(size(ACCrep));
     end
 end
+
+%% Combine marginal posterior distribution from model evidence (normalize)
+pModDist = pmod./sum(pmod);
+
 %% Now Plot Results of Model Comparison
 figure(2)
 subplot(4,1,1)
@@ -102,7 +106,7 @@ violin(MSE,'facecolor',cmap,'medc','k:','xlabel',shortlab); %,...
 hold on
 plot([0 numel(R.modcomp.modN)+1],[R.modcomp.modEvi.epspop R.modcomp.modEvi.epspop],'k--')
 xlabel('Model'); ylabel('NMRSE'); grid on;
-% ylim([-1 0.4])
+ylim([-40 0])
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 
@@ -112,19 +116,16 @@ h = findobj(gca,'Type','line');
 % legend(hl,{longlab{[R.modcompplot.NPDsel end]}})
 
 subplot(4,1,2)
-% TlnK = 2.*log(max(pmod)./pmod);
-%  TlnK = log10(pmod); % smallest (closest to zero) is the best
 TlnK = -log10(1-pmod); % largest is the best
-
 for i = 1:numel(R.modcomp.modN)
     %     b = bar(i,-log10(1-pmod(i))); hold on
-    b = bar(i,TlnK(i)); hold on
+    b = bar(i,pModDist(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN); grid on
 a.XTickLabel = shortlab;
-xlabel('Model'); ylabel('-log_{10} P(M|D)')
-xlim([0.5 numel(R.modcomp.modN)+0.5])
+xlabel('Model'); ylabel('Marginal Likelihood- Model Evidence')
+xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 0.2])
 
 subplot(4,1,3)
 for i = 1:numel(R.modcomp.modN)
@@ -136,21 +137,22 @@ a.XTickLabel = shortlab;
 grid on
 xlabel('Model'); ylabel('KL Divergence')
 set(gcf,'Position',[277   109   385   895])
-xlim([0.5 numel(R.modcomp.modN)+0.5])
+xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 6250])
 % subplot(3,1,3)
 % bar(DKL)
 % xlabel('Model'); ylabel('Joint KL Divergence')
 
 subplot(4,1,4)
+ACS = -log10(1-pmod) -log10(DKL/median(DKL));
 for i = 1:numel(R.modcomp.modN)
-    b = bar(i,mean(ACC{i})); hold on
+    b = bar(i,ACS(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 grid on
-xlabel('Model'); ylabel('KL Divergence')
-set(gcf,'Position',[277   109   385   895])
+xlabel('Model'); ylabel('ACS')
+set(gcf,'Position',[277   109   385   895]); ylim([0 2.5])
 xlim([0.5 numel(R.modcomp.modN)+0.5])
 
 

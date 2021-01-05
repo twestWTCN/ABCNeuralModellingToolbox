@@ -3,13 +3,16 @@ close all; clear
 % FIGURE 3- (II) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
-% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
 %
 %This should be your projectname
 projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
 R = ABCsetup_partI_STNGPe(R);
+% Sets plotting defaults
+ABCGraphicsDefaults
+
 
 R.out.tag = 'figure3_MultiStart'; % Task tag
 R.out.dag = sprintf('NPD_STN_GPe_MultiStart_M%.0f',1); % 'All Cross'
@@ -60,7 +63,7 @@ end
 scatter(CMDprior{1}(1),CMDprior{1}(2),200,'MarkerEdgeColor',cmap(1,:),'Marker','x','LineWidth',1.25);
 scatter(CMDprior{2}(1),CMDprior{2}(2),200,'MarkerEdgeColor',cmap(N+1,:),'Marker','x','LineWidth',1.25);
 
-
+xlim([-0.15 1.2]); ylim([-1 0])
 xlabel('Scaling Dimension 1'); ylabel('Scaling Dimension 2');
 grid on
 title('Multi-start Posteriors on Projected Coordinates')
@@ -72,11 +75,11 @@ c = bar(1:numel(pMuMap),parConv);
 for i = 1:size(c,2)
     c(i).FaceColor = cmap(i,:);
     c(i).EdgeAlpha = 0;
-    if i<11
+    if i<9
         ig = i;
         legnames{i} = sprintf('%.0fA',ig);
     else
-        ig = i-10;
+        ig = i-8;
         legnames{i} = sprintf('%.0fB',ig);
     end
 end
@@ -101,7 +104,7 @@ e2.LineWidth = 1.2;
 g = gca;
 g.XTickLabel = parNames;
 g.XTickLabelRotation = -45;
-grid on
+grid on; box off
 ylabel('Precision Weighted Posteior Means')
 title('Multi-start Posterior Means')
 
@@ -110,10 +113,10 @@ title('Multi-start Posterior Means')
 
 X = ((1:numel(pMuMap))).*h;
 X(X==0) = NaN;
-sc = scatter(X,repmat(1.25,1,numel(pMuMap)),60,'*');
+sc = scatter(X,repmat(0.75,1,numel(pMuMap)),60,'*');
 sc.LineWidth = 1.5;
 sc.CData = [0 0 0];
-
+ xlim([0.25 10.50]); ylim([-1.5 1])
 leg = legend(c,legnames,'Orientation','vertical');
 leg.Box = 'off';
 set(leg,'Position',[0.9131 0.1209 0.0803 0.2472]);
@@ -139,11 +142,11 @@ for multiStart = convMods
 end
 
 subplot(2,2,1)
-ylabel('R2');    grid on
+ylabel('R2');    grid on; box on
 xlabel('Iteration');
 title('Multi-start Model Convergence')
 subplot(2,2,2)
-ylabel('Log Precision');    grid on
+ylabel('Log Precision');    grid on; box on
 xlabel('Iteration');
 title('Multi-start Parameter Inference')
 set(gcf,'Position',[72         -14        1237        1009])

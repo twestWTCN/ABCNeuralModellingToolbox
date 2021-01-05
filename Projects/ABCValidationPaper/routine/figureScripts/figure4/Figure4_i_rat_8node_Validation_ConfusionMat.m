@@ -11,19 +11,22 @@ projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
 
 R.out.tag = 'figure4_confusionMatrix';
+R = ABCsetup_partII_FullModel(R);
 
 %% First Simulate the Data from the Empirically Fitted Models
-delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfWorkList.mat'])
-for modID = 1:3
-    Rt = []; % Temp R Struc
-    % Recover Fitted Parameters
-    tagname = 'figure5_ModelComp';
-    [r2,pMAP{modID},feat_sim{modID}] = getModelData(R,tagname,modID);
-end
-save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'RSimData')
-load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'RSimData')
+% delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfWorkList.mat'])
+% modlist = [11 3 8];
+% for modID = 1:3
+%     Rt = []; % Temp R Struc
+%     % Recover Fitted Parameters
+%     tagname = 'figure5_ModelComp';
+%     [r2,pMAP{modlist(modID)},feat_sim{modlist(modID)},~,~,~,Rmod{modlist(modID)}] = getModelData(R,tagname,modlist(modID));
+% end
+% mkdir([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag])
+% save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'feat_sim','pMAP','modlist','Rmod')
+load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'feat_sim','pMAP','modlist','Rmod')
 % Make matrix of combinations for confusion matrix
-confmatlist = allcomb(1:3,1:3)';
+confmatlist = allcomb(modlist,modlist)';
 R.tmp.confmat = confmatlist;
 
 % Create List (for parallelization across multiple MATLAB instances)
@@ -47,20 +50,23 @@ for i =1:size(confmatlist,2)
         
         SimData = confmatlist(1,i);
         SimMod = confmatlist(2,i);
-        
+        RSim = Rmod{SimMod};
+        % Adjust R
         fprintf('Fitting Model %.0f to data %.0f',SimMod,SimData)
         f = msgbox(sprintf('Fitting Model %.0f to data %.0f',SimMod,SimData));
         
-        modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(SimMod)]);
-        [R p m uc] = modelspec(R);
-        pause(5)
+        modelspec = eval(['@MS_rat_InDrt_ModCompRev2_Model' num2str(SimMod)]);
+        [R p m uc] = modelspec(RSim);
+        pause(1)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        R.data.feat_emp = feat_sim{2};
-        R.data.feat_xscale{1} = R.frqz;
-        R.out.dag = sprintf([R.out.tag '_DataM%.0f_ParM%.0f'],SimData,SimMod); % 'All Cross'
-        R.Bcond = 0;
-        R.plot.flag = 1;
-        SimAn_ABC_201120(R,p,m);
+        RSim.data.feat_emp = feat_sim{SimData};
+        RSim.data.feat_xscale{1} = RSim.frqz;
+        RSim.out.dag = sprintf([R.out.tag '_DataM%.0f_ParM%.0f'],SimData,SimMod); % 'All Cross'
+        RSim.Bcond = 0;
+        RSim.plot.flag = 1;
+        RSim = rmfield(RSim,{'Mfit'}); % Important!! Reverts to unfitted model spec
+         RSim = setSimTime(RSim,32);
+        SimAn_ABC_201120(RSim,p,m);
         closeMessageBoxes
     end
 end

@@ -70,11 +70,14 @@ R.SimAn.pOptRange = R.SimAn.pOptBound(1):.1:R.SimAn.pOptBound(2);
 R.SimAn.searchMax = 200;
 R.SimAn.convIt.dEps = 2e-3;
 R.SimAn.convIt.eqN = 5;
-R.analysis.modEvi.N  = 500;
 R.SimAn.scoreweight = [1 0];
 R.SimAn.rep = 512; %512; % Repeats per temperature
 % R.SimAn.saveout = 'xobs1';
 R.SimAn.jitter = 1; % Global precision
+
+%% MODEL COMPARISON
+R.analysis.modEvi.N  = 1000; % Number of draws
+ 
 %% PLOTTING
 R.plot.outFeatFx = @genplotter_200420; 
 R.plot.save = 'False';

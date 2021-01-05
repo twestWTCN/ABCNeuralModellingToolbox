@@ -53,7 +53,7 @@ for modID =1:12
         modelspec = eval(['@MS_rat_InDrt_ModCompRev2_Model' num2str(modID)]);
         [R p m uc] = modelspec(R); % M! intrinsics shrunk"
         pause(5)
-        R.out.dag = sprintf('NPD_InDrt_ModCompRev2_M%.0f',modID); % 'All Cross'
+        R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
         
         %% Run ABC Optimization
         R = setSimTime(R,32);
