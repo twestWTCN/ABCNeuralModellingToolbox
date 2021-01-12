@@ -10,16 +10,15 @@ addpath(repopath)
 projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
 
-R.out.tag = 'figure4_confusionMatrix';
-R = ABCsetup_partII_FullModel(R);
-
+R.out.tag = 'figure4_2node_confusionMatrix';
+R = ABCsetup_partI_STNGPe(R);
 %% First Simulate the Data from the Empirically Fitted Models
 % delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfWorkList.mat'])
-% modlist = [11 3 8];
+% modlist = [1 2 3];
 % for modID = 1:3
 %     Rt = []; % Temp R Struc
 %     % Recover Fitted Parameters
-%     tagname = 'figure5_ModelComp';
+%     tagname = 'figure2_FitDemo';
 %     [r2,pMAP{modlist(modID)},feat_sim{modlist(modID)},~,~,~,Rmod{modlist(modID)}] = getModelData(R,tagname,modlist(modID));
 % end
 % mkdir([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag])
@@ -55,7 +54,7 @@ for i =1:size(confmatlist,2)
         fprintf('Fitting Model %.0f to data %.0f',SimMod,SimData)
         f = msgbox(sprintf('Fitting Model %.0f to data %.0f',SimMod,SimData));
         
-        modelspec = eval(['@MS_rat_InDrt_ModCompRev2_Model' num2str(SimMod)]);
+        modelspec = eval(['@MS_rat_STN_GPe_ModComp_Model' num2str(SimMod)]);
         [~,p,m,uc] = modelspec(RSim);
 %         pause(1)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

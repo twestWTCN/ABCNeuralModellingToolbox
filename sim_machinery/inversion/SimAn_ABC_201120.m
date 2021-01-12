@@ -58,8 +58,9 @@ R.SimAn.minRank = ceil(size(pIndMap,1)*4); %Ensure rank of sample is large enoug
 
 % set initial batch of parameters from gaussian priors
 if isfield(R,'Mfit')
+    Mfit = R.Mfit;
     rep =  R.SimAn.rep(1);
-    par = postDrawCopula(R.Mfit,p,pIndMap,rep);
+    par = postDrawCopula(R,Mfit,p,pIndMap,pSigMap,rep);
 else
     rep = R.SimAn.rep(1);
     ptmp = spm_vec(p);

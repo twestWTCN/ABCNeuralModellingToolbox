@@ -1,4 +1,5 @@
 function R = ABCAddPaths(repopath,routname)
+% restoredefaultpath
 switch getenv('computername')
     case 'SFLAP-2'
         usname = 'Tim'; gitpath = '\Documents\Work\GIT'; madpath = 'MATLAB_ADDONS';
