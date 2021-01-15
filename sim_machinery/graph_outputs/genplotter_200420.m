@@ -7,7 +7,7 @@ if ~isfield(R.plot,'cmap')
 end
 if isempty(NPD_sim)
     for FN = 1:numel(R.data.datatype)
-    NPD_sim{1}{FN} = zeros(size(NPD_data{1}{FN}));
+        NPD_sim{1}{FN} = zeros(size(NPD_data{1}{FN}));
     end
 end
 if nargin<5
@@ -26,7 +26,7 @@ for FN = 1:numel(R.data.datatype)
         case {'CSD','NPD'}
             NPD_data_n = NPD_data{1}{FN};
             O = size(NPD_data_n,1);
-
+            
             for C = 1:O
                 figure(C*10 + FN)
                 clf
@@ -74,7 +74,7 @@ for FN = 1:numel(R.data.datatype)
             figure(1*10 + FN)
             clf
             plot(F{2}(2:end),fano_data,'r','linewidth',2); hold on
-
+            
             for L = 1:length(NPD_sim)
                 fano_sim = NPD_sim{L}{FN};
                 
@@ -84,7 +84,23 @@ for FN = 1:numel(R.data.datatype)
                     lwid = 0.5;
                 end
                 
-                 plot(F{FN}(2:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
-            end            
+                plot(F{FN}(2:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
+            end
+        case {'BRSTPROF'}
+            figure(1*10 + FN)
+            clf
+            plot(F{2},NPD_data{1}{FN},'r','linewidth',2); hold on
+            for L = 1:length(NPD_sim)
+                fano_sim = NPD_sim{L}{FN};
+                
+                if L == bestn
+                    lwid = 2;
+                else
+                    lwid = 0.5;
+                end
+                
+                plot(F{FN},fano_sim(:,R.datinds),'r--','linewidth',lwid);
+            end
+            ylim([0 inf])
     end
 end

@@ -27,6 +27,7 @@ function [R,parBank] = SimAn_ABC_250320(R,p,m,parBank)
 % Timothy West (2018) - UCL CoMPLEX
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
+ABCGraphicsDefaults
 %% Setup for annealing
 if nargin<4
     parBank = [];
@@ -81,6 +82,7 @@ while ii <= R.SimAn.searchMax
     parnum = (6*2);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
+        ABC_checkParallelToolbox
         parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;

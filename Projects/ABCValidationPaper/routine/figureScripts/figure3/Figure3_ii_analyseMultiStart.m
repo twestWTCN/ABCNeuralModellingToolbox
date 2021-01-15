@@ -3,8 +3,8 @@ close all; clear
 % FIGURE 3- (II) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-% repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
 
 %This should be your projectname
 projname = 'ABCValidationPaper';
@@ -39,8 +39,8 @@ for ds = 1:2
     pAct = spm_vec(pMAP{ds});
     pMuAct{ds} = pAct(pMuMap);
     pSigAct{ds} = pAct(pSigMap);
-    A = 1-( pSigAct{ds}.^(1/2));
-    pMuAct{ds} = pMuAct{ds}.*A;
+%     A = 1-( pSigAct{ds}.^(1/2));
+    pMuAct{ds} = pMuAct{ds}; %.*A;
     pMuAct{ds}(end-1:end) = 0;
 end
 
@@ -50,7 +50,7 @@ for multiStart = 1:(2*N)
     R.out.dag = sprintf('NPD_STN_GPe_MultiStart_M%.0f',multiStart); % 'All Cross'
     [Rout,m,p,parBank,~,parHist,bankSave,kldHist] = loadABCData_160620(R);
     
-   
+    
     % parameter history
     parTT = []; r2 = [];
     for i = 1:size(parHist,2)
@@ -69,15 +69,16 @@ for multiStart = 1:(2*N)
     parWeighted{multiStart} = wParT;
     parMS{multiStart} = parT;
     parConv(:,multiStart) = wParT(:,end);
+    parSigConv(:,multiStart) = parTT(pSigMap,end);
     Inds(:,multiStart+1) = [Inds(2,multiStart)+1, Inds(2,multiStart) + size(parT,2)];
     R2ms(multiStart) = r2(end);
     R2track{multiStart} = r2;
     Its(multiStart) = size(parT,2);
     kldTrack{multiStart} = kldHist;
     if multiStart<=N
-    pwpe{multiStart} = (wParT-pMuAct{1}).^2;
+        pwpe{multiStart} = (wParT-pMuAct{1}).^2;
     elseif multiStart>N
-    pwpe{multiStart} = (wParT-pMuAct{1}).^2;
+        pwpe{multiStart} = (wParT-pMuAct{1}).^2;
     end
 end
 Inds(:,1) = [];

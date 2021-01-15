@@ -13,7 +13,7 @@ for s = 1:M,                      % sample over discrete Brownian paths
     dW = sqrt(dt)*randn(1,N);     % Brownian increments
     W = cumsum(dW);               % discrete Brownian path
     Xtrue = Xzero*exp((lambda-0.5*mu^2)+mu*W(end));
-    for p = 1:5
+    for p = 3:5
         R = 2^(p-1); Dt = R*dt; L = N/R;     % L Euler steps of size Dt = R*dt
         Xtemp = Xzero;
         for j = 1:L

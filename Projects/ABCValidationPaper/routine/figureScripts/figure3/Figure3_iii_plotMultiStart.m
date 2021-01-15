@@ -1,18 +1,17 @@
 close all; clear
 %%%%%%%%%%%%%%%%%%%%%%%%
-% FIGURE 3- (II) Multistart Analysis
+% FIGURE 3- (III) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-% repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
 %
 %This should be your projectname
 projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
-R = ABCsetup_partI_STNGPe(R);
+% R = ABCsetup_partI_STNGPe(R);
 % Sets plotting defaults
 ABCGraphicsDefaults
-
 
 R.out.tag = 'figure3_MultiStart'; % Task tag
 R.out.dag = sprintf('NPD_STN_GPe_MultiStart_M%.0f',1); % 'All Cross'
@@ -20,7 +19,7 @@ load([R.path.rootn '\outputs\' R.path.projectn '\figure3_MultiStart\MSAsave1.mat
 format short g
 
 % Perform CMD
-T = [parWeighted{:} pMuAct{1} pMuAct{2}];
+T = [parMS{:} pMuAct{1} pMuAct{2}];
 D = pdist(T','euclidean');
 [Y,eigvals] = cmdscale(squareform(D));
 % Zero centr
@@ -35,8 +34,6 @@ end
 % MDS for priors
 CMDprior{1} = Y(end-1,:);
 CMDprior{2} = Y(end,:);
-
-
 
 convMods = 1:(N*2);
 cmap = brewermap(N,'*Blues');
@@ -63,7 +60,7 @@ end
 scatter(CMDprior{1}(1),CMDprior{1}(2),200,'MarkerEdgeColor',cmap(1,:),'Marker','x','LineWidth',1.25);
 scatter(CMDprior{2}(1),CMDprior{2}(2),200,'MarkerEdgeColor',cmap(N+1,:),'Marker','x','LineWidth',1.25);
 
-xlim([-0.15 1.2]); ylim([-1 0])
+% xlim([-0.15 1.2]); ylim([-1 0])
 xlabel('Scaling Dimension 1'); ylabel('Scaling Dimension 2');
 grid on
 title('Multi-start Posteriors on Projected Coordinates')
@@ -105,8 +102,8 @@ g = gca;
 g.XTickLabel = parNames;
 g.XTickLabelRotation = -45;
 grid on; box off
-ylabel('Precision Weighted Posteior Means')
-title('Multi-start Posterior Means')
+ylabel('Multistart MAP Estimates')
+title('Log Scaling Factor')
 
 % Plot statistics stars
 [h p] = ttest(parConv(:,1:N)',parConv(:,N+1:2*N)');
@@ -134,7 +131,7 @@ for multiStart = convMods
     subplot(2,2,1)
     A = R2track{multiStart}';
     A = -log(-A);
-        yyaxis left
+%         yyaxis left
     plot(1:size(R2track{multiStart},2),A,'color',cmap(multiStart,:),'Marker','none','LineStyle','-','LineWidth',2);
     hold on
 %     yyaxis right
@@ -144,9 +141,10 @@ end
 subplot(2,2,1)
 ylabel('R2');    grid on; box on
 xlabel('Iteration');
-title('Multi-start Model Convergence')
+title('MDS Projection of Multistart Parameter Trajectories')
 subplot(2,2,2)
-ylabel('Log Precision');    grid on; box on
+ylabel('Log mean Precision');    grid on; box on
 xlabel('Iteration');
 title('Multi-start Parameter Inference')
 set(gcf,'Position',[72         -14        1237        1009])
+a = 1;

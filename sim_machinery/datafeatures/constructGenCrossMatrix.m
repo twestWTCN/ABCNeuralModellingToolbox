@@ -155,6 +155,18 @@ switch R.data.datatype{2}
         for i = 1:size(dataX,2)
             [nb(:,i),nbs(:,i),E(:,i)] = burstDurHist(dataX(:,i)',[30 40],fsamp,R.data.feat_xscale{2});
         end
+    case 'BRSTPROF'
+        dataX = dataS{C}(datinds,:)';
+        nAvg                = 1; % the time series is divided into nAvg segments to plot sem error bars
+        minBurstDuration    = 0.05; % burst are only considered if longer than this duration (in s)
+        xPerc               = R.data.feat_xscale{2}; % vector of thresholds       
+        
+        nbs = []; E = xPerc;
+        for i = 1:size(dataX,2)
+            env = abs(hilbert(dataX(:,1)));
+            nbs(:,i) = burstDurWrapper(env,E,nAvg,1/fsamp,minBurstDuration,[]); % burst profile
+        end
+        nbs(isnan(nbs)) = -5; % IS THIS OK?
 end
 
 feat_out{2} = nbs;

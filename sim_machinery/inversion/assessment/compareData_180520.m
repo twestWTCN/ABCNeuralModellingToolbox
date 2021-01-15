@@ -32,7 +32,7 @@ for dt = 1:numel(R.data.datatype)
                                     yfx = squeeze(abs(NPDsim(C,i,j,1,:)));
                                     ffx = squeeze(abs(NPDemp(C,i,j,1,:)));
                                     r(1) = -RMSE_scaled(yfx,ffx);
-                                    r2loop(C,ic,jc) = r(2);
+                                    r2loop(C,ic,jc) = r(1);
                                 end
                             case 'imaginary'
                                 if i~=j
@@ -124,13 +124,16 @@ for dt = 1:numel(R.data.datatype)
             r2mean(dt) = mean(r2loop);
         case 'none'
             r2mean(dt) = NaN;
-        case {'FANO','DUR'}
+        case {'FANO','DUR','BRSTPROF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
-                r2loop(:,C) = 1-RMSE_scaled(NPDemp,NPDsim(:,R.datinds));
+                r2loop(:,C) = -RMSE_scaled(NPDsim(:,R.datinds),NPDemp);
             end
-            r2mean(dt) = nanmean(r2loop)*50000;
-            fprintf('Fano error is: %0.3f  ',r2mean(dt))
+            r2mean(dt) = nanmean(r2loop);
+%             fprintf('Fano error is: %0.3f  ',r2mean(dt))
+            
+            
+            
     end
 end
 % Option to weight the respective features

@@ -47,6 +47,6 @@ for condsel = 1:numel(R.condnames)
             u(2,:) = tx;
             u = u';
     end
-    u = u.*sqrt(R.IntP.dt);
+%     u = u.*sqrt(R.IntP.dt);
     uc{condsel} = u;
 end

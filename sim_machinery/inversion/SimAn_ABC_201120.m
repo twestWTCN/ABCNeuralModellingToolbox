@@ -28,6 +28,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
+ABC_checkParallelToolbox
 %% Setup for annealing
 if nargin<4
     parBank = [];
@@ -82,7 +83,7 @@ while ii <= R.SimAn.searchMax
     parnum = (6*2);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-       parfor jj = 1:parnum % Replicates for each temperature
+        parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
@@ -98,10 +99,10 @@ while ii <= R.SimAn.searchMax
             %         xsims_rep{jj} = xsims_gl; % This takes too much memory: !Modified to store last second only!
             feat_sim_rep{jj} = feat_sim;
             
-%             fprintf(1,'\b\b%.0f',jj/parnum);
+            %             fprintf(1,'\b\b%.0f',jj/parnum);
         end % End of batch replicates
         if rem(ji,4)
-        disp(['Batch ' num2str(ji) ' proposal ' num2str(ii)])
+            disp(['Batch ' num2str(ji) ' proposal ' num2str(ii)])
         end
         % Retrieve fits
         
@@ -156,7 +157,9 @@ while ii <= R.SimAn.searchMax
     [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,u,pnew,0,0);
     
     for L = 1:numel(i)
-        bestfeat{L}{1} = featbank{ji_best(L)}{jj_best(L)}{1};
+        for j = 1:numel(featbank{ji_best(L)}{jj_best(L)})
+            bestfeat{L}{j} = featbank{ji_best(L)}{jj_best(L)}{j};
+        end
     end
     bestr2(ii) =  ACCbank(jj_best(1),ji_best(1));
     
@@ -241,7 +244,7 @@ while ii <= R.SimAn.searchMax
         Ws = repmat(W,size(xs,1),1); % added 03/2020 as below wasnt right dim (!)
         Mfit.Mu = wmean(xs,Ws,2);
         Mfit.Sigma = weightedcov(xs',W);
-        R.Mfit = Mfit;       
+        R.Mfit = Mfit;
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,0);
         Mfit.DKL = DKL;
     end
@@ -294,7 +297,7 @@ while ii <= R.SimAn.searchMax
             figure(22)
             plotTimeSeriesGen(xsims_gl_best,1./R.IntP.dt,R.chsim_name,R.condnames)
         catch
-             disp('Feature plotting failed!')
+            disp('Feature plotting failed!')
         end
     end
     disp({['Current R2: ' num2str(bestr2)];[' Temperature ' num2str(ii) ' K']; R.out.tag; ['Eps ' num2str(eps)]})
@@ -314,7 +317,7 @@ while ii <= R.SimAn.searchMax
     end
     %
     if ~rem(ii,5)
-    a= 1;    
+        a= 1;
     end
     
     if (abs(delta_act) < R.SimAn.convIt.dEps && abs(delta_act)~=0) || RFLAG
