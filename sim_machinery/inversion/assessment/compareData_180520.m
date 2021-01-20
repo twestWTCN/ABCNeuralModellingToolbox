@@ -3,8 +3,8 @@ for empi = 1:numel(R.chdat_name)
     sim2Emp(empi) = find(strcmp(R.chsim_name,R.chdat_name{empi}));
 end
 for dt = 1:numel(R.data.datatype)
-    NPDemp  = R.data.feat_emp{dt}; % empirical
-    NPDsim  = sim_dat{dt}; % simulated
+    DatEmp  = R.data.feat_emp{dt}; % empirical
+    DatSim  = sim_dat{dt}; % simulated
     
     switch R.data.datatype{dt}
         %% CSD
@@ -19,42 +19,42 @@ for dt = 1:numel(R.data.datatype)
                         switch R.objfx.feattype
                             case 'complex'
                                 if i~=j
-                                    yfx = (squeeze(imag(NPDsim(C,i,j,1,:))));
-                                    ffx = (squeeze(imag(NPDemp(C,i,j,1,:))));
+                                    yfx = (squeeze(imag(DatSim(C,i,j,1,:))));
+                                    ffx = (squeeze(imag(DatEmp(C,i,j,1,:))));
                                     r(1) = -RMSE_scaled(yfx,ffx);
                                     
-                                    yfx = (squeeze(real(NPDsim(C,i,j,1,:))));
-                                    ffx = (squeeze(real(NPDemp(C,i,j,1,:))));
+                                    yfx = (squeeze(real(DatSim(C,i,j,1,:))));
+                                    ffx = (squeeze(real(DatEmp(C,i,j,1,:))));
                                     r(2) = -RMSE_scaled(yfx,ffx);
                                     r2loop(C,ic,jc) = mean(r);
                                     
                                 else
-                                    yfx = squeeze(abs(NPDsim(C,i,j,1,:)));
-                                    ffx = squeeze(abs(NPDemp(C,i,j,1,:)));
+                                    yfx = squeeze(abs(DatSim(C,i,j,1,:)));
+                                    ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
                                     r(1) = -RMSE_scaled(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1);
                                 end
                             case 'imaginary'
                                 if i~=j
-                                    yfx = (squeeze(imag(NPDsim(C,i,j,1,:))));
-                                    ffx = (squeeze(imag(NPDemp(C,i,j,1,:))));
+                                    yfx = (squeeze(imag(DatSim(C,i,j,1,:))));
+                                    ffx = (squeeze(imag(DatEmp(C,i,j,1,:))));
                                     r(1) = -RMSE_scaled(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1); %mean(r);
                                     
                                 else
-                                    yfx = squeeze(abs(NPDsim(C,i,j,1,:)));
-                                    ffx = squeeze(abs(NPDemp(C,i,j,1,:)));
+                                    yfx = squeeze(abs(DatSim(C,i,j,1,:)));
+                                    ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
                                     r(1) = -RMSE_scaled(yfx,ffx);
                                     r2loop(C,ii,jc) = r(1);
                                 end
                             case 'absolute'
-                                yfx = squeeze(abs(NPDsim(C,i,j,1,:)));
-                                ffx = squeeze(abs(NPDemp(C,i,j,1,:)));
+                                yfx = squeeze(abs(DatSim(C,i,j,1,:)));
+                                ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
                                     r(1) = -RMSE_scaled(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);
                             case 'magnitude'
-                                yfx = squeeze((NPDsim(C,i,j,1,:)));
-                                ffx = squeeze((NPDemp(C,i,j,1,:)));
+                                yfx = squeeze((DatSim(C,i,j,1,:)));
+                                ffx = squeeze((DatEmp(C,i,j,1,:)));
 %                                 yfx = (yfx-mean(ffx))./std(ffx);
 %                                 ffx = (ffx-mean(ffx))./std(ffx);
                                 r(1) = -RMSE_scaled(yfx,ffx);
@@ -127,9 +127,9 @@ for dt = 1:numel(R.data.datatype)
         case {'FANO','DUR','BRSTPROF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
-                r2loop(:,C) = -RMSE_scaled(NPDsim(:,R.datinds),NPDemp);
+                r2loop(:,C) = -RMSE_scaled(DatSim(:,R.datinds),DatEmp);
             end
-            r2mean(dt) = nanmean(r2loop);
+            r2mean(dt) = nanmean(r2loop)*10;
 %             fprintf('Fano error is: %0.3f  ',r2mean(dt))
             
             

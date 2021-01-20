@@ -154,7 +154,7 @@ while ii <= R.SimAn.searchMax
     [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,u,pnew,0,0);
     
     for L = 1:numel(i)
-        bestfeat{L}{1} = featbank{ji_best(L)}{jj_best(L)}{1};
+        bestfeat{L} = featbank{ji_best(L)}{jj_best(L)};
     end
     bestr2(ii) =  ACCbank(jj_best(1),ji_best(1));
     

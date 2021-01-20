@@ -1,13 +1,13 @@
-function genplotter_200420(NPD_data,NPD_sim,F,R,bestn,labelna)
-if isempty(NPD_data)
-    NPD_data = {zeros(size(NPD_sim{1}))};
+function genplotter_200420(datEmp,datSim,F,R,bestn,labelna)
+if isempty(datEmp)
+    datEmp = {zeros(size(datSim{1}))};
 end
 if ~isfield(R.plot,'cmap')
     R.plot.cmap = [1 0 0];
 end
-if isempty(NPD_sim)
+if isempty(datSim)
     for FN = 1:numel(R.data.datatype)
-        NPD_sim{1}{FN} = zeros(size(NPD_data{1}{FN}));
+        datSim{1}{FN} = zeros(size(datEmp{1}{FN}));
     end
 end
 if nargin<5
@@ -19,19 +19,16 @@ end
 
 
 % Main Function Starts Here
-
-
-for FN = 1:numel(R.data.datatype)
-    switch R.data.datatype{FN}
-        case {'CSD','NPD'}
-            NPD_data_n = NPD_data{1}{FN};
-            O = size(NPD_data_n,1);
-            
-            for C = 1:O
+for C = 1:numel(R.condnames)
+    for FN = 1:numel(R.data.datatype)
+        switch R.data.datatype{FN}
+            case {'CSD','NPD'}
+                NPD_data_n = datEmp{1}{FN};
+                
                 figure(C*10 + FN)
                 clf
-                for L = 1:length(NPD_sim)
-                    NPD_sim_n = NPD_sim{L}{FN};
+                for L = 1:length(datSim)
+                    NPD_sim_n = datSim{L}{FN};
                     
                     if L == bestn
                         lwid = 2;
@@ -67,40 +64,41 @@ for FN = 1:numel(R.data.datatype)
                     end
                 end
                 set(gcf,'Position',[380         235        1112         893])
-            end
-            
-        case {'FANO','DUR'}
-            fano_data = NPD_data{1}{FN};
-            figure(1*10 + FN)
-            clf
-            plot(F{2}(2:end),fano_data,'r','linewidth',2); hold on
-            
-            for L = 1:length(NPD_sim)
-                fano_sim = NPD_sim{L}{FN};
+            case {'FANO','DUR'}
+                fano_data = datEmp{1}{FN};
+                figure(1*10 + FN)
+                clf
+                plot(F{2}(2:end),fano_data,'r','linewidth',2); hold on
                 
-                if L == bestn
-                    lwid = 2;
-                else
-                    lwid = 0.5;
+                for L = 1:length(datSim)
+                    fano_sim = datSim{L}{FN};
+                    
+                    if L == bestn
+                        lwid = 2;
+                    else
+                        lwid = 0.5;
+                    end
+                    
+                    plot(F{FN}(2:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
                 end
+            case {'BRSTPROF'}
                 
-                plot(F{FN}(2:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
-            end
-        case {'BRSTPROF'}
-            figure(1*10 + FN)
-            clf
-            plot(F{2},NPD_data{1}{FN},'r','linewidth',2); hold on
-            for L = 1:length(NPD_sim)
-                fano_sim = NPD_sim{L}{FN};
-                
-                if L == bestn
-                    lwid = 2;
-                else
-                    lwid = 0.5;
+                figure(C*10 + FN)
+                clf
+                plot(F{2},squeeze(datEmp{1}{FN}(:,:,C)),'r','linewidth',2); hold on
+                for L = 1:length(datSim)
+                    fano_sim = squeeze(datSim{L}{FN}(:,:,C));
+                    
+                    if L == bestn
+                        lwid = 2;
+                    else
+                        lwid = 0.5;
+                    end
+                    
+                    plot(F{FN},fano_sim(:,R.datinds),'r--','linewidth',lwid);
                 end
+                ylim([0 inf])
                 
-                plot(F{FN},fano_sim(:,R.datinds),'r--','linewidth',lwid);
-            end
-            ylim([0 inf])
+        end
     end
 end
