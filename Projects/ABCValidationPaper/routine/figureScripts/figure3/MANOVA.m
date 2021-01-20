@@ -1,4 +1,4 @@
-dataind = [1:10; 11:20];
+dataind = [1:N; N+1:20];
 for data = 1:2
 % X = parConv(:,1:10)';
 X = parConv(:,dataind(data,:))';
@@ -6,8 +6,8 @@ c = cvpartition(10,'KFold',10);
 for i = 1:10
     inSample = X(~test(c,i),:);
     outSample = X(test(c,i),:);
-    out(i,:) = HZmvntest(inSample)
-     T2 = T2Hot1(inSample,0.05,outSample);
+%     out(i,:) = HZmvntest(inSample)
+     sT2 = T2Hot1(inSample,0.05,outSample);
      p(i) = T2.p;
 end
     

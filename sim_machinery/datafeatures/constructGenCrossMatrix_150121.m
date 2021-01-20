@@ -156,12 +156,11 @@ for C = 1:O
                 end
             case 'BRSTPROF'
                 dataX = dataS{C}(datinds,:)';
-                dataX = bandpass(dataX,[15 25],fsamp);
-                dataX = (dataX-mean(dataX))./std(dataX);
                 nAvg                = 1; % the time series is divided into nAvg segments to plot sem error bars
                 minBurstDuration    = 0.05; % burst are only considered if longer than this duration (in s)
                 xPerc               = R.data.feat_xscale{2}; % vector of thresholds
                 
+                %nbs = [];
                 E = xPerc;
                 for i = 1:size(dataX,2)
                     env = abs(hilbert(dataX(:,1)));
@@ -169,10 +168,9 @@ for C = 1:O
                 end
                 nbs(isnan(nbs)) = -5; % IS THIS OK?
         end
+        
+        feat_out{2} = nbs;
+        F{2} = E;
     end
-    
-    feat_out{2} = nbs;
-    F{2} = E;
 end
-
 meanconf = [];

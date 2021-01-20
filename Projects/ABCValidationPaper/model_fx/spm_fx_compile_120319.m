@@ -267,7 +267,7 @@ for condsel = 1:numel(R.condnames)
             end
             % intrinsic flow at target
             %----------------------------------------------------------------------
-            ui   = us(tstep,i)+ sum(fA);
+            ui   = (us(tstep,i).*sqrt(dt)) + sum(fA);
             xi = xstore(m.xinds(i,1):m.xinds(i,2),tstep)';
             f(m.xinds(i,1):m.xinds(i,2)) = fx{nmm(i)}(xi,ui,qbank{i});
             %             f(Dt(1,i))  = f(Dt(1,i)) + sum(fA) ;

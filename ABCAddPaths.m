@@ -62,6 +62,7 @@ if ~onPath; addpath(spmpath); spm eeg; close all; end
 
 addpath(genpath([gitpath '\ABCNeuralModellingToolbox\ABC_dependencies']))
 addpath(genpath([gitpath '\ABCNeuralModellingToolbox\sim_machinery']))
+addpath(genpath([gitpath '\beta-burst-dyn']))
 addpath(genpath([gitpath '\Spike-smr-reader']))
 addpath(genpath([repopath '\data']));
 addpath(genpath([repopath '\model_fx']));

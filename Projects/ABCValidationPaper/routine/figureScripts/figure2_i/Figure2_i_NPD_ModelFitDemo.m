@@ -4,8 +4,8 @@
 
 clear ; close all
 %This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-% repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
 
 addpath(repopath)
 %This should be your projectname

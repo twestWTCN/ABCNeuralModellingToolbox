@@ -68,6 +68,10 @@ for featN = 1:numel(R.data.datatype)
                         
                         subplot(N,M,k)
                         Y = squeeze(CSD_mean(:,i,j,:));
+                        if i == j
+                            Y  = (Y-mean(Y))/std(Y);
+                            Y = Y-min(Y);
+                        end
                         B = squeeze(CSD_std(:,i,j,:,:));
                         B = permute(B,[1 3 2]);
                         alpval = 0.45;
@@ -110,7 +114,7 @@ for featN = 1:numel(R.data.datatype)
                             end
                         end
                         if i == j
-                            ylim([0 5])
+%                             ylim([0 5])
                             ylabel('Power')
                             title(R.chsim_name{i})
                         else
