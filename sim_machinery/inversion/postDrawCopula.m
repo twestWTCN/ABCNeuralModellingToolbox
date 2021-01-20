@@ -30,7 +30,11 @@ MAP(pSigMap) = diag(Mfit.Sigma);
 MAP = spm_unvec(MAP,pOrg);
 
 if R.plot.flag == 1
-    figure(3)
+    if ~ishandle(3)
+        figure(3)
+    else
+        set(groot,'CurrentFigure',3);  clf
+    end
     clf
     cflag= 1;
     pardraw = baseSave(pIndMap,:);

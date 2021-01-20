@@ -5,7 +5,7 @@ end
 closeMessageBoxes
 
 if ~isfield(R.analysis,'dagtype')
-    R.analysis.comptype = 'normal';
+    R.analysis.dagtype = 'normal';
 end
 
 %% Setup for parallelisation (multiple MATLAB sessions)

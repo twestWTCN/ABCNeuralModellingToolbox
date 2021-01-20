@@ -95,7 +95,7 @@ e1 = errorbar((1:numel(pMuMap))-0.25,mean(parConv(:,1:N),2),std(parConv(:,1:N),[
 e1.Color = cmap(1,:);
 e1.LineWidth = 1.2;
 
-b2 = plot((1:numel(pMuMap))+0.25,mean(parConv(:,11:end),2),' ko');
+b2 = plot((1:numel(pMuMap))+0.25,mean(parConv(:,N+1:end),2),' ko');
 b2.MarkerFaceColor = cmap(N+1,:);
 b2.MarkerEdgeColor = 'none';
 e2 = errorbar((1:numel(pMuMap))+0.25,mean(parConv(:,N+1:2*N),2),std(parConv(:,N+1:2*N),[],2),'.');
@@ -128,7 +128,8 @@ for multiStart = convMods
     szvec = R2track{multiStart}; %
     
     R2term(multiStart) = R2track{multiStart}(end);
-    plot(1:size(parSig{multiStart},2),mean(log10(parSig{multiStart}'),2),'color',cmap(multiStart,:),'LineWidth',2);
+    iprec(multiStart) = mean(log10(parSig{multiStart}(1:end-2,1)'));
+    plot(1:size(parSig{multiStart},2),mean(log10(parSig{multiStart}(1:end-2,:)'),2),'color',cmap(multiStart,:),'LineWidth',2);
     hold on
     % Accuracy gain
     subplot(2,2,1)

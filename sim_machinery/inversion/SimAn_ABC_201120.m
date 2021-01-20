@@ -28,6 +28,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
+figure(2); figure(22); figure(3)
 %% Setup for annealing
 if nargin<4
     parBank = [];
@@ -287,12 +288,12 @@ while ii <= R.SimAn.searchMax
             pmean = p;
         end
         
-        figure(2);  clf
+        set(groot,'CurrentFigure',2);  clf
         optProgPlot(1:ii,bestr2,pmean,banksave,eps_rec,bestr2,pInd,pSig,R,kldHist,r2Hist)
         drawnow;%shg
         %% Plot example time series
         try
-            figure(22)
+            set(groot,'CurrentFigure',22);
             plotTimeSeriesGen(xsims_gl_best,1./R.IntP.dt,R.chsim_name,R.condnames)
         catch
              disp('Feature plotting failed!')

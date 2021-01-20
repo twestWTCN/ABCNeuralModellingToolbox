@@ -1,4 +1,4 @@
-clear ; close all; closeMessageBoxes
+clear ; close all;% closeMessageBoxes
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 5/6- (I) MODEL FITTING
 %%%%%%%%%%%%%%%%%%%%%%%%

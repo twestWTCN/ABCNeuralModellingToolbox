@@ -11,7 +11,7 @@ addpath(repopath)
 projname = 'ABCValidationPaper';
 R = ABCAddPaths(repopath,projname);
 
-R.out.tag = 'figure4_confusionMatrix';
+R.out.tag = 'figure4_2node_confusionMatrix';
 R = ABCsetup_partII_FullModel(R);
 closeMessageBoxes
 fresh = 0;
@@ -26,10 +26,10 @@ for i = 1:size(confmatlist,2)
     SimMod = confmatlist(2,i);
     daglist{i} = sprintf([R.out.tag '_DataM%.0f_ParM%.0f'],SimData,SimMod); % 'All Cross'
 end
-R.out.tag = 'figure5_ModelComp';
+R.out.tag = 'figure2_FitDemo';
 if fresh
     R.analysis.dagtype = 'arbitrary';
-    modelCompMaster_160620(R,1:9,[],daglist) %,[1:8 10:12]
+    modelCompMaster_160620(R,1:9,1:8,daglist) %,[1:8 10:12]
 end
 %% Analysis of model comp
 PMOD = zeros(3,3);
@@ -63,9 +63,9 @@ for dataN = 1:3
     pmod = cellfun(@(x) sum(x>=R.modcomp.modEvi.epspop)./(numel(x)+1),ACCrep,'UniformOutput',0);
     pmod = [pmod{:}];
     pModDist = (1-pmod)./sum(pmod);
-    dkl = [dkl{:}]; 
+    dkl = [dkl{:}];
     dklN = (numel(dkl)*dkl)./sum(dkl);
-        
+    
     PMOD(:,dataN) = pModDist'; %-log10(X)'; %X'; % the more positive the better
     CMP(:,dataN) = dklN'; %log10(dklN)'; %dkl'; the more negative the worse
     ACS(:,dataN) = (-log10(pModDist) - log10(dklN))'; % the more negative it is the better

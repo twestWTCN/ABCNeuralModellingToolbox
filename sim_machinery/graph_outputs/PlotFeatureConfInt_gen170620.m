@@ -57,10 +57,13 @@ for featN = 1:numel(R.data.datatype)
                         k = k+1;
                         if i==j
                             c = 1; lr = 1;
+                            q = 1;
                         elseif i>j
                             c = 2; lr=2;
+                            q = 2;
                         elseif j>i
                             c = 3; lr=2;
+                            q = 2;
                         end
                         
                         subplot(N,M,k)
@@ -103,7 +106,7 @@ for featN = 1:numel(R.data.datatype)
                             
                             hold on
                             for L = lr
-                                dl = plot(R.data.feat_xscale{featN},abs(squeeze(R.data.feat_emp{featN}(cond,i,j,L,:))),'color',[0 0 0],'LineWidth',1.5); hold on
+                                dl = plot(R.data.feat_xscale{featN},q.*abs(squeeze(R.data.feat_emp{featN}(cond,i,j,L,:))),'color',[0 0 0],'LineWidth',1.5); hold on
                             end
                         end
                         if i == j

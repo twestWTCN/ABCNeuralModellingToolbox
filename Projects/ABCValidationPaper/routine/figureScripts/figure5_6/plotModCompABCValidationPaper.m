@@ -67,7 +67,7 @@ for modID = 1:numel(R.modcomp.modN)
         ACCrep = permMod.ACCrep;
 
         % now get the exceedence probability
-        pmod(modID) =sum(ACCrep>R.modcomp.modEvi.epspop) / size(ACCrep,2);
+        pmod(modID) =sum(ACCrep<R.modcomp.modEvi.epspop) / (size(ACCrep,2)+1);
         % parameter divergences
         KL(modID) = sum(permMod.KL(~isnan(permMod.KL))); % sum across all (marginal distributions)
         DKL(modID) = permMod.DKL; % total joint space KL divergence
@@ -93,8 +93,22 @@ for modID = 1:numel(R.modcomp.modN)
     end
 end
 
+%% Adjust axis limits
+figure(10)
+for i = 1:4
+    for j = 1:4
+        subplot(4,4,sub2ind([4 4],j,i))
+        if i==j
+            ylim([0 4]);xlim([4 48])
+        else
+%             ylim([0 0.8]); 
+            xlim([4 48])
+        end
+    end
+end
+
 %% Combine marginal posterior distribution from model evidence (normalize)
-pModDist = pmod./sum(pmod);
+pModDist = (pmod)./sum(pmod);
 
 %% Now Plot Results of Model Comparison
 figure(2)
@@ -105,8 +119,8 @@ violin(MSE,'facecolor',cmap,'medc','k:','xlabel',shortlab); %,...
 %'bw',[0.025 0.1 0.1]); % 0.025 0.2 0.2 0.025 0.025 0.025 0.025 0.2 0.2]);
 hold on
 plot([0 numel(R.modcomp.modN)+1],[R.modcomp.modEvi.epspop R.modcomp.modEvi.epspop],'k--')
-xlabel('Model'); ylabel('NMRSE'); grid on;
-ylim([-40 0])
+xlabel('Model'); ylabel('Model Error (MSE)'); grid on;
+ylim([-40 -10])
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 
@@ -116,34 +130,34 @@ h = findobj(gca,'Type','line');
 % legend(hl,{longlab{[R.modcompplot.NPDsel end]}})
 
 subplot(4,1,2)
-TlnK = -log10(1-pmod); % largest is the best
+TlnK = -log10(pModDist); % largest is the best
 for i = 1:numel(R.modcomp.modN)
     %     b = bar(i,-log10(1-pmod(i))); hold on
-    b = bar(i,pModDist(i)); hold on
+    b = bar(i,TlnK(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN); grid on
 a.XTickLabel = shortlab;
-xlabel('Model'); ylabel('Marginal Likelihood- Model Evidence')
-xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 0.2])
+xlabel('Model'); ylabel('Model Probability -log10(1-P(M|D))')
+xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 3])
 
 subplot(4,1,3)
+dklN =(numel(DKL)*DKL)/sum(DKL);
 for i = 1:numel(R.modcomp.modN)
-    b = bar(i,DKL(i)); hold on
+    b = bar(i,dklN(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 grid on
-xlabel('Model'); ylabel('KL Divergence')
-set(gcf,'Position',[277   109   385   895])
-xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 6250])
+xlabel('Model'); ylabel('Normalized Divergence')
+xlim([0.5 numel(R.modcomp.modN)+0.5]);% ylim([0 0.15])
 % subplot(3,1,3)
 % bar(DKL)
 % xlabel('Model'); ylabel('Joint KL Divergence')
 
 subplot(4,1,4)
-ACS = -log10(1-pmod) -log10(DKL/median(DKL));
+ACS = -log10(pModDist) - log10(dklN); % + log10(DKL/sum(DKL));
 for i = 1:numel(R.modcomp.modN)
     b = bar(i,ACS(i)); hold on
     b.FaceColor = cmap(i,:);
@@ -151,9 +165,9 @@ end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 grid on
-xlabel('Model'); ylabel('ACS')
-set(gcf,'Position',[277   109   385   895]); ylim([0 2.5])
-xlim([0.5 numel(R.modcomp.modN)+0.5])
+xlabel('Model'); ylabel('Combined Score (ACS)')
+xlim([0.5 numel(R.modcomp.modN)+0.5]);% ylim([-1 1.75])
+set(gcf,'Position',[277   109   385   895]); 
 
 
 

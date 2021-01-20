@@ -1,4 +1,4 @@
-clear ; close all; closeMessageBoxes
+clear ; close all;% closeMessageBoxes
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 4- (I) Face Validation - Fitting Confusion Matrices with 8 node network
 %%%%%%%%%%%%%%%%%%%%%%%%

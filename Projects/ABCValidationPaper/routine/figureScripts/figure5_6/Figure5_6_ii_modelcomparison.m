@@ -1,4 +1,4 @@
-clear ; close all; closeMessageBoxes
+clear ; close all;% closeMessageBoxes
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 5/6- (II) MODEL COMPARISON
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,14 +21,14 @@ R = prepareRatData_InDirect_Group_NPD(R);
 
 %% Do the model probability computations
 R.comptype = 1;
-% R.out.tag2 = 'NPD_InDrt_ModCompRev2';
+R.out.tag2 = 'figure5_ModelComp';
 % modelCompMaster_160620(R,1:12,[]) %,[1:8 10:12]
 %% Plot the modComp results
 R.modcomp.modN = [1:12];
-R.modcompplot.NPDsel = []; %[8 10]; %[6 9 10];
+R.modcompplot.NPDsel = [];% [10 8 4]; %[10 8 4]; %[8 10]; %[6 9 10];
 R.plot.confint = 'yes';
 cmap = linspecer(numel(R.modcomp.modN));
 cmap = cmap(end:-1:1,:);
 plotModCompABCValidationPaper(R,cmap)
-figure(2)
-subplot(3,1,1); ylim([-2 1])
+% figure(2)
+% subplot(3,1,1); ylim([-2 1])

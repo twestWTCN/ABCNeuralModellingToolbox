@@ -31,8 +31,8 @@ elseif cflag == 1 % Kernel Density Estimates
     end
 end
 
-xlabel('\mu')
-ylabel('p(\mu)')
+xlabel('mu')
+ylabel('p(mu)')
 % ylim([0 1]);
 xlim(R.SimAn.pOptBound.*0.2); grid on
 title('Approximate Posterior Distribution')

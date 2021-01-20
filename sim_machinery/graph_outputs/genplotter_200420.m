@@ -48,11 +48,11 @@ for FN = 1:numel(R.data.datatype)
                             subplot(N,M,k)
                             try
                                 plot(F{FN},squeeze(abs(NPD_sim_n(C,i,j,1,:))),'r--','linewidth',lwid); hold on
-                                plot(F{FN},squeeze(imag(NPD_sim_n(C,i,j,1,:))),'b--','linewidth',lwid);
+%                                 plot(F{FN},squeeze(imag(NPD_sim_n(C,i,j,1,:))),'b--','linewidth',lwid);
                             end
                             try
                                 plot(F{FN},squeeze(abs(NPD_data_n(C,i,j,1,:))),'r','linewidth',2);
-                                plot(F{FN},squeeze(imag(NPD_data_n(C,i,j,1,:))),'b','linewidth',2);
+%                                 plot(F{FN},squeeze(imag(NPD_data_n(C,i,j,1,:))),'b','linewidth',2);
                             end
                             xlabel('Hz'); ylabel('Power'); %title(sprintf('Ch %1.f Pxx',i))
                             xlim([min(F{FN}) max(F{FN})])
