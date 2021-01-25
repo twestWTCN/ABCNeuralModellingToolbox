@@ -1,4 +1,9 @@
 function r2mean = compareData_180520(R,sim_dat)
+
+if ~isfield(R.IntP,'errorFx')
+    R.IntP.errorFx = @fxSSE;
+end
+
 for empi = 1:numel(R.chdat_name)
     sim2Emp(empi) = find(strcmp(R.chsim_name,R.chdat_name{empi}));
 end
@@ -21,43 +26,43 @@ for dt = 1:numel(R.data.datatype)
                                 if i~=j
                                     yfx = (squeeze(imag(DatSim(C,i,j,1,:))));
                                     ffx = (squeeze(imag(DatEmp(C,i,j,1,:))));
-                                    r(1) = -RMSE_scaled(yfx,ffx);
+                                    r(1) = R.IntP.errorFx(yfx,ffx);
                                     
                                     yfx = (squeeze(real(DatSim(C,i,j,1,:))));
                                     ffx = (squeeze(real(DatEmp(C,i,j,1,:))));
-                                    r(2) = -RMSE_scaled(yfx,ffx);
+                                    r(2) = R.IntP.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = mean(r);
                                     
                                 else
                                     yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                     ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = -RMSE_scaled(yfx,ffx);
+                                    r(1) = R.IntP.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1);
                                 end
                             case 'imaginary'
                                 if i~=j
                                     yfx = (squeeze(imag(DatSim(C,i,j,1,:))));
                                     ffx = (squeeze(imag(DatEmp(C,i,j,1,:))));
-                                    r(1) = -RMSE_scaled(yfx,ffx);
+                                    r(1) = R.IntP.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1); %mean(r);
                                     
                                 else
                                     yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                     ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = -RMSE_scaled(yfx,ffx);
+                                    r(1) = R.IntP.errorFx(yfx,ffx);
                                     r2loop(C,ii,jc) = r(1);
                                 end
                             case 'absolute'
                                 yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                 ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = -RMSE_scaled(yfx,ffx);
+                                    r(1) = R.IntP.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);
                             case 'magnitude'
                                 yfx = squeeze((DatSim(C,i,j,1,:)));
                                 ffx = squeeze((DatEmp(C,i,j,1,:)));
 %                                 yfx = (yfx-mean(ffx))./std(ffx);
 %                                 ffx = (ffx-mean(ffx))./std(ffx);
-                                r(1) = -RMSE_scaled(yfx,ffx);
+                                r(1) = R.IntP.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);  %r(1);
                         end
                     end
@@ -101,39 +106,35 @@ for dt = 1:numel(R.data.datatype)
             end
             
         case 'time' % time courses
-            TCemp  = R.data.feat_emp{1}; % empirical
-            TCsim  = sim_dat{1}; % simulated
-            
-            for i = 1:size(TCemp,1)
-                try
-                    yfx = TCsim(i,:);
-                    ffx = TCemp(i,:);
-                    if size(yfx,1)<size(yfx,2)
-                        yfx = yfx';
-                    end
-                    if size(ffx,1)<size(ffx,2)
-                        ffx = ffx';
-                    end
-                    r = rsquare(yfx,ffx);
-                    %  r = goodnessOfFit(yfx,ffx,'NRMSE_scaled');
-                    r2loop(i) = r;
-                catch
-                    r2loop(i) = -32;
-                end
-            end
-            r2mean(dt) = mean(r2loop);
+%             TCemp  = R.data.feat_emp{1}; % empirical
+%             TCsim  = sim_dat{1}; % simulated
+%             
+%             for i = 1:size(TCemp,1)
+%                 try
+%                     yfx = TCsim(i,:);
+%                     ffx = TCemp(i,:);
+%                     if size(yfx,1)<size(yfx,2)
+%                         yfx = yfx';
+%                     end
+%                     if size(ffx,1)<size(ffx,2)
+%                         ffx = ffx';
+%                     end
+%                     r = rsquare(yfx,ffx);
+%                     r2loop(i) = r;
+%                 catch
+%                     r2loop(i) = -32;
+%                 end
+%             end
+%             r2mean(dt) = mean(r2loop);
         case 'none'
             r2mean(dt) = NaN;
         case {'FANO','DUR','BRSTPROF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
-                r2loop(:,C) = -RMSE_scaled(DatSim(:,R.datinds),DatEmp);
+                r2loop(:,C) = R.IntP.errorFx(DatSim(:,R.datinds),DatEmp);
             end
             r2mean(dt) = nanmean(r2loop)*10;
 %             fprintf('Fano error is: %0.3f  ',r2mean(dt))
-            
-            
-            
     end
 end
 % Option to weight the respective features

@@ -66,9 +66,7 @@ for C = 1:O
                 if R.obs.logscale == 1
                     Pxy = log10(Pxy);
                 end
-                if R.obs.trans.norm == 1
-                    Pxy = (Pxy-nanmean(Pxy))./nanstd(Pxy);
-                end
+                
                 
                 if R.obs.trans.gauss3 == 1
                     %                             Pxy = smoothdata(Pxy,'gaussian');
@@ -88,6 +86,9 @@ for C = 1:O
                     Pxy = smoothdata(Pxy,'gaussian',gwid);
                 end
                 
+                if R.obs.trans.norm == 1
+                    Pxy = (Pxy-nanmean(Pxy))./nanstd(Pxy);
+                end
                 if R.obs.trans.zerobase == 1
                     Pxy = Pxy - min(Pxy);
                 end
