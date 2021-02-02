@@ -133,7 +133,7 @@ for dt = 1:numel(R.data.datatype)
             for C = 1:numel(R.condnames)
                 r2loop(:,C) = R.IntP.errorFx(DatSim(:,R.datinds),DatEmp);
             end
-            r2mean(dt) = nanmean(r2loop)*10;
+            r2mean(dt) = 10*nanmean(r2loop);
 %             fprintf('Fano error is: %0.3f  ',r2mean(dt))
     end
 end

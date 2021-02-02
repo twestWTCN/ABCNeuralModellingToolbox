@@ -3,8 +3,8 @@ close all; clear
 % FIGURE 3- (III) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
 %This should link to your repo folder
-% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
+repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
+% repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
 %
 %This should be your projectname
 projname = 'ABCValidationPaper';
@@ -125,7 +125,9 @@ for multiStart = convMods
     szvec = R2track{multiStart}; %
     
     R2term(multiStart) = R2track{multiStart}(end);
-    iprec(multiStart) = mean(log10(parSig{multiStart}(1:end-2,1)'));
+    iprec(multiStart) = mean(log10(parSig{multiStart}(1:end-2,end)'));
+        iprecPrior(multiStart) = mean(log10(parSig{multiStart}(1:end-2,1)'));
+
     plot(1:size(parSig{multiStart},2),mean(log10(parSig{multiStart}(1:end-2,:)'),2),'color',cmap(multiStart,:),'LineWidth',2);
     hold on
     % Accuracy gain

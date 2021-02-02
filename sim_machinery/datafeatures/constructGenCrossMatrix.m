@@ -123,21 +123,24 @@ for C = 1:O
             xcsd(C,j,i,1:4,:) = repmat(Pxy,4,1);
         end
     end
-    
-    if R.obs.trans.normcat == 1
-        % Normalize each component by concatanating the conditions
-        for chI = 1:numel(datinds)
-            for chJ = 1:numel(datinds)
-                Xd = xcsd(:,chJ,chI,1:4,:); %here you select both conditions
-                XM = mean(Xd(:));
-                XV = std(Xd(:));
-                Xd = xcsd(:,chJ,chI,1:4,:); %here you select both conditions
-                xcsd(:,chJ,chI,1:4,:) = (Xd)./XV; % Rescale
-            end
+end
+if R.obs.trans.normcat == 1
+    % Normalize each component by concatanating the conditions
+    for chI = 1:numel(datinds)
+        for chJ = 1:numel(datinds)
+            Xd = xcsd(:,chJ,chI,1:4,:); %here you select both conditions
+            XM = mean(Xd(:));
+            XV = std(Xd(:));
+            Xd = xcsd(:,chJ,chI,1:4,:); %here you select both conditions
+            xcsd(:,chJ,chI,1:4,:) = (Xd)./XV; % Rescale
         end
     end
-    feat_out{1} = xcsd;
-    F{1} = R.frqz;
+end
+feat_out{1} = xcsd;
+F{1} = R.frqz;
+
+
+for C = 1:O
     if numel(R.data.datatype)>1
         switch R.data.datatype{2}
             case 'FANO'
@@ -168,12 +171,12 @@ for C = 1:O
                     env = abs(hilbert(dataX(:,1)));
                     nbs(:,i,C) = burstDurWrapper(env,E,nAvg,1/fsamp,minBurstDuration,[]); % burst profile
                 end
-                nbs(isnan(nbs)) = -5; % IS THIS OK?
+                nbs(isnan(nbs)) = -20; % IS THIS OK?
         end
+        
+        feat_out{2} = nbs;
+        F{2} = E;
     end
-    
-    feat_out{2} = nbs;
-    F{2} = E;
 end
 
 meanconf = [];

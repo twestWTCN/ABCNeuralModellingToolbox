@@ -12,20 +12,15 @@ switch getenv('computername')
         usname = 'timot';
         gitpath =  'C:\Users\timot\Documents\GitHub';
         spmpath = 'C:\Users\timot\Documents\GitHub\spm12';
-        R.path.datapath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox\Projects\ABCValidationPaper\data\Storage';
     case 'TIM_PC'
         gitpath = 'D:\GITHUB';
         spmpath = 'D:\GITHUB\spm12-master';
-        R.path.datapath_shenghong = 'D:\Data\Shenghong_Tremor';
     case 'DESKTOP-1QJTIMO'
         gitpath = 'C:\Users\Tim West\Documents\GitHub';
         spmpath = 'C:\Users\Tim West\Documents\GitHub\spm12';
-        R.path.datapath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox\Projects\ABCValidationPaper\data\Storage';
     case 'DESKTOP-4VATHIO'
         gitpath = 'D:\GITHUB';
         spmpath = 'D:\GITHUB\spm12';
-        R.path.datapath_shenghong = 'D:\DATA\Shenghong_Tremor';
-        R.path.datapath_pedrosa = 'D:\DATA\DP_Tremor_ThalamoMuscular\';
 end
 R.path.root = [repopath];
 R.path.rootn = R.path.root; 

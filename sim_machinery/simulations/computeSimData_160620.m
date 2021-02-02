@@ -2,7 +2,7 @@ function [modelError,pnew,feat_sim,xsims,xsims_gl,wflag,R] = computeSimData_1606
 if nargin<6
     plotop = 0;
 end
-if isempty(uc)
+if isempty(uc) && simtime == 0
         uc = innovate_timeseries(R,m);
 end
 

@@ -11,7 +11,6 @@ bCnt = 0;
 pfldnm = {};
 for fn = f'
     Y = X.(fn{1});
-    fn{1}
     % If numeric
     if ~iscell(Y) && ~isstruct(Y)
         % If matrix

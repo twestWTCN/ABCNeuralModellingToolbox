@@ -1,3 +1,5 @@
+
+
 function [r2,pMAP,feat_sim,xsims,xsims_gl,wflag,Rmod] = getParModulationData(R,intag,field2mod)
 R.out.tag = intag;
 R.out.dag = sprintf([R.out.tag '_M%.0f'],10);

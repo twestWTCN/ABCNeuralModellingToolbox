@@ -184,19 +184,19 @@ while ii <= R.SimAn.searchMax
         fprintf('effective rank of optbank is %.0f\n',eRank)
     end
     if size(parOptBank,2)> R.SimAn.minRank-1
-        if size(parOptBank,2) <= (2*R.SimAn.minRank-1)
-            disp('Bank satisfies current eps')
-            eps_act = eps_exp;
-            cflag = 1; % copula flag (enough samples)
-            itry = 0;  % set counter to 0
-        else % if the bank is very large than take subset
+%         if size(parOptBank,2) <= (2*R.SimAn.minRank-1)
+%             disp('Bank satisfies current eps')
+%             eps_act = eps_exp;
+%             cflag = 1; % copula flag (enough samples)
+%             itry = 0;  % set counter to 0
+%         else % if the bank is very large than take subset
             disp('Bank is large taking new subset to form eps')
-            parOptBank = parBank(:,intersect(1:2*R.SimAn.minRank,1:size(parBank,2)));
+            parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
             ACClocbank = computeObjective(R,parOptBank(end,:));
-            eps_act = min(ACClocbank(end,:));
+            eps_act = prctile(ACClocbank(end,:),25);
             cflag = 1; % copula flag (enough samples)
             itry = 0;  % set counter to 0
-        end
+%         end
     elseif (itry < 1) || (size(parBank,2) < (R.SimAn.minRank-1))
         fprintf('Trying for the %.0f\n time with the current eps \n',itry+1)
         disp('Trying once more with current eps')
@@ -289,10 +289,11 @@ while ii <= R.SimAn.searchMax
         else
             pmean = p;
         end
-        
-        set(groot,'CurrentFigure',2);  clf
-        optProgPlot(1:ii,bestr2,pmean,banksave,eps_rec,bestr2,pInd,pSig,R,kldHist,r2Hist)
-        drawnow;%shg
+        try
+            set(groot,'CurrentFigure',2);  clf
+            optProgPlot(1:ii,bestr2,pmean,banksave,eps_rec,bestr2,pInd,pSig,R,kldHist,r2Hist)
+            drawnow;%shg
+        end
         %% Plot example time series
         try
             set(groot,'CurrentFigure',22);
