@@ -1,4 +1,4 @@
-function [modelError,pnew,feat_sim,xsims,xsims_gl,wflag,R] = computeSimData_160620(R,m,uc,pnew,simtime,plotop)
+function [modelError,pnew,feat_sim,xsims,xsims_gl,wflag,R,errorVec,J] = computeSimData_160620(R,m,uc,pnew,simtime,plotop)
 if nargin<6
     plotop = 0;
 end
@@ -15,7 +15,7 @@ wflag = 0;
 %% Simulate New Data
 % Integrate in time master fx function
 try
-    [xsims dum1 wflag] = R.IntP.intFx(R,m.x,uc,pnew,m);
+    [xsims,dum1,wflag,J] = R.IntP.intFx(R,m.x,uc,pnew,m);
 catch
     disp('Simulation failed!')
     xsims{1} = nan(1,3);
@@ -44,7 +44,7 @@ if sum(isnan(vertcat(xsims{1}(:),xsims{1}(:)) )) == 0 && wflag == 0
                 feat_sim{gl} = xsims_gl{gl}; % else take raw time series
             end
             % Compare Pseudodata with Real
-            modelError_gl(gl)  = R.IntP.compFx(R,feat_sim{gl});
+            [modelError_gl(gl),errorVec]  = R.IntP.compFx(R,feat_sim{gl});
         end
         if any(wflag)
             error('TransFX could not compute data transform!')

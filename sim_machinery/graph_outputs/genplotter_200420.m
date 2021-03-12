@@ -21,12 +21,13 @@ end
 % Main Function Starts Here
 for C = 1:numel(R.condnames)
     for FN = 1:numel(R.data.datatype)
+                        figure(C*10 + FN)
+                clf
+% hold on
         switch R.data.datatype{FN}
             case {'CSD','NPD'}
                 NPD_data_n = datEmp{1}{FN};
                 
-                figure(C*10 + FN)
-                clf
                 for L = 1:length(datSim)
                     NPD_sim_n = datSim{L}{FN};
                     
@@ -64,11 +65,9 @@ for C = 1:numel(R.condnames)
                     end
                 end
                 set(gcf,'Position',[380         235        1112         893])
-            case {'FANO','DUR'}
+            case {'FANO','DURPDF'}
                 fano_data = datEmp{1}{FN};
-                figure(1*10 + FN)
-                clf
-                plot(F{2}(2:end),fano_data,'r','linewidth',2); hold on
+                plot(F{FN}(1:end),fano_data,'r','linewidth',2); hold on
                 
                 for L = 1:length(datSim)
                     fano_sim = datSim{L}{FN};
@@ -79,13 +78,10 @@ for C = 1:numel(R.condnames)
                         lwid = 0.5;
                     end
                     
-                    plot(F{FN}(2:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
+                    plot(F{FN}(1:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
                 end
-            case {'BRSTPROF'}
-                
-                figure(C*10 + FN)
-                clf
-                plot(F{2},squeeze(datEmp{1}{FN}(:,:,C)),'r','linewidth',2); hold on
+            case {'BRSTPROF','ENVPDF'}
+                plot(F{FN},squeeze(datEmp{1}{FN}(:,:,C)),'r','linewidth',2); hold on
                 for L = 1:length(datSim)
                     fano_sim = squeeze(datSim{L}{FN}(:,:,C));
                     
