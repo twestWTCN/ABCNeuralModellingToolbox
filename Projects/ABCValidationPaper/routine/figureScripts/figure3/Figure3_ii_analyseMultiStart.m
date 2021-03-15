@@ -1,16 +1,7 @@
-close all; clear
+function Figure3_ii_analyseMultiStart(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 3- (II) Multistart Analysis
 %%%%%%%%%%%%%%%%%%%%%%%%
-%This should link to your repo folder
-% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
-
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-
-
 R.out.tag = 'figure3_MultiStart'; % Task tag
 R = ABCsetup_partI_STNGPe(R);
 

@@ -44,7 +44,7 @@ if sum(isnan(vertcat(xsims{1}(:),xsims{1}(:)) )) == 0 && wflag == 0
                 feat_sim{gl} = xsims_gl{gl}; % else take raw time series
             end
             % Compare Pseudodata with Real
-            [modelError_gl(gl),errorVec]  = R.IntP.compFx(R,feat_sim{gl});
+            [modelError_gl(gl),errorVec]  = R.objfx.compFx(R,feat_sim{gl});
         end
         if any(wflag)
             error('TransFX could not compute data transform!')

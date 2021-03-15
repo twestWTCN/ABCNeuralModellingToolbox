@@ -1,4 +1,9 @@
-function [xstore_cond,tvec,wflag,J,Es] = spm_fx_compile_120319(R,x,uc,pc,m)
+function [xstore_cond,tvec,wflag,J,Es] = ABC_fx_compile_120319(R,x,uc,pc,m)
+
+% Note this code is adapted from "spm_fx_gen" included in the SPM12
+% software package. Copyright (C) 2005 Wellcome Trust Centre for Neuroimaging
+% The 
+
 % To Do:
 % 1)Precompute the expectations of the within source parameters and take
 %   outside of the integration loop.

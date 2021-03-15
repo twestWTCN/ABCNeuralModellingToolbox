@@ -1,15 +1,7 @@
+function FigureSI_forwardUncertainty(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
-% FIGURE SII- Examination of forward uncertainty of posterior model
+% FIGURE SI- Examination of forward uncertainty of posterior model
 %%%%%%%%%%%%%%%%%%%%%%%%
-
-clear ; close all
-%This should link to your repo folder
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
-addpath(repopath)
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-
 % Close all msgboxes
 closeMessageBoxes
 
