@@ -52,8 +52,7 @@ for condsel = 1:numel(R.condnames)
     
     efferent(4,:) = [3 3 6 7];               % ORIG sources of MMC connections
     afferent(4,:) = [2 4 8 0];               % targets of MMC connections
-    %     efferent(4,:) = [7 7 7 7];               % sources of MMC connections
-    %     afferent(4,:) = [8 8 8 8];                  % forward deep/middle; back deep/superficial
+
     efferent(5,:) = [1 1 1 1];               % sources of STR connections
     afferent(5,:) = [2 2 2 2];               % targets of STR connections
     
@@ -75,15 +74,7 @@ for condsel = 1:numel(R.condnames)
     E(1,:) = [1 0 1 0]*200;                    % ERP connections
     E(2,:) = [1 .3571 1 .625]*100000;          % CMC connections (to ctx) with T = [2 2 16 28] gives [200 100 200 100] = regular DCM
     E(3,:) = [1.8 1.2 1.8 1.2]*10000;         % BGC connections (to bgc) with T_str=8 and T_stn=4 gives A = 144 and 48
-    %     E(4,:) = [.2 .2 -.2 -.2]*(200);  %500           % MMC connections (to mmc) with T_mp=3 and T_sp=2 gives A = 270 and 180; with T_dp=18 gives A=200
-    E(4,:) = [.2 .2 -.2 -.2]*10000;
-    %% to calculate E divide the target value for A by the value of the time constant (in seconds, i.e. 0.018)
-    % E(5,:) = [.5 .5 -.5 -.5]*100000;             % STR connections
-    % E(6,:) = [.5 .5 -.5 -.5]*100000;             % GPE connections
-    % E(7,:) = [ 1  1 -.1  -1]*100000;             % STN connections
-    % E(8,:) = [.5 .5 -.5 -.5]*100000;               % GPI connections
-    % E(9,:) = [.5 .5 -.5 -.5]*100000;               % THAL connections
-    
+    E(4,:) = [.2 .2 -.2 -.2]*10000;            % MMC connections
     E(5,:) = [.2 .2 -.2 -.2]*8000;             % STR connections
     E(6,:) = [.2 .2 -.2 -.2]*10000;             % GPE connections
     E(7,:) = [.2 .2 -.2 -.2]*10000;             % STN connections
@@ -136,7 +127,7 @@ for condsel = 1:numel(R.condnames)
     
     D(6,5) = 3/1000;    % GPi to Thal (Stoelzel J Neurosci. 2017)
     
-    D(1,6) = 3/1000;   % Thal to M1 (Lumer, Edelman, Tononi; 1997)
+    D(6,1) = 3/1000;   % Thal to M1 (Lumer, Edelman, Tononi; 1997)
     D(1,6) = 8/1000;   % M1 to Thal (Lumer, Edelman, Tononi; 1997)
     
     
@@ -198,14 +189,6 @@ for condsel = 1:numel(R.condnames)
         %     A{alist(i,2)} = exp(p.A{i});
     end
     
-    % detect and reduce the strength of reciprocal (lateral) connections
-    %--------------------------------------------------------------------------
-    % TOL   = exp(2);
-    % for i = 1:numel(A)
-    %     L    = (A{i} > TOL) & (A{i}' > TOL);
-    %     A{i} = A{i}./(1 + 4*L);
-    % end
-    
     % and scale of extrinsic connectivity (Hz)
     %--------------------------------------------------------------------------
     for j = 1:n
@@ -244,10 +227,7 @@ for condsel = 1:numel(R.condnames)
     else
         xstore = x;
     end
-    % pad out the rest of xstore with zeros
-    %     xstore =    [xstore zeros(m.xinds(end),(R.IntP.nt+1)-size(xstore,2))];
     
-    %     xstore = [xstore nan(size(xstore,1),R.IntP.nt-R.IntP.buffer)];
     xint = zeros(m.n,1);
     TOL = exp(-4);
     for tstep = R.IntP.buffer:R.IntP.nt
@@ -287,10 +267,7 @@ for condsel = 1:numel(R.condnames)
                 wflag= 1;
                 break
             end
-            pp1 = 1;
         end
-        % disp(tstep/R.IntP.nt)
-        % xint= spm_unvec(x,M.x);
     end
     if wflag == 1
         xstore_cond{condsel} = NaN;

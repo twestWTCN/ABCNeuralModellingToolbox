@@ -2,8 +2,10 @@ function genplotter_200420(datEmp,datSim,F,R,bestn,labelna)
 if isempty(datEmp)
     datEmp = {zeros(size(datSim{1}))};
 end
-if ~isfield(R.plot,'cmap')
-    R.plot.cmap = [1 0 0];
+if ~isfield(R.plot,'featcolor')
+    featcolor = [1 0 0];
+else
+    featcolor = R.plot.featcolor;
 end
 if isempty(datSim)
     for FN = 1:numel(R.data.datatype)
@@ -21,11 +23,12 @@ end
 % Main Function Starts Here
 for C = 1:numel(R.condnames)
     for FN = 1:numel(R.data.datatype)
-                        figure(C*10 + FN)
-                clf
+
 % hold on
         switch R.data.datatype{FN}
             case {'CSD','NPD'}
+                                        figure(C*10 + FN)
+                clf
                 NPD_data_n = datEmp{1}{FN};
                 
                 for L = 1:length(datSim)
@@ -45,11 +48,11 @@ for C = 1:numel(R.condnames)
                             k = k+1;
                             subplot(N,M,k)
                             try
-                                plot(F{FN},squeeze(abs(NPD_sim_n(C,i,j,1,:))),'r--','linewidth',lwid); hold on
-                                plot(F{FN},squeeze(imag(NPD_sim_n(C,i,j,1,:))),'b--','linewidth',lwid);
+                                plot(F{FN},squeeze(abs(NPD_sim_n(C,i,j,1,:))),'color',featcolor,'linestyle','--','linewidth',lwid); hold on
+                                plot(F{FN},squeeze(imag(NPD_sim_n(C,i,j,1,:))),'b','linestyle','--','linewidth',lwid);
                             end
                             try
-                                plot(F{FN},squeeze(abs(NPD_data_n(C,i,j,1,:))),'r','linewidth',2);
+                                plot(F{FN},squeeze(abs(NPD_data_n(C,i,j,1,:))),'color',featcolor,'linewidth',2); 
                                 plot(F{FN},squeeze(imag(NPD_data_n(C,i,j,1,:))),'b','linewidth',2);
                             end
                             xlabel('Hz'); ylabel('Power'); %title(sprintf('Ch %1.f Pxx',i))
@@ -66,8 +69,12 @@ for C = 1:numel(R.condnames)
                 end
                 set(gcf,'Position',[380         235        1112         893])
             case {'FANO','DURPDF'}
+                figure(10 + FN)
+                subplot(1,numel(R.condnames),C)
+                                cla
+
                 fano_data = datEmp{1}{FN};
-                plot(F{FN}(1:end),fano_data,'r','linewidth',2); hold on
+                plot(F{FN}(1:end),squeeze(fano_data(:,1,C)),'color',featcolor,'linewidth',2); hold on
                 
                 for L = 1:length(datSim)
                     fano_sim = datSim{L}{FN};
@@ -78,10 +85,19 @@ for C = 1:numel(R.condnames)
                         lwid = 0.5;
                     end
                     
-                    plot(F{FN}(1:end),fano_sim(:,R.datinds),'r--','linewidth',lwid);
+                    plot(F{FN}(1:end),fano_sim(:,R.datinds,C),'color',featcolor,'linestyle','--','linewidth',lwid);
                 end
+                
+                if strcmp(R.data.datatype{FN},'DURPDF')
+                    xlabel('Burst duration (ms)');
+                   ylabel('p.d.f') 
+                end
+                
             case {'BRSTPROF','ENVPDF'}
-                plot(F{FN},squeeze(datEmp{1}{FN}(:,:,C)),'r','linewidth',2); hold on
+                                figure(10 + FN)
+                subplot(1,numel(R.condnames),C)
+                cla
+                plot(F{FN},squeeze(datEmp{1}{FN}(:,:,C)),'color',featcolor,'linewidth',2); hold on
                 for L = 1:length(datSim)
                     fano_sim = squeeze(datSim{L}{FN}(:,:,C));
                     
@@ -91,9 +107,17 @@ for C = 1:numel(R.condnames)
                         lwid = 0.5;
                     end
                     
-                    plot(F{FN},fano_sim(:,R.datinds),'r--','linewidth',lwid);
+                    plot(F{FN},fano_sim(:,R.datinds),'color',featcolor,'linestyle','--','linewidth',lwid);
                 end
                 ylim([0 inf])
+                if strcmp(R.data.datatype{FN},'BRSTPROF')
+                    xlabel('Threshold');
+                    ylabel('Mean Duration');
+                elseif strcmp(R.data.datatype{FN},'ENVPDF')
+                    xlabel('Burst amplitude');
+                   ylabel('p.d.f') 
+                end
+
                 
         end
     end

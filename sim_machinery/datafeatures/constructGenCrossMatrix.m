@@ -16,7 +16,6 @@ for C = 1:O
     switch R.data.datatype{1}
         case 'CSD'
             dataX = dataS{C}(datinds,:)';
-            
             % Compute the CrossSpectral Density for Everything
             [csdMaster,fMaster] = cpsd(dataX,dataX,hanning(2^N),[],2^N,fsamp,'mimo');
             if numel(size(csdMaster))<3
@@ -139,10 +138,11 @@ end
 feat_out{1} = xcsd;
 F{1} = R.frqz;
 
-for C = 1:O
-    if numel(R.data.datatype)>1
-        for fcnt = 2:numel(R.data.datatype)
-            nbs = [];
+if numel(R.data.datatype)>1
+    for fcnt = 2:numel(R.data.datatype)
+        nbs = []; n = []; E = [];
+        for C = 1:O
+            
             switch R.data.datatype{fcnt}
                 case 'FANO'
                     dataX = dataS{C}(datinds,:)';
@@ -155,10 +155,11 @@ for C = 1:O
                     
                 case 'DURPDF'
                     dataX = dataS{C}(datinds,:)';
-                    nb = []; E = [];
                     for i = 1:size(dataX,2)
-                        [nb(:,i,C),nbs(:,i,C),E(:,i,C)] = burstDurHist(dataX(:,i)',[15 25],fsamp,R.data.feat_xscale{fcnt});
+                        [nb(:,i,C),~,~,nbs(:,i,C)] = burstDurHist(dataX(:,i)',[15 25],fsamp,R.data.feat_xscale{fcnt});
                     end
+                    
+                    
                 case {'BRSTPROF','ENVPDF'}
                     dataX = dataS{C}(datinds,:)';
                     dataX = bandpass(dataX,[15 25],fsamp);
