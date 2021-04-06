@@ -84,7 +84,7 @@ while ii <= R.SimAn.searchMax
     parnum = (6*2);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-        parfor jj = 1:parnum % Replicates for each temperature
+       parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
@@ -184,19 +184,12 @@ while ii <= R.SimAn.searchMax
         fprintf('effective rank of optbank is %.0f\n',eRank)
     end
     if size(parOptBank,2)> R.SimAn.minRank-1
-%         if size(parOptBank,2) <= (2*R.SimAn.minRank-1)
-%             disp('Bank satisfies current eps')
-%             eps_act = eps_exp;
-%             cflag = 1; % copula flag (enough samples)
-%             itry = 0;  % set counter to 0
-%         else % if the bank is very large than take subset
             disp('Bank is large taking new subset to form eps')
             parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
             ACClocbank = computeObjective(R,parOptBank(end,:));
             eps_act = prctile(ACClocbank(end,:),25);
             cflag = 1; % copula flag (enough samples)
             itry = 0;  % set counter to 0
-%         end
     elseif (itry < 1) || (size(parBank,2) < (R.SimAn.minRank-1))
         fprintf('Trying for the %.0f\n time with the current eps \n',itry+1)
         disp('Trying once more with current eps')
@@ -318,9 +311,12 @@ while ii <= R.SimAn.searchMax
         RFLAG = 0;
     end
     %
-    if ~rem(ii,5)
-        a= 1;
-    end
+%     if ~rem(ii,5)
+%         a= 1;
+%                 R.plot.flag = 1;
+%     else
+%                 R.plot.flag = 0;
+%     end
     
     if (abs(delta_act) < R.SimAn.convIt.dEps && abs(delta_act)~=0) || RFLAG
         disp('Itry Exceeded: Convergence')

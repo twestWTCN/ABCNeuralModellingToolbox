@@ -1,29 +1,22 @@
-clear ; close all; closeMessageBoxes
+function Figure4_i_rat_8node_Validation_ConfusionMat(R)
+closeMessageBoxes
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 4- (I) Face Validation - Fitting Confusion Matrices with 8 node network
 %%%%%%%%%%%%%%%%%%%%%%%%
-
-%This should link to your repo folder
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
-addpath(repopath)
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-
 R.out.tag = 'figure4_confusionMatrix';
 R = ABCsetup_partII_FullModel(R);
 
 %% First Simulate the Data from the Empirically Fitted Models
-% delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfWorkList.mat'])
-% modlist = [11 3 8];
-% for modID = 1:3
-%     Rt = []; % Temp R Struc
-%     % Recover Fitted Parameters
-%     tagname = 'figure5_ModelComp';
-%     [r2,pMAP{modlist(modID)},feat_sim{modlist(modID)},~,~,~,Rmod{modlist(modID)}] = getModelData(R,tagname,modlist(modID));
-% end
-% mkdir([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag])
-% save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'feat_sim','pMAP','modlist','Rmod')
+delete([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfWorkList.mat'])
+modlist = [11 3 8];
+for modID = 1:3
+    Rt = []; % Temp R Struc
+    % Recover Fitted Parameters
+    tagname = 'figure5_ModelComp';
+    [r2,pMAP{modlist(modID)},feat_sim{modlist(modID)},~,~,~,Rmod{modlist(modID)}] = getModelData(R,tagname,modlist(modID));
+end
+mkdir([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag])
+save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'feat_sim','pMAP','modlist','Rmod')
 load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\ConfData'],'feat_sim','pMAP','modlist','Rmod')
 % Make matrix of combinations for confusion matrix
 confmatlist = allcomb(modlist,modlist)';

@@ -1,5 +1,7 @@
-function [permMod, xsimMod] = modelProbs_160620(R,x,m,p,Rmod)
-if ~isfield(R.analysis.BAA,'flag')
+function [permMod, xsimMod] = modelProbs_160620(R,~,m,p,Rmod)
+if ~isfield(R.analysis,'BAA')
+    R.analysis.BAA.flag = 0;
+elseif ~isfield(R.analysis.BAA,'flag')
     R.analysis.BAA.flag = 0;
 end
 R.plot.flag= 1;
@@ -30,15 +32,17 @@ wfstr = ones(1,N);
 R.plot.flag= 0;
 
 while wfstr(end)>0
-    parfor (jj = 1:N, parforArg)
+        parfor (jj = 1:N, parforArg)
+%     for jj = 1:N
         %     for jj = 1:N
         pnew = par{jj};
         u = innovate_timeseries(Rmod,m);
-        [r2,pnew,feat_sim,xsims,xsims_gl,wflag] = computeSimData_160620(Rmod,m,u,pnew,0);
-        [ACC R2w dkl] = computeObjective(Rmod,r2)
-        %     R.plot.outFeatFx({},{feat_sim},R.data.feat_xscale,R,1)
+        [r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec] = computeSimData_160620(Rmod,m,u,pnew,0);
+        [ACC,R2w,dkl] = computeObjective(Rmod,r2);
+%         R.plot.outFeatFx({Rmod.data.feat_emp},{feat_sim},Rmod.data.feat_xscale,R,1,[])
         wfstr(jj) = any(wflag);
         r2rep{jj} = r2;
+        errorVecrep(:,jj) = errorVec;
         dklrep{jj} = dkl;
         accrep{jj} = ACC;
         par_rep{jj} = pnew;
@@ -59,6 +63,7 @@ end
 delete(ppm);
 permMod.r2rep = [r2rep{:}];
 permMod.par_rep = par_rep;
+permMod.errorVec_rep = errorVecrep;
 permMod.feat_rep = feat_rep;
 permMod.DKL = DKL;
 permMod.KL = KL;
@@ -68,10 +73,11 @@ permMod.MAP = MAP;
 [a b] = max([r2rep{:}]);
 permMod.bestP = par_rep{b};
 
-
+R.analysis.modEvi.eps = prctile(permMod.r2rep,50);
 % Do some basic plotting
 if ~R.analysis.BAA.flag
     % Temporary EPS
+    
     eps = R.analysis.modEvi.eps; % temporary (calculated later from whole model family)
     
     figure

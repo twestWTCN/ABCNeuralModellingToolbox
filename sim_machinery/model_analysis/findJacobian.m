@@ -1,12 +1,12 @@
 function [J Es] =findJacobian(R,x,uc,pc,m)
-uc = {zeros(size(uc{1}))};
+uc = repmat({zeros(size(uc{1}))},1,2);
 % computes the Jacobian of a function
 n=size(x,1);
 xvec = x;
 % x = zeros(size(x));
 plist = 0:0.025:0.3;
 for p = 1:length(plist)
-    R.IntP.nt = R.IntP.buffer + (plist(p)./R.IntP.dt);
+    R.IntP.nt = R.IntP.bufferInt + (plist(p)./R.IntP.dt);
     fx = R.IntP.intFx(R,x,uc,pc,m);
     fx = fx{1}(:,end);
     eps=1.e-12;  % could be made better

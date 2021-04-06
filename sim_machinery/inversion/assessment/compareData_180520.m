@@ -1,4 +1,4 @@
-function r2mean = compareData_180520(R,sim_dat)
+function [r2mean,errorVec] = compareData_180520(R,sim_dat)
 
 if ~isfield(R.IntP,'errorFx')
     R.IntP.errorFx = @fxSSE;
@@ -128,18 +128,20 @@ for dt = 1:numel(R.data.datatype)
 %             r2mean(dt) = mean(r2loop);
         case 'none'
             r2mean(dt) = NaN;
-        case {'FANO','DUR','BRSTPROF'}
+        case {'FANO','DURPDF','BRSTPROF','ENVPDF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
                 r2loop(:,C) = R.IntP.errorFx(DatSim(:,R.datinds),DatEmp);
             end
-            r2mean(dt) = 10*nanmean(r2loop);
+            r2mean(dt) = nanmean(r2loop(:));
 %             fprintf('Fano error is: %0.3f  ',r2mean(dt))
     end
 end
+
 % Option to weight the respective features
 if isfield(R.objfx,'featweight')
     r2mean = r2mean.*R.objfx.featweight;
 end
-r2mean = mean(r2mean(:)); %sum(r2mean);
+errorVec = [mean(r2mean(:)) r2mean]; %sum(r2mean);
+r2mean = mean(r2mean(:));
 

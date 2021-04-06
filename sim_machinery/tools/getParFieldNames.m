@@ -9,7 +9,9 @@ X = p;
 f   = fieldnames(X);
 bCnt = 0;
 pfldnm = {};
-for fn = f'
+for fn = f' % go through fields
+    fn
+    ldb = 0; %bug check flag
     Y = X.(fn{1});
     % If numeric
     if ~iscell(Y) && ~isstruct(Y)
@@ -21,11 +23,13 @@ for fn = f'
                     pfldnm{bCnt} = [fn{1} ' ' m.dipfit.model(i).source ' to ' m.dipfit.model(j).source];
                 end
             end
+            ldb = 1;
         else % Simple vector
             for i = 1:numel(Y)
                 bCnt = bCnt + 1;
                 pfldnm{bCnt} = [prefix ' ' fn{1} num2str(i)];
             end
+            ldb = 1;
         end
     end
     
@@ -34,6 +38,7 @@ for fn = f'
         pfldn_rec = getParFieldNames(Y,m,fn{1});
         pfldnm = [pfldnm pfldn_rec];
         bCnt = numel(pfldnm);
+        ldb = 1;
     end
     
     % If there are subfields
@@ -42,6 +47,12 @@ for fn = f'
             
             Z = Y{L};
             
+            % Case of vector
+            if ~isstruct(Z) && (size(Z,1) == 1)
+                bCnt = bCnt + 1;
+                pfldnm{bCnt} = [fn{1} num2str(L) ' 1'];
+                ldb = 1;
+            end
             % Case of Matrix
             if sum(size(Z)>1)>1
                 for i = 1:size(Z,1)
@@ -50,6 +61,7 @@ for fn = f'
                         pfldnm{bCnt} = [fn{1} num2str(L) ' ' m.dipfit.model(i).source ' to ' m.dipfit.model(j).source];
                     end
                 end
+                ldb = 1;
             end
             
             % Case of Structure
@@ -57,10 +69,12 @@ for fn = f'
                 pfldn_rec = getParFieldNames(Z,m,[fn{1} ' ' m.dipfit.model(L).source]);
                 pfldnm = [pfldnm pfldn_rec];
                 bCnt = numel(pfldnm);
+                ldb = 1;
             end
-            
         end
-        
+    end
+    if ldb == 0
+        warning('You skipped an assignment, possible condition not met!')
     end
 end
 

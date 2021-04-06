@@ -1,16 +1,7 @@
-clear ; close all;
+function Figure4_ii_rat_8node_Validation_ConfusionMat_Evidence(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 4- (II) Face Validation - Compute model evidence for each
 %%%%%%%%%%%%%%%%%%%%%%%%
-
-%This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-cd(repopath)
-addpath(repopath)
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-
 R.out.tag = 'figure4_confusionMatrix';
 R = ABCsetup_partII_FullModel(R);
 closeMessageBoxes

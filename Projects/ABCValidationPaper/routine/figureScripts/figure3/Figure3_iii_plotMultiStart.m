@@ -1,15 +1,7 @@
-close all; clear
+function Figure3_iii_plotMultiStart(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
-% FIGURE 3- (III) Multistart Analysis
+% FIGURE 3- (III) Multistart Plotting
 %%%%%%%%%%%%%%%%%%%%%%%%
-%This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-% repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
-%
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-% R = ABCsetup_partI_STNGPe(R);
 % Sets plotting defaults
 ABCGraphicsDefaults
 

@@ -1,15 +1,7 @@
-clear ; close all;% closeMessageBoxes
+function Figure5_6_i_modelfitting(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 5/6- (I) MODEL FITTING
 %%%%%%%%%%%%%%%%%%%%%%%%
-
-%This should link to your repo folder
-repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-addpath(repopath)
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-
 %% Set Routine Pars
 R.out.tag = 'figure5_ModelComp'; % Task tag
 R = ABCsetup_partII_FullModel(R);

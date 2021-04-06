@@ -1,17 +1,7 @@
+function Figure2_ii_rat_STN_GPE_ModelComp(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
 % FIGURE 2- Example model selection of STN/GPe Subcircuit
 %%%%%%%%%%%%%%%%%%%%%%%%
-
-clear ; close all
-%This should link to your repo folder
-% repopath = 'C:\Users\timot\Documents\GitHub\ABCNeuralModellingToolbox';
-repopath = 'C:\Users\Tim West\Documents\GitHub\ABCNeuralModellingToolbox';
-
-addpath(repopath)
-%This should be your projectname
-projname = 'ABCValidationPaper';
-R = ABCAddPaths(repopath,projname);
-
 % Close all msgboxes
 closeMessageBoxes
 rng(6439735)

@@ -1,5 +1,6 @@
+function FigureSI_testIntegrationStepSize(R)
 %%%%%%%%%%%%%%%%%%%%%%%%
-% FIGURE SII- Examination of forward uncertainty of posterior model
+% FIGURE SII- Examination of simulatio step size
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 clear ; close all
