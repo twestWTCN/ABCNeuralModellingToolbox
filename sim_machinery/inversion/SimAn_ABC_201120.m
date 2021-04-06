@@ -28,7 +28,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
-figure(2); figure(22); figure(3)
+ABCGraphicsDefaults
 %% Setup for annealing
 if nargin<4
     parBank = [];
