@@ -6,6 +6,11 @@ switch getenv('computername')
         usname = 'timot';
         gitpath =  'C:\Users\timot\Documents\GitHub'; % points towards github repos
 %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
+    case 'DESKTOP-4VATHIO'
+        gitpath =  'D:\GITHUB'; % points towards github repos
+%         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
+
+
     otherwise
         error('You need to setup your ABCAddPaths! Add paths for your computer...')
 end
