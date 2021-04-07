@@ -140,7 +140,7 @@ F{1} = R.frqz;
 
 if numel(R.data.datatype)>1
     for fcnt = 2:numel(R.data.datatype)
-        nbs = []; n = []; E = [];
+        nbs = []; nb = []; E = [];
         for C = 1:O
             
             switch R.data.datatype{fcnt}
@@ -153,10 +153,19 @@ if numel(R.data.datatype)>1
                         [nb(:,i),E(:,i)] = histcounts(XH,R.data.feat_xscale{fcnt},'Normalization','pdf');
                     end
                     
-                case 'DURPDF'
+                case {'DURPDF','ENVPDF'}
                     dataX = dataS{C}(datinds,:)';
+                    dataX = bandpass(dataX,[15 25],fsamp);
+                    dataX = (dataX-mean(dataX))./std(dataX);
+                    minbs = (2/25)*fsamp;
+                    
                     for i = 1:size(dataX,2)
-                        [nb(:,i,C),~,~,nbs(:,i,C)] = burstDurHist(dataX(:,i)',[15 25],fsamp,R.data.feat_xscale{fcnt});
+                        switch R.data.datatype{fcnt}
+                            case 'ENVPDF'
+                                [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs);
+                            case 'DURPDF'
+                                [E,nbs(:,i,C)] = burstDurHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs);
+                        end
                     end
                     
                     

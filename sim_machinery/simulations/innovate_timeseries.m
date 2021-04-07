@@ -2,19 +2,22 @@ function uc  = innovate_timeseries(R,m)
 
 fs = 1/R.IntP.dt;
 nyq = fs/2;
-fw = R.frqzfull./nyq;
 
-if size(fw,2)>size(fw,1)
-    fw = fw';
-end
-
-if rem(size(fw,1),2)==0
-    fw(end) = []; % Make uneven length
-end
 for condsel = 1:numel(R.condnames)
     
     switch R.IntP.Utype
         case 'DCM_Str_Innov'
+            fw = R.frqzfull./nyq;
+            
+            if size(fw,2)>size(fw,1)
+                fw = fw';
+            end
+            
+            if rem(size(fw,1),2)==0
+                fw(end) = []; % Make uneven length
+            end
+            
+            
             [Gu,Gs,Gn,f] = spm_csd_mtf_gu(m.uset.p,fw);
             
             for i = 1:size(Gu,2)
@@ -36,8 +39,8 @@ for condsel = 1:numel(R.condnames)
             u = (sqrtm(m.uset.p.covar)*randn(m.m,R.IntP.nt)).*m.uset.p.scale;
             u = u';
         case 'constant'
-             u = repmat(m.uset.p.scale,m.m,R.IntP.nt);
-             u = u';
+            u = repmat(m.uset.p.scale,m.m,R.IntP.nt);
+            u = u';
         case 'zero'
             u= zeros(m.m,R.IntP.nt)';
         case 'white+beta'
@@ -47,6 +50,6 @@ for condsel = 1:numel(R.condnames)
             u(2,:) = tx;
             u = u';
     end
-%     u = u.*sqrt(R.IntP.dt);
+    %     u = u.*sqrt(R.IntP.dt);
     uc{condsel} = u;
 end
