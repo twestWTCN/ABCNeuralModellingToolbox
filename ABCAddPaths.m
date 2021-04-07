@@ -13,14 +13,20 @@ R.path.root = [repopath];
 R.path.rootn = R.path.root; 
 R.path.projectn = routname;
 R.path.projpath =  [R.path.root '\Projects\' R.path.projectn];
-R.path.datapath = [R.path.projpath '\data\Storage'];
-% pathCell = regexp(path, pathsep, 'split'); onPath = any(strcmpi(spmpath, pathCell));
-% if ~onPath; addpath(spmpath); spm eeg; close all; end
+R.path.datapath =  [R.path.projpath filesep 'data'];
 
-addpath(genpath([repopath '\ABC_dependencies']))
-addpath(genpath([repopath '\sim_machinery']))
-try; addpath(genpath([gitpath '\beta-burst-dyn'])); catch; warning('Optional Repo not found'); end
-try; addpath(genpath([gitpath '\Spike-smr-reader'])); catch; warning('Optional Repo not found'); end
+addpath(genpath([gitpath '\ABCNeuralModellingToolbox\ABC_dependencies']))
+addpath(genpath([gitpath '\ABCNeuralModellingToolbox\sim_machinery']))
+addpath(genpath([repopath '\data']));
+addpath(genpath([repopath '\model_fx']));
+addpath(genpath([repopath '\ModelSpecs']));
+addpath(genpath([repopath '\priors']));
+addpath(genpath([repopath '\plotting']));
+addpath(genpath([repopath '\routine\' routname]))
+addpath(genpath([repopath '\statsfx']))
+addpath(genpath([repopath '\dependencies']))
 addpath(genpath(R.path.projpath))
 
+try; addpath(genpath([gitpath '\beta-burst-dyn'])); catch; warning('Optional Repo not found'); end
+try; addpath(genpath([gitpath '\Spike-smr-reader'])); catch; warning('Optional Repo not found'); end
 

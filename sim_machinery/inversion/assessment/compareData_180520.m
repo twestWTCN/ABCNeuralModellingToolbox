@@ -1,7 +1,7 @@
 function [r2mean,errorVec] = compareData_180520(R,sim_dat)
 
-if ~isfield(R.IntP,'errorFx')
-    R.IntP.errorFx = @fxSSE;
+if ~isfield(R.objfx,'errorFx')
+    R.objfx.errorFx = @fxSSE;
 end
 
 for empi = 1:numel(R.chdat_name)
@@ -26,43 +26,43 @@ for dt = 1:numel(R.data.datatype)
                                 if i~=j
                                     yfx = (squeeze(imag(DatSim(C,i,j,1,:))));
                                     ffx = (squeeze(imag(DatEmp(C,i,j,1,:))));
-                                    r(1) = R.IntP.errorFx(yfx,ffx);
+                                    r(1) = R.objfx.errorFx(yfx,ffx);
                                     
                                     yfx = (squeeze(real(DatSim(C,i,j,1,:))));
                                     ffx = (squeeze(real(DatEmp(C,i,j,1,:))));
-                                    r(2) = R.IntP.errorFx(yfx,ffx);
+                                    r(2) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = mean(r);
                                     
                                 else
                                     yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                     ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = R.IntP.errorFx(yfx,ffx);
+                                    r(1) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1);
                                 end
                             case 'imaginary'
                                 if i~=j
                                     yfx = (squeeze(imag(DatSim(C,i,j,1,:))));
                                     ffx = (squeeze(imag(DatEmp(C,i,j,1,:))));
-                                    r(1) = R.IntP.errorFx(yfx,ffx);
+                                    r(1) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1); %mean(r);
                                     
                                 else
                                     yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                     ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = R.IntP.errorFx(yfx,ffx);
+                                    r(1) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ii,jc) = r(1);
                                 end
                             case 'absolute'
                                 yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                 ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = R.IntP.errorFx(yfx,ffx);
+                                    r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);
                             case 'magnitude'
                                 yfx = squeeze((DatSim(C,i,j,1,:)));
                                 ffx = squeeze((DatEmp(C,i,j,1,:)));
 %                                 yfx = (yfx-mean(ffx))./std(ffx);
 %                                 ffx = (ffx-mean(ffx))./std(ffx);
-                                r(1) = R.IntP.errorFx(yfx,ffx);
+                                r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);  %r(1);
                         end
                     end
@@ -131,7 +131,7 @@ for dt = 1:numel(R.data.datatype)
         case {'FANO','DURPDF','BRSTPROF','ENVPDF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
-                r2loop(:,C) = R.IntP.errorFx(DatSim(:,R.datinds),DatEmp);
+                r2loop(:,C) = R.objfx.errorFx(DatSim(:,R.datinds),DatEmp);
             end
             r2mean(dt) = nanmean(r2loop(:));
 %             fprintf('Fano error is: %0.3f  ',r2mean(dt))
