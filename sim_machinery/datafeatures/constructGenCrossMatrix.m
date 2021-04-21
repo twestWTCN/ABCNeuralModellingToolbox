@@ -153,7 +153,7 @@ if numel(R.data.datatype)>1
                         [nb(:,i),E(:,i)] = histcounts(XH,R.data.feat_xscale{fcnt},'Normalization','pdf');
                     end
                     
-                case {'DURPDF','ENVPDF'}
+                case {'DURPDF','ENVPDF','INTPDF'}
                     dataX = dataS{C}(datinds,:)';
                     dataX = bandpass(dataX,[15 25],fsamp);
                     dataX = (dataX-mean(dataX))./std(dataX);
@@ -165,11 +165,14 @@ if numel(R.data.datatype)>1
                                 [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs);
                             case 'DURPDF'
                                 [E,nbs(:,i,C)] = burstDurHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs);
+                            case 'INTPDF'
+                                [E,nbs(:,i,C)] = burstIntHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs);
+                                
                         end
                     end
                     
                     
-                case {'BRSTPROF','ENVPDF'}
+                case {'BRSTPROF'}
                     dataX = dataS{C}(datinds,:)';
                     dataX = bandpass(dataX,[15 25],fsamp);
                     dataX = (dataX-mean(dataX))./std(dataX);

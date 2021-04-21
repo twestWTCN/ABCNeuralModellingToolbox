@@ -27,6 +27,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % Timothy West (2018) - UCL CoMPLEX
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
+%%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 ABCGraphicsDefaults
 %% Setup for annealing
@@ -74,6 +75,7 @@ R.Mfit.DKL = 0; % Divergence is zero to begin
 parPrec(:,1) = diag(Mfit.Sigma);
 itry = 0; cflag = 0;
 ii = 1; parOptBank = [];
+%%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 %% Main Annealing Loop
 while ii <= R.SimAn.searchMax
     %% Batch Loop for Replicates for Generation of Pseudodata
@@ -84,7 +86,7 @@ while ii <= R.SimAn.searchMax
     parnum = (6*2);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-       parfor jj = 1:parnum % Replicates for each temperature
+        parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
@@ -164,7 +166,7 @@ while ii <= R.SimAn.searchMax
     end
     bestr2(ii) =  ACCbank(jj_best(1),ji_best(1));
     
-    
+    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % PARAMETER OPTIMIZATION BEGINS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,12 +186,12 @@ while ii <= R.SimAn.searchMax
         fprintf('effective rank of optbank is %.0f\n',eRank)
     end
     if size(parOptBank,2)> R.SimAn.minRank-1
-            disp('Bank is large taking new subset to form eps')
-            parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
-            ACClocbank = computeObjective(R,parOptBank(end,:));
-            eps_act = prctile(ACClocbank(end,:),25);
-            cflag = 1; % copula flag (enough samples)
-            itry = 0;  % set counter to 0
+        disp('Bank is large taking new subset to form eps')
+        parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+        ACClocbank = computeObjective(R,parOptBank(end,:));
+        eps_act = prctile(ACClocbank(end,:),25);
+        cflag = 1; % copula flag (enough samples)
+        itry = 0;  % set counter to 0
     elseif (itry < 1) || (size(parBank,2) < (R.SimAn.minRank-1))
         fprintf('Trying for the %.0f\n time with the current eps \n',itry+1)
         disp('Trying once more with current eps')
@@ -265,6 +267,7 @@ while ii <= R.SimAn.searchMax
     saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag  '\' R.out.dag '\parHist_' R.out.tag '_' R.out.dag '.mat'],parHist)
     banksave{ii} = parBank(end,parBank(end,:)>eps_act);
     saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag  '\' R.out.dag '\bankSave_' R.out.tag '_' R.out.dag '.mat'],banksave)
+    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
     %%%%%%%%%%%%%%% SAVE PROGRESS, PLOTTING ETC. %%%%%%%%%%%%%%%%%%%%%%%%%%
     if R.plot.flag ==1
         if isfield(R.plot,'outFeatFx')
@@ -310,14 +313,20 @@ while ii <= R.SimAn.searchMax
     catch
         RFLAG = 0;
     end
-    %
-%     if ~rem(ii,5)
-%         a= 1;
-%                 R.plot.flag = 1;
-%     else
-%                 R.plot.flag = 0;
-%     end
     
+    % This is for intermittent plot updates
+    if isfield(R.plot,'updateperiod')
+        if ~rem(ii,R.plot.updateperiod)
+            a= 1;
+            R.plot.flag = 1;
+            ABCGraphicsDefaults
+            
+        else
+            R.plot.flag = 0;
+        end
+    end
+    
+    % Check convergence
     if (abs(delta_act) < R.SimAn.convIt.dEps && abs(delta_act)~=0) || RFLAG
         disp('Itry Exceeded: Convergence')
         saveSimABCOutputs(R,Mfit,m,parBank)
@@ -331,7 +340,5 @@ while ii <= R.SimAn.searchMax
     end
     
     ii = ii + 1;
-    %     uv = whos;
-    %     saveMkPath([R.rootn 'outputs\' R.out.tag '\' R.out.dag '\memDebug_' R.out.tag '_' R.out.dag '.mat'],uv)
     %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 end

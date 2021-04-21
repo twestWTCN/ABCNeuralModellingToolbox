@@ -18,7 +18,7 @@ elseif isempty(cnt) || numel(cnt)>1 % this condition rewrites the WML
     WML = cnt;
     mkdir([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag ]);
     save([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WML'],'WML')
-    disp('Rewritting Mod List!!')    
+    disp('Rewritting Mod List!!')
 elseif cnt>0
     load([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\WML'],'WML')
     if ~any(intersect(WML,cnt))
