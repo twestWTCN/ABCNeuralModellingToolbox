@@ -32,8 +32,8 @@ wfstr = ones(1,N);
 R.plot.flag= 0;
 
 while wfstr(end)>0
-        parfor (jj = 1:N, parforArg)
-%     for jj = 1:N
+%         parfor (jj = 1:N, parforArg)
+    parfor jj = 1:N
         %     for jj = 1:N
         pnew = par{jj};
         u = innovate_timeseries(Rmod,m);

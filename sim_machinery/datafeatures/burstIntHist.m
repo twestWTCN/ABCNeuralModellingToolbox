@@ -9,7 +9,13 @@ for i = 1:numel(burstinds)-1
     bint(i) = burstinds{i+1}(1)-burstinds{i}(end) - 2;
 end
 
-[Apdf,nb] =  ksdensity(bint,bins);
+if numel(burstinds)>2
+    [Apdf,nb] =  ksdensity(bint,bins);
+else
+    warning('Not enough data to fit a distribution!')
+    Apdf = nan;
+    nb = nan;
+end
 
 % if nargout>2
 %     if numel(segL)>2

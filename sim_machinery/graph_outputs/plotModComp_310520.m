@@ -23,7 +23,7 @@ R.modcomp.modEvi.epspop = prctile(ACCbankcat,prct); % threshold becomes median o
 
 p = 0; % plot counter
 mni = 0; % Model counter
-for modID = 1:numel(R.modcomp.modN)
+for modID = numel(R.modcomp.modN):-1:1
     shortlab{modID} = sprintf('M%.f',R.modcomp.modN(modID)); % Make model label
 
     % Load in the precompute model iterations
@@ -77,7 +77,7 @@ for modID = 1:numel(R.modcomp.modN)
         
         %% Plot Data Features with Bayesian confidence intervals
         h(1,1) = figure(10);
-        h(2,1) = figure(20);
+        h(1,2) = figure(20);
         flag = 0;
 
         if ismember(modID,R.modcompplot.NPDsel)
@@ -93,6 +93,10 @@ for modID = 1:numel(R.modcomp.modN)
     end
 end
 %% Now Plot Results of Model Comparison
+%% Combine marginal posterior distribution from model evidence (normalize)
+% pmod = 1-pmod;
+pModDist = (pmod)./sum(pmod);
+
 figure(2)
 subplot(4,1,1)
 MSE = cellfun(@(x) x(~isnan(x) & ~isinf(x)),MSE,'UniformOutput',false);
@@ -112,57 +116,41 @@ h = findobj(gca,'Type','line');
 % legend(hl,{longlab{[R.modcompplot.NPDsel end]}})
 
 subplot(4,1,2)
-% TlnK = 2.*log(max(pmod)./pmod);
-%  TlnK = log10(pmod); % smallest (closest to zero) is the best
-TlnK = -log10(1-pmod); % largest is the best
-
+TlnK = (pModDist); % largest is the best
 for i = 1:numel(R.modcomp.modN)
-    %     b = bar(i,-log10(1-pmod(i))); hold on
-    b = bar(i,TlnK(i)); hold on
+        b = bar(i,-log10(1-pmod(i))); hold on
+%     b = bar(i,TlnK(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN); grid on
 a.XTickLabel = shortlab;
-xlabel('Model'); ylabel('-log_{10} P(M|D)')
-xlim([0.5 numel(R.modcomp.modN)+0.5])
+xlabel('Model'); ylabel('Model Probability -log10(1-P(M|D))')
+xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 0.5])
 
 subplot(4,1,3)
+dklN =(numel(DKL)*DKL)/sum(DKL);
 for i = 1:numel(R.modcomp.modN)
-    b = bar(i,DKL(i)); hold on
+    b = bar(i,dklN(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 grid on
-xlabel('Model'); ylabel('KL Divergence')
-set(gcf,'Position',[277   109   385   895])
-xlim([0.5 numel(R.modcomp.modN)+0.5])
+xlabel('Model'); ylabel('Normalized Divergence')
+xlim([0.5 numel(R.modcomp.modN)+0.5]);% ylim([0 0.15])
 % subplot(3,1,3)
 % bar(DKL)
 % xlabel('Model'); ylabel('Joint KL Divergence')
 
 subplot(4,1,4)
+ACS = -log10(pModDist) - log10(dklN); % + log10(DKL/sum(DKL));
 for i = 1:numel(R.modcomp.modN)
-    b = bar(i,mean(ACC{i})); hold on
+    b = bar(i,ACS(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
 a.XTickLabel = shortlab;
 grid on
-xlabel('Model'); ylabel('KL Divergence')
-set(gcf,'Position',[277   109   385   895])
-xlim([0.5 numel(R.modcomp.modN)+0.5])
-
-
-
-%% SCRIPT GRAVE
-% Adjust the acceptance threshold if any models have no rejections
-% exc = ones(1,numel(R.modcomp.modN));
-% while any(exc==1)
-%     r2bankcat = horzcat(r2bank{:});
-%     R.modcomp.modEvi.epspop = prctile(r2bankcat,prct); % threshold becomes median of model fits
-%     for modID = 1:numel(R.modcomp.modN)
-%         exc(modID) = sum(r2bank{modID}>R.modcomp.modEvi.epspop)/size(r2bank{modID},2);
-%     end
-%     prct = prct+1;
-% end
+xlabel('Model'); ylabel('Combined Score (ACS)')
+xlim([0.5 numel(R.modcomp.modN)+0.5]);% ylim([-1 1.75])
+set(gcf,'Position',[277   109   385   895]); 
