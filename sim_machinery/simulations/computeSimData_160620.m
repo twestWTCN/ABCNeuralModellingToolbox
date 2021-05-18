@@ -30,6 +30,7 @@ if sum(isnan(vertcat(xsims{1}(:),xsims{1}(:)) )) == 0 && wflag == 0
         feat_sim = cell(1,length(gainlist));
         xsims_gl = cell(1,length(gainlist));
         modelError_gl = zeros(1,length(gainlist));
+        errorVec = nan(4,length(gainlist));
         for gl = 1:length(gainlist)
             pnew.obs.LF = glorg+gainlist(gl);
             if isfield(R.obs,'obsFx')

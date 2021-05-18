@@ -1,4 +1,4 @@
-function [nb,Apdf,normpdf] = burstAmpHist(dataX,fsamp,bins,minbs)
+function [nb,Apdf,normpdf,amp] = burstAmpHist(dataX,fsamp,bins,minbs)
 
 XH = abs(hilbert(dataX));
 burstinds = SplitVec(find(XH>prctile(XH,75)),'consecutive');
@@ -6,11 +6,16 @@ segL = 1000*(cellfun('length',burstinds)/fsamp);
 
 burstinds(segL<minbs) = [];
 amp = 1000*(cellfun(@(a) max(XH(a)),burstinds)/fsamp);
-[Apdf,nb] =  ksdensity(amp,bins);
+if numel(burstinds)>2
+    [Apdf,nb] =  ksdensity(amp,bins);
+else
+    Apdf = nan;
+    nb = nan;
+end
 
 if nargout>2
-    if numel(segL)>2
-        [normpdf] = fitdist(segL','normal');
+    if numel(amp)>2
+        [normpdf] = fitdist(amp','normal');
     else
         normpdf = nan;
         warning('Not enough data to fit a distribution!')

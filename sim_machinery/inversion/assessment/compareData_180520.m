@@ -128,7 +128,7 @@ for dt = 1:numel(R.data.datatype)
 %             r2mean(dt) = mean(r2loop);
         case 'none'
             r2mean(dt) = NaN;
-        case {'FANO','DURPDF','BRSTPROF','ENVPDF'}
+        case {'FANO','DURPDF','BRSTPROF','ENVPDF','INTPDF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
                 r2loop(:,C) = R.objfx.errorFx(DatSim(:,R.datinds),DatEmp);

@@ -68,7 +68,7 @@ for C = 1:numel(R.condnames)
                     end
                 end
                 set(gcf,'Position',[380         235        1112         893])
-            case {'FANO','DURPDF'}
+            case {'FANO','DURPDF','INTPDF'}
                 figure(10 + FN)
                 subplot(1,numel(R.condnames),C)
                                 cla
@@ -117,7 +117,8 @@ for C = 1:numel(R.condnames)
                     xlabel('Burst amplitude');
                    ylabel('p.d.f') 
                 end
-
+            otherwise
+                warning('Plotting for datafeature not defined!')
                 
         end
     end

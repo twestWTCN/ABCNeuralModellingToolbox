@@ -177,7 +177,12 @@ while ii <= R.SimAn.searchMax
     %% Concatanate Batch Results and Decide Acceptance Level Epsilon
     
     %% Find error threshold for temperature (epsilon) and do rejection sampling
-    A = parOptBank(pIndMap,:);
+    if size(ACClocbank,2)<2
+        warning('No valid draws saved- either your simulator is broken (check computeSimData_#),you havent made enough draws, or your priors are very far away!')
+            A = nan(1,1);
+    else
+            A = parOptBank(pIndMap,:);
+    end
     if size(A,2)>= R.SimAn.minRank
         B = eig(cov(A'));
         C = B/sum(B);

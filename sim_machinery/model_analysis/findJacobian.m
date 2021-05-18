@@ -1,5 +1,7 @@
-function [J Es] =findJacobian(R,x,uc,pc,m)
-uc = repmat({zeros(size(uc{1}))},1,2);
+function [J Es] =findJacobian(R,x,uc,pc,m,condsel)
+uc = repmat({zeros(size(uc{condsel}))},1,2);
+X{1} = R.condnames{condsel};
+R.condnames = X;
 % computes the Jacobian of a function
 n=size(x,1);
 xvec = x;
@@ -13,7 +15,7 @@ for p = 1:length(plist)
     xperturb= x;
     for i=1:n
         xperturb(i,:)=xperturb(i,:)+eps;
-        fx_st = R.IntP.intFx(R,xperturb,{uc{1}+eps},pc,m);
+        fx_st = R.IntP.intFx(R,xperturb,{uc{condsel}+eps},pc,m);
         fx_st = fx_st{1}(:,end);
         J(:,i)=(fx_st-fx)/eps;
         xperturb(i,:)= xvec(i,:);

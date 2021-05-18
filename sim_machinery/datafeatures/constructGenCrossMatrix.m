@@ -155,7 +155,12 @@ if numel(R.data.datatype)>1
                     
                 case {'DURPDF','ENVPDF','INTPDF'}
                     dataX = dataS{C}(datinds,:)';
-                    dataX = bandpass(dataX,[15 25],fsamp);
+                    if isfield(R.obs.trans,'burstsfrq')
+                        frqband = R.obs.trans.bursts.frq;
+                    else
+                        frqband = [15 25];
+                    end
+                    dataX = bandpass(dataX,frqband,fsamp);
                     dataX = (dataX-mean(dataX))./std(dataX);
                     minbs = (2/25)*fsamp;
                     
