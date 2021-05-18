@@ -13,10 +13,11 @@ end
 if numel(burstinds)>2
     [Apdf,nb] =  ksdensity(bint,bins);
 else
+    warning('Not enough data to fit a distribution!')
     Apdf = nan;
     nb = nan;
 end
-normpdf = nan;
+
 % if nargout>2
 %     if numel(segL)>2
 %         [normpdf] = fitdist(segL','normal');
