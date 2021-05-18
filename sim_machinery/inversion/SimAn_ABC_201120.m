@@ -306,7 +306,7 @@ while ii <= R.SimAn.searchMax
     disp({['Current R2: ' num2str(bestr2)];[' Temperature ' num2str(ii) ' K']; R.out.tag; ['Eps ' num2str(eps)]})
     
     %% Save data
-    if rem(ii,10) == 0 || ii == 1
+    if rem(ii,1) == 0 || ii == 1
         saveSimABCOutputs(R,Mfit,m,parBank)
         if R.plot.save == 1
             saveSimAnFigures(R,ii)
