@@ -45,7 +45,7 @@ for featN = 1:numel(R.data.datatype)
                 if axflag == 0
                     figure(fighan(featN,cond))
                 elseif axflag == 1
-                    axes(fighan(featN,cond))
+                    subplot(fighan(featN,cond))
                 end
                 
                 if strncmp(R.data.datatype{featN},'CSD',3)
@@ -77,9 +77,8 @@ for featN = 1:numel(R.data.datatype)
                             c = 3; lr=2;
                             q = 2;
                         end
-                        if axflag == 0
-                            subplot(N,M,k) % if handle is a figure then use subplots
-                        end
+                        
+                        subplot(N,M,k)
                         Y = squeeze(CSD_mean(:,i,j,:));
                         if i == j
                             Y  = (Y-mean(Y))/std(Y);
@@ -128,17 +127,14 @@ for featN = 1:numel(R.data.datatype)
                         end
                         if i == j
                             %                             ylim([0 5])
-                            ylabel('Power')
+                            ylabel(R.plot.feat(featN).axtit{2});
                             title(R.chsim_name{i})
                         else
                             %                 ylim([0 0.5])
-                            ylabel(msr)
-                        end
-                        if isfield(R.plot,'feat')
-                            axis(R.plot.feat(featN).axlim);
-                            xlabel(R.plot.feat(featN).axtit{1});
                             ylabel(R.plot.feat(featN).axtit{2});
                         end
+                        axis(R.plot.feat(featN).axlim);
+                        xlabel(R.plot.feat(featN).axtit{1});
                         grid on; axis square
                         %         ylim([-0.03 0.03])
                     end
@@ -161,7 +157,7 @@ for featN = 1:numel(R.data.datatype)
             if axflag == 0
                 figure(fighan(featN,cond))
             elseif axflag == 1
-                axes(fighan(featN,cond))
+                subplot(fighan(featN,cond))
             end
             
             fanomean = prctile(fanobank,50,3);
@@ -177,12 +173,11 @@ for featN = 1:numel(R.data.datatype)
             hold on
             dl = plot(F(1:end),R.data.feat_emp{featN} ,'color',[0 0 0],'LineWidth',1.5); hold on
             
-            if isfield(R.plot,'feat')
-                axis(R.plot.feat(featN).axlim);
-                xlabel(R.plot.feat(featN).axtit{1});
-                ylabel(R.plot.feat(featN).axtit{2});
-            end
+            ylabel(R.plot.feat(featN).axtit{2});
+            axis(R.plot.feat(featN).axlim);
+            xlabel(R.plot.feat(featN).axtit{1});
             grid on; axis square
+            
     end
     
 end

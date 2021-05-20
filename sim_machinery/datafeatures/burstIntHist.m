@@ -18,11 +18,11 @@ else
     nb = nan;
 end
 
-% if nargout>2
-%     if numel(segL)>2
-%         [normpdf] = fitdist(segL','normal');
-%     else
-%         normpdf = nan;
-%         warning('Not enough data to fit a distribution!')
-%     end
-% end
+if nargout>2
+    if numel(segL)>2
+        [normpdf] = fitdist(segL','normal');
+    else
+        normpdf = nan;
+        warning('Not enough data to fit a distribution!')
+    end
+end

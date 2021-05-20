@@ -26,7 +26,7 @@ parforArg = a.NumWorkers;
 %%
 figure(5)
 pnew = par{1};
-u = innovate_timeseries(R,m);
+u = innovate_timeseries(Rmod,m);
 [r2,pnew,feat_sim,xsims,xsims_gl,wflag] = computeSimData_160620(Rmod,m,u,pnew,0,1);
 wfstr = ones(1,N);
 R.plot.flag= 0;
