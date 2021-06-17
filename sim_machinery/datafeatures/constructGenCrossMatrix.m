@@ -17,7 +17,7 @@ for C = 1:O
         case 'CSD'
             dataX = dataS{C}(datinds,:)';
             % Compute the CrossSpectral Density for Everything
-            [csdMaster,fMaster] = cpsd(dataX,dataX,hanning(2^N),[],2^N,fsamp,'mimo');
+            [csdMaster,fMaster] = cpsd(dataX,dataX,hanning(2^N),[],fsamp,fsamp,'mimo');
             if numel(size(csdMaster))<3
                 X = nan(size(csdMaster,1),2,2);
                 X(:,1,1) = csdMaster;

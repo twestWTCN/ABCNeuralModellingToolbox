@@ -144,5 +144,5 @@ if isfield(R.objfx,'featweight')
     r2mean(r2mean==0) = nan;
 end
 errorVec = [nanmean(r2mean(:)) r2mean]; %sum(r2mean);
-r2mean = mean(r2mean(:));
+r2mean = nanmean(r2mean(:));
 
