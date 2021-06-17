@@ -1,0 +1,5 @@
+function saveSimABCOutputs(R,Mfit,m,parBank)
+saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modelfit_' R.out.tag '_' R.out.dag '.mat'],Mfit)
+saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modelspec_' R.out.tag '_' R.out.dag '.mat'],m)
+saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\R_' R.out.tag '_' R.out.dag '.mat'],R)
+saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\' R.out.tag '\' R.out.dag '\parBank_' R.out.tag '_' R.out.dag '.mat'],parBank)
