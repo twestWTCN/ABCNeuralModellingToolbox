@@ -1,4 +1,4 @@
-function  [hl, hp, dl,flag,CSD_mean] = PlotFeatureConfInt_gen190521(R,permMod,fighan,cmap)
+function  [hl, hp, dl,flag,CSD_mean] = PlotFeatureConfInt_gen170620(R,permMod,fighan,cmap)
 if ~isfield(R.plot,'confint')
     R.plot.confint = 1; % If not specified then dont plot confidence intervals
 end
@@ -45,7 +45,7 @@ for featN = 1:numel(R.data.datatype)
                 if axflag == 0
                     figure(fighan(featN,cond))
                 elseif axflag == 1
-                    subplot(fighan(featN,cond))
+                    axes(fighan(featN,cond))
                 end
                 
                 if strncmp(R.data.datatype{featN},'CSD',3)
@@ -78,7 +78,7 @@ for featN = 1:numel(R.data.datatype)
                             q = 2;
                         end
                         if axflag == 0
-                            subplot(N,M,k)
+                            subplot(N,M,k) % if handle is a figure then use subplots
                         end
                         Y = squeeze(CSD_mean(:,i,j,:));
                         if i == j
@@ -128,14 +128,17 @@ for featN = 1:numel(R.data.datatype)
                         end
                         if i == j
                             %                             ylim([0 5])
-                            ylabel(R.plot.feat(featN).axtit{2});
+                            ylabel('Power')
                             title(R.chsim_name{i})
                         else
                             %                 ylim([0 0.5])
+                            ylabel(msr)
+                        end
+                        if isfield(R.plot,'feat')
+                            axis(R.plot.feat(featN).axlim);
+                            xlabel(R.plot.feat(featN).axtit{1});
                             ylabel(R.plot.feat(featN).axtit{2});
                         end
-                        axis(R.plot.feat(featN).axlim);
-                        xlabel(R.plot.feat(featN).axtit{1});
                         grid on; axis square
                         %         ylim([-0.03 0.03])
                     end
@@ -144,17 +147,8 @@ for featN = 1:numel(R.data.datatype)
                 set(gcf,'Position',[680         112        1112         893])
             end
         case {'FANO','DUR','ENVPDF','DURPDF','INTPDF'}
-            tf = 0; a = 1;
-            while tf == 0
-                try
-                    fanodata = permMod.feat_rep{a}{featN};
-                    tf = 1;
-                catch
-                    tf = 0;
-                end
-                a = a+1;
-            end
-            list =find(~isinf(permMod.errorVec_rep(featN+1,:)) & ~isnan(permMod.errorVec_rep(featN+1,:)));
+            fanodata = permMod.feat_rep{1}{featN};
+            list =find(~isinf(permMod.ACCrep) & ~isnan(permMod.ACCrep) & (permMod.ACCrep>prctile(permMod.ACCrep,75)));
             N = size(fanodata,2);
             fano_std = []; fanobank = [];
             for ii = 1:size(list,2)
@@ -167,7 +161,7 @@ for featN = 1:numel(R.data.datatype)
             if axflag == 0
                 figure(fighan(featN,cond))
             elseif axflag == 1
-                subplot(fighan(featN,cond))
+                axes(fighan(featN,cond))
             end
             
             fanomean = prctile(fanobank,50,3);
@@ -183,11 +177,12 @@ for featN = 1:numel(R.data.datatype)
             hold on
             dl = plot(F(1:end),R.data.feat_emp{featN} ,'color',[0 0 0],'LineWidth',1.5); hold on
             
-            ylabel(R.plot.feat(featN).axtit{2});
-            axis(R.plot.feat(featN).axlim);
-            xlabel(R.plot.feat(featN).axtit{1});
+            if isfield(R.plot,'feat')
+                axis(R.plot.feat(featN).axlim);
+                xlabel(R.plot.feat(featN).axtit{1});
+                ylabel(R.plot.feat(featN).axtit{2});
+            end
             grid on; axis square
-            
     end
     
 end
