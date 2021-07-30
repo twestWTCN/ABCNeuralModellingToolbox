@@ -6,7 +6,7 @@ switch getenv('computername')
         usname = 'timot';
         gitpath =  'C:\Users\timot\Documents\GitHub'; % points towards github repos
         %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
-    case 'DESKTOP-4VATHIO'
+    case 'DESKTOP-0HO6J14'
         gitpath =  'D:\GITHUB'; % points towards github repos
         %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
         R.path.datapath_pedrosa = 'D:\DATA\DP_BUA_thalamomuscular\preproc\'

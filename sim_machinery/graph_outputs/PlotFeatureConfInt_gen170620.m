@@ -144,11 +144,13 @@ for featN = 1:numel(R.data.datatype)
                     end
                 end
                 flag = 0;
+                legend([dl hl],{'Empirical','Fitted'})
+
                 set(gcf,'Position',[680         112        1112         893])
             end
         case {'FANO','DUR','ENVPDF','DURPDF','INTPDF'}
             fanodata = permMod.feat_rep{1}{featN};
-            list =find(~isinf(permMod.ACCrep) & ~isnan(permMod.ACCrep) & (permMod.ACCrep>prctile(permMod.ACCrep,75)));
+            list =find(~isinf(permMod.ACCrep) & ~isnan(permMod.ACCrep)); % & (permMod.ACCrep>prctile(permMod.ACCrep,75)));
             N = size(fanodata,2);
             fano_std = []; fanobank = [];
             for ii = 1:size(list,2)
@@ -165,8 +167,8 @@ for featN = 1:numel(R.data.datatype)
             end
             
             fanomean = prctile(fanobank,50,3);
-            fano_std(:,:,1)  = std(fanobank,1,3); %prctile(fanobank,50,3)-prctile(fanobank,25,3); % %prctile(CSD_bank,5,5); %
-            fano_std(:,:,2)  = std(fanobank,1,3); %prctile(fanobank,75,3)-prctile(fanobank,50,3); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
+            fano_std(:,:,1)  = prctile(fanobank,50,3)-prctile(fanobank,25,3); % %prctile(CSD_bank,5,5); %std(fanobank,1,3); %
+            fano_std(:,:,2)  = prctile(fanobank,75,3)-prctile(fanobank,50,3); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %std(fanobank,1,3); %
             
             F =  R.data.feat_xscale{featN};
             
@@ -183,6 +185,8 @@ for featN = 1:numel(R.data.datatype)
                 ylabel(R.plot.feat(featN).axtit{2});
             end
             grid on; axis square
+            legend([dl hl],{'Empirical','Fitted'})
+
     end
     
 end

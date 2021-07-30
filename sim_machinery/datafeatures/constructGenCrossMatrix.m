@@ -176,21 +176,21 @@ if numel(R.data.datatype)>1
                     end
                     
                 case {'DURPDF','ENVPDF','INTPDF'}
-                    dataX = dataS{C}(datinds,:)';
+                    dataC = dataS{C}(datinds,:)';
                     if isfield(R.obs.trans,'burstsfrq')
                         frqband = R.obs.trans.bursts.frq;
                     else
                         frqband = [15 25];
                     end
-                    dataX = bandpass(dataX,frqband,fsamp);
+                    dataX = bandpass(dataC,frqband,fsamp);
                     dataX = (dataX-mean(dataX))./std(dataX);
                     minbs = (2/25)*fsamp;
                     for i = 1:size(dataX,2)
                         switch R.data.datatype{fcnt}
                             case 'ENVPDF'
-                                [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark);
+                                [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC);
                             case 'DURPDF'
-                                [E,nbs(:,i,C)] = burstDurHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark);
+                                [E,nbs(:,i,C)] = burstDurHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC);
                             case 'INTPDF'
                                 [E,nbs(:,i,C)] = burstIntHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark);
                                 
