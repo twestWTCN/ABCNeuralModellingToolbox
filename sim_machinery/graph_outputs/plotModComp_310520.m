@@ -99,7 +99,7 @@ pModDist = (pmod)./sum(pmod);
 
 figure(2)
 subplot(4,1,1)
-MSE = cellfun(@(x) x(~isnan(x) & ~isinf(x)),MSE,'UniformOutput',false);
+MSE = cellfun(@(x) x(~isnan(x) & ~isinf(x)  & x>-5),MSE,'UniformOutput',false);
 
 violin(MSE,'facecolor',cmap,'medc','k:','xlabel',shortlab); %,...
 %'bw',[0.025 0.1 0.1]); % 0.025 0.2 0.2 0.025 0.025 0.025 0.025 0.2 0.2]);

@@ -56,7 +56,7 @@ delta_act = 0.05;
 pIndMap = spm_vec(pInd); % in flat form
 pMuMap = spm_vec(pMu);
 pSigMap = spm_vec(pSig);
-R.SimAn.minRank = ceil(size(pIndMap,1)*3); %Ensure rank of sample is large enough to compute copula
+R.SimAn.minRank = ceil(size(pIndMap,1)*R.SimAn.minRankLambda); %Ensure rank of sample is large enough to compute copula
 
 % set initial batch of parameters from gaussian priors
 if isfield(R,'Mfit')
