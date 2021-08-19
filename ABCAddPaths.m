@@ -2,11 +2,14 @@ function R = ABCAddPaths(repopath,routname)
 % This function sets up your path and points to the right toolboxes/etc
 % restoredefaultpath
 switch getenv('computername')
+        case 'DESKTOP-1QJTIMO'
+        gitpath =  'C:\Users\Tim West\Documents\GitHub'; % points towards github repos
+        %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
+
     case 'DESKTOP-94CEG1L'
-        usname = 'timot';
         gitpath =  'C:\Users\timot\Documents\GitHub'; % points towards github repos
         %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
-    case 'DESKTOP-4VATHIO'
+    case 'DESKTOP-0HO6J14'
         gitpath =  'D:\GITHUB'; % points towards github repos
         %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
         R.path.datapath_pedrosa = 'D:\DATA\DP_BUA_thalamomuscular\preproc\'

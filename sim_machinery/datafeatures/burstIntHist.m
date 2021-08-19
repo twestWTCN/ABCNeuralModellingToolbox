@@ -2,8 +2,10 @@ function [nb,Apdf,normpdf,bint] = burstIntHist(dataX,fsamp,bins,minbs,winmark)
 
 XH = abs(hilbert(dataX));
 burstinds = SplitVec(find(XH>prctile(XH,75)),'consecutive');
-if ~isempty(winmark)
-    burstinds = edgeCorrect(burstinds,winmark);
+if nargin>4
+    if ~isempty(winmark)
+        burstinds = edgeCorrect(burstinds,winmark);
+    end
 end
 segL = 1000*(cellfun('length',burstinds)/fsamp);
 
