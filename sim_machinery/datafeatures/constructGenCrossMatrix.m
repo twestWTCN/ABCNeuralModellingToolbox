@@ -176,7 +176,7 @@ if numel(R.data.datatype)>1
                     end
                     
                 case {'DURPDF','ENVPDF','INTPDF'}
-                    dataX = dataS{C}(datinds,:)';
+                    dataC = dataS{C}(datinds,:)';
                     if isfield(R.obs.trans.bursts,'frq')
                         frqband = R.obs.trans.bursts.frq;
                     else
