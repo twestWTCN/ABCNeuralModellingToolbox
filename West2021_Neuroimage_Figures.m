@@ -25,8 +25,7 @@ addpath(genpath([repopath '\Projects\ABCValidationPaper\routine\figureScripts'])
 
 % Setup the basic config structure 'R'
 projname = 'ABCValidationPaper'; % This is the name of the current project
-R = ABCAddPath
-s(repopath,projname);
+R = ABCAddPaths(repopath,projname);
 
 %% Figure 2- 
 % "Examining the convergence of ABC optimization upon summary statistics

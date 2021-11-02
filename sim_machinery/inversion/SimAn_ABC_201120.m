@@ -30,7 +30,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 ABCGraphicsDefaults
-%% Setup for annealing
+%% Set Defaults
 if nargin<4
     parBank = [];
 end
@@ -43,15 +43,21 @@ end
 if ~isfield(R.plot,'updateflag')
     R.plot.updateflag = 0;
 end
+if ~isfield(R.SimAn,'minRankLambda')
+    R.SimAn.minRankLambda = 3;
+end
+
 pOrg = p; % Record prior parameters.
 
-% Set Fixed Annealing Parameters
+% Set Fixed Initialization Parameters
 eps_prior = -200; % prior eps (needed for gradient approximation);
 eps_exp = -12;
 eps_act = eps_prior;
 delta_act = 0.05;
+
 % Compute indices of parameters to be optimized
 [pInd,pMu,pSig] = parOptInds_110817(R,p,m.m); % in structure form
+
 % Form descriptives
 pIndMap = spm_vec(pInd); % in flat form
 pMuMap = spm_vec(pMu);
@@ -71,6 +77,7 @@ else
     Mfit.prior = Mfit;
     par = postDrawMVN(R,Mfit,pOrg,pIndMap,pSigMap,rep);
 end
+
 R.Mfit.DKL = 0; % Divergence is zero to begin
 parPrec(:,1) = diag(Mfit.Sigma);
 itry = 0; cflag = 0;
