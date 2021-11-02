@@ -23,7 +23,7 @@ for pn = 1:numel(modID)
     R.Mfit.prior = R.Mfit;
     warning('getSimModelData_v3 is using legacy setup!')
     % With Hyperdirect
-    [permMod{pn} xsimMod{pn}] = modelProbs_160620(m.x,m,p,R);
+    [permMod{pn} xsimMod{pn}] = modelProbs_160620(R,m.x,m,p,R);
 end
 
 R.path = Rorg.path;

@@ -12,6 +12,13 @@ if simtime ~= 0
 end
 wflag = 0;
 
+% legacy check
+if isfield(R.IntP,'compFx')
+    R.objfx.compFx = R.IntP.compFx;
+    warning('You are using legacy setup files!')
+end
+
+
 %% Simulate New Data
 % Integrate in time master fx function
 try
