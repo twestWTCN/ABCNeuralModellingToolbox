@@ -38,6 +38,14 @@ for condsel = 1:numel(R.condnames)
         case 'white_covar'
             u = (sqrtm(m.uset.p.covar)*randn(m.m,R.IntP.nt)).*m.uset.p.scale;
             u = u';
+        case 'white_covar_perPop'
+            for nm = 1:m.m
+                u = (sqrtm(m.uset.p.covar{nm})*randn(m.Cint(nm),R.IntP.nt)).*m.uset.p.scale(nm);
+                u = u';
+                um{nm} = u;
+            end
+            u = um;
+            
         case 'constant'
             u = repmat(m.uset.p.scale,m.m,R.IntP.nt);
             u = u';

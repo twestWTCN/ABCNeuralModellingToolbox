@@ -60,8 +60,6 @@ for dt = 1:numel(R.data.datatype)
                             case 'magnitude'
                                 yfx = squeeze((DatSim(C,i,j,1,:)));
                                 ffx = squeeze((DatEmp(C,i,j,1,:)));
-%                                 yfx = (yfx-mean(ffx))./std(ffx);
-%                                 ffx = (ffx-mean(ffx))./std(ffx);
                                 r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);  %r(1);
                         end

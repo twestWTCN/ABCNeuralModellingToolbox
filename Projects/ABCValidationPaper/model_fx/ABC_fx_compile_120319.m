@@ -15,6 +15,10 @@ else
     decon = 1;
 end
 
+if ~isfield(R.IntP,'bufferExt')
+    R.IntP.bufferExt = R.IntP.buffer;
+end
+
 cs = 0; % cond counter
 wflag= 0; tvec = [];
 for condsel = 1:numel(R.condnames)
@@ -274,7 +278,7 @@ for condsel = 1:numel(R.condnames)
     end
     xstore_cond{condsel} = xstore;
     if nargout>3
-        [J{condsel},Es{condsel}] = findJacobian(R,xstore(:,end-R.IntP.buffer:end),uc,p,m);
+        [J{condsel},Es{condsel}] = findJacobian(R,xstore(:,end-R.IntP.buffer:end),uc,p,m,condsel);
     end    % tvec = linspace(R.IntP.buffer*R.IntP.dt,R.IntP.nt*R.IntP.dt,R.IntP.nt);
     a = 1;
 end
