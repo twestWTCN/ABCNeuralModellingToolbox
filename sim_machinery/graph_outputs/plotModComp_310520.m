@@ -1,4 +1,4 @@
-function plotModComp_310520(R,cmap)
+function plotModComp_310520(R,cmap,daglist)
 % addpath('C:\Users\Tim\Documents\MATLAB_ADDONS\violin')
 % R.plot.confint = 'none';
 if nargin<2
@@ -7,7 +7,11 @@ if nargin<2
 end
 %% First get probabilities so you can compute model space epsilon
 for modID = 1:numel(R.modcomp.modN)
-    R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
+    if nargin<3
+        R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
+    else
+        R.out.dag = daglist{modID}
+    end
     load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_'  R.out.dag '.mat'])
     permMod = varo; %i.e. permMod
     if ~isempty(permMod)
@@ -27,7 +31,11 @@ for modID = numel(R.modcomp.modN):-1:1
     shortlab{modID} = sprintf('M%.f',R.modcomp.modN(modID)); % Make model label
 
     % Load in the precompute model iterations
-    R.out.dag = sprintf([R.out.tag '_M%.0f'],R.modcomp.modN(modID));
+    if nargin<3
+        R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
+    else
+        R.out.dag = daglist{modID}
+    end
     load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_'  R.out.dag '.mat'])
     permMod = varo; %i.e. permMod
 
@@ -76,8 +84,9 @@ for modID = numel(R.modcomp.modN):-1:1
         MSE{modID} = permMod.r2rep;
         
         %% Plot Data Features with Bayesian confidence intervals
-        h(1,1) = figure(10);
-        h(1,2) = figure(20);
+        for n = 1:numel(R.data.datatype)
+        h(n,1) = figure(n*10);
+        end
         flag = 0;
 
         if ismember(modID,R.modcompplot.NPDsel)
