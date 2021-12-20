@@ -1,5 +1,5 @@
 function [xsims_c R wflag] = observe_data(xstore,m,p,R)
-    wflag = 0;
+wflag = 0;
 
 for condsel = 1:numel(R.condnames)
     xsims = xstore{condsel}(R.obs.outstates,:); % R.obs.outstates is different to R.siminds = 1
@@ -26,6 +26,13 @@ for condsel = 1:numel(R.condnames)
             case 'obsnoise'
                 CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
                 xsims = xsims + randn(size(xsims)).*CN.*std(xsims,[],2); % SNR of target
+            case 'obsCnoise'
+                CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
+                alpha = R.obs.AlpNoise.*exp(p.obs.AlpNoise)';
+                for i = 1:size(xsims,1)
+                    U = ffGn(size(xsims,2),(alpha+1)/2, std(xsims(i,:)), 0).*CN;
+                    xsims(i,:) = xsims(i,:) + U;
+                end               
             case 'leadfield'
                 LF = R.obs.LF.*exp(p.obs.LF);
                 LFF = zeros(m.m);
@@ -44,7 +51,7 @@ for condsel = 1:numel(R.condnames)
                 end
                 XM = mean(LM,2);
                 XV = std(LM,[],2);
-                xsims = (xsims-XM)./XV;            
+                xsims = (xsims-XM)./XV;
             case 'mixing'
                 %% REPLACE WITH DISTANCE MATRIX
                 mixdeg = R.obs.mixing(1).*exp(p.obs.mixing(1));
@@ -78,10 +85,10 @@ for condsel = 1:numel(R.condnames)
                     xsims(i,:) = filtfilt(R.obs.highpass.fwts,1,x);
                 end
             case 'boring'
-%                 figure(100);
-%                 clf
-%                 plot(xsims'); shg
-%                 
+                %                 figure(100);
+                %                 clf
+                %                 plot(xsims'); shg
+                %
                 montoncheck = [];
                 for j = 1:size(xsims,1)
                     swX = slideWindow(xsims(j,:), floor(size(xsims(j,:),2)/3), 0);
@@ -89,17 +96,17 @@ for condsel = 1:numel(R.condnames)
                         A = swX(:,swin);
                         Env = abs(hilbert(A));
                         [acf,lags,bounds] = autocorr(Env,1000);
-%                         fft(acf)
+                        %                         fft(acf)
                         acfEnvcheck(j,swin) = any(abs(acf(100:end))>0.65);
                         [acf,lags,bounds] = autocorr(acf,1000);
                         acf2Envcheck(j,swin) = any(abs(acf(100:end))>0.65);
                         
                     end
-                        Env = abs(hilbert(xsims(j,:)));
-                        % Subsample
-                        Env = Env(1:100:end);
-                        [tau pc] = corr((1:size(Env,2))',Env','type','Kendall');
-                        montoncheck(j) = pc<0.05;
+                    Env = abs(hilbert(xsims(j,:)));
+                    % Subsample
+                    Env = Env(1:100:end);
+                    [tau pc] = corr((1:size(Env,2))',Env','type','Kendall');
+                    montoncheck(j) = pc<0.05;
                     %                     Xstab(i) = std(diff(abs(hilbert(xsims(i,:)))))<0.005;
                 end
                 
@@ -113,11 +120,11 @@ for condsel = 1:numel(R.condnames)
                 if wflag == 0
                     a = 1;
                 end
-%                 pause(2)
+                %                 pause(2)
             case 'FANO'
                 
                 R.sim.fano(:,condsel) = computeFano(xsims,1/R.IntP.dt);
-
+                
         end
     end
     xsims_c{condsel} = xsims;
@@ -130,14 +137,14 @@ end
 %        if any(abs(maxD)>1e4)
 %            wflag = 1;
 %                   disp('Scale Differeence of conditions is too large!')
-% 
+%
 %        end
 % end
 
-                if wflag == 0
-                    a = 1;
-%                     plot([xsims_c{1} xsims_c{2}]')
-                end
+if wflag == 0
+    a = 1;
+    %                     plot([xsims_c{1} xsims_c{2}]')
+end
 % if R.obs.norm
 %     % Normalise
 %     for i = 1:size(xstore,1)

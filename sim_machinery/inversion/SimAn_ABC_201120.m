@@ -163,8 +163,7 @@ while ii <= R.SimAn.searchMax
     
     % Simulate best data (plotting outside of parfor)
     pnew = samppar{ji_best(1)}{jj_best(1)};
-    u = innovate_timeseries(R,m);
-    [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,u,pnew,0,0);
+    [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,[],pnew,0,0);
     
     for L = 1:numel(i)
         for j = 1:numel(featbank{ji_best(L)}{jj_best(L)})
