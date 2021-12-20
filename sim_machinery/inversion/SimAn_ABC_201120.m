@@ -28,6 +28,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
 %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+    GPool = gcp;
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 ABCGraphicsDefaults
 %% Set Defaults
@@ -90,7 +91,7 @@ while ii <= R.SimAn.searchMax
     % optimization here is prime.
     clear xsims_rep feat_sim_rep featbank ACCbank
     ji = 0;
-    parnum = (6*8);
+    parnum = (6*GPool.NumWorkers);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
        parfor jj = 1:parnum % Replicates for each temperature
