@@ -2,7 +2,9 @@ function [xsims_c R wflag] = observe_data(xstore,m,p,R)
 wflag = 0;
 
 for condsel = 1:numel(R.condnames)
-    xsims = xstore{condsel}(R.obs.outstates,:); % R.obs.outstates is different to R.siminds = 1
+    xsims = xstore{condsel}(R.obs.outstates,:); % select simulation states
+%     xsims = xsims(R.obs.obsstates,:); % and states to be observed (or put into LF)
+
     % Delete burnin
     if size(xsims,2) > 5*round(R.obs.brn*(1/R.IntP.dt))
         xsims(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
@@ -20,7 +22,7 @@ for condsel = 1:numel(R.condnames)
     tvec_obs = R.IntP.tvec;
     tvec_obs(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
     R.IntP.tvec_obs = tvec_obs;
-    
+
     for i = 1:length(R.obs.gainmeth)
         switch R.obs.gainmeth{i}
             case 'obsnoise'
@@ -32,9 +34,9 @@ for condsel = 1:numel(R.condnames)
                 for i = 1:size(xsims,1)
                     U = ffGn(size(xsims,2),(alpha+1)/2, std(xsims(i,:)), 0).*CN;
                     xsims(i,:) = xsims(i,:) + U;
-                end               
+                end
             case 'leadfield'
-                LF = R.obs.LF.*exp(p.obs.LF);
+                LF = m.obs.LF.*exp(p.obs.LF);
                 LFF = zeros(m.m);
                 LFF(eye(size(LFF))~=0) = LF;
                 xsims = LFF*xsims;
@@ -54,7 +56,7 @@ for condsel = 1:numel(R.condnames)
                 xsims = (xsims-XM)./XV;
             case 'mixing'
                 %% REPLACE WITH DISTANCE MATRIX
-                mixdeg = R.obs.mixing(1).*exp(p.obs.mixing(1));
+                mixdeg = m.obs.mixing(1).*exp(p.obs.mixing(1));
                 sigmix = repmat(1-mixdeg,m.m,1).*eye(m.m);
                 sigmix = sigmix + (repmat(mixdeg/(m.m-1),m.m,1).*~eye(m.m));
                 xsims = sigmix*xsims;
@@ -65,7 +67,7 @@ for condsel = 1:numel(R.condnames)
                 cortmix = [1-(mixdeg(1)*(m.m-1)) repmat(mixdeg(1),1,m.m-1)];
                 submix = ~eye(m.m-1,m.m).*repmat(mixdeg(1),m.m-1,m.m);
                 submix(logical(eye(size(submix)))) = 1-(mixdeg(2));
-                
+
                 mix = [cortmix; circshift(submix,1,2)];
                 %             m.m = 6;
                 %             dm = eye(m.m) + (~eye(m.m).*repmat(mixdeg(2),m.m,m.m));
@@ -95,12 +97,12 @@ for condsel = 1:numel(R.condnames)
                     for swin = 1:size(swX,2)
                         A = swX(:,swin);
                         Env = abs(hilbert(A));
-                        [acf,lags,bounds] = autocorr(Env,1000);
-                        %                         fft(acf)
-                        acfEnvcheck(j,swin) = any(abs(acf(100:end))>0.65);
-                        [acf,lags,bounds] = autocorr(acf,1000);
-                        acf2Envcheck(j,swin) = any(abs(acf(100:end))>0.65);
-                        
+                        [acf,lags] = xcorr(Env,Env,1000,'coeff');
+%                         fft(acf)
+                        acfEnvcheck(j,swin) = any(abs(acf(abs(lags)>100))>0.85);
+                        [acf,lags] = xcorr(acf,acf,1000,'coeff');
+                        acf2Envcheck(j,swin) = any(abs(acf(abs(lags)>300))>0.95);
+
                     end
                     Env = abs(hilbert(xsims(j,:)));
                     % Subsample
@@ -109,7 +111,7 @@ for condsel = 1:numel(R.condnames)
                     montoncheck(j) = pc<0.05;
                     %                     Xstab(i) = std(diff(abs(hilbert(xsims(i,:)))))<0.005;
                 end
-                
+
                 if any(acfEnvcheck(:)) || any(acf2Envcheck(:))
                     disp('SimFx is perfectly periodic!!')
                     wflag = 1;
@@ -122,9 +124,9 @@ for condsel = 1:numel(R.condnames)
                 end
                 %                 pause(2)
             case 'FANO'
-                
+
                 R.sim.fano(:,condsel) = computeFano(xsims,1/R.IntP.dt);
-                
+
         end
     end
     xsims_c{condsel} = xsims;

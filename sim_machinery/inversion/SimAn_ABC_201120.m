@@ -90,10 +90,10 @@ while ii <= R.SimAn.searchMax
     % optimization here is prime.
     clear xsims_rep feat_sim_rep featbank ACCbank
     ji = 0;
-    parnum = (6*2);
+    parnum = (6*8);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-        parfor jj = 1:parnum % Replicates for each temperature
+       parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
