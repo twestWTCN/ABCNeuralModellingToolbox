@@ -93,12 +93,12 @@ while ii <= R.SimAn.searchMax
     parnum = (6*2);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-        parfor jj = 1:parnum % Replicates for each temperature
+        for jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
             %% Simulate New Data
-            u = innovate_timeseries(R,m);
+            u = innovate_timeseries(R,m,pnew);
             [r2,pnew,feat_sim] = computeSimData_160620(R,m,u,pnew,0,0);
             % Adjust the score to account for set complexity
             

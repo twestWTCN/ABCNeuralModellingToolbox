@@ -2,7 +2,7 @@ function [xsims_c R wflag] = observe_data(xstore,m,p,R)
     wflag = 0;
 
 for condsel = 1:numel(R.condnames)
-    xsims = xstore{condsel}(R.obs.outstates,:);
+    xsims = xstore{condsel}(R.obs.outstates,:); % R.obs.outstates is different to R.siminds = 1
     % Delete burnin
     if size(xsims,2) > 5*round(R.obs.brn*(1/R.IntP.dt))
         xsims(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
