@@ -16,6 +16,7 @@ for modID = 1:numel(R.modcomp.modN)
     permMod = varo; %i.e. permMod
     if ~isempty(permMod)
         ACCrep{modID} = permMod.ACCrep;
+        ACCmean(modID) = median(ACCrep{modID});
     end
 end
 
@@ -23,7 +24,8 @@ end
 % probability
 prct = 50;
 ACCbankcat = horzcat(ACCrep{:});
-R.modcomp.modEvi.epspop = prctile(ACCbankcat,prct); % threshold becomes median of model fits
+[~,id] =  max(ACCmean);
+R.modcomp.modEvi.epspop = prctile(ACCrep{id},prct); % threshold becomes median of model fits
 
 p = 0; % plot counter
 mni = 0; % Model counter

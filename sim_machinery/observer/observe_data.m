@@ -2,7 +2,8 @@ function [xsims_c R wflag] = observe_data(xstore,m,p,R)
     wflag = 0;
 
 for condsel = 1:numel(R.condnames)
-    xsims = xstore{condsel}(R.obs.outstates,:);
+    xsims = xstore{condsel}(R.obs.outstates,:); % select simulation states
+%     xsims = xsims(R.obs.obsstates,:); % and states to be observed (or put into LF)
     % Delete burnin
     if size(xsims,2) > 5*round(R.obs.brn*(1/R.IntP.dt))
         xsims(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
@@ -27,7 +28,7 @@ for condsel = 1:numel(R.condnames)
                 CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
                 xsims = xsims + randn(size(xsims)).*CN.*std(xsims,[],2); % SNR of target
             case 'leadfield'
-                LF = R.obs.LF.*exp(p.obs.LF);
+                LF = m.obs.LF.*exp(p.obs.LF);
                 LFF = zeros(m.m);
                 LFF(eye(size(LFF))~=0) = LF;
                 xsims = LFF*xsims;
@@ -47,7 +48,7 @@ for condsel = 1:numel(R.condnames)
                 xsims = (xsims-XM)./XV;            
             case 'mixing'
                 %% REPLACE WITH DISTANCE MATRIX
-                mixdeg = R.obs.mixing(1).*exp(p.obs.mixing(1));
+                mixdeg = m.obs.mixing(1).*exp(p.obs.mixing(1));
                 sigmix = repmat(1-mixdeg,m.m,1).*eye(m.m);
                 sigmix = sigmix + (repmat(mixdeg/(m.m-1),m.m,1).*~eye(m.m));
                 xsims = sigmix*xsims;
@@ -78,9 +79,9 @@ for condsel = 1:numel(R.condnames)
                     xsims(i,:) = filtfilt(R.obs.highpass.fwts,1,x);
                 end
             case 'boring'
-%                 figure(100);
-%                 clf
-%                 plot(xsims'); shg
+                figure(100);
+                clf
+                plot(xsims'); shg
 %                 
                 montoncheck = [];
                 for j = 1:size(xsims,1)
@@ -88,11 +89,11 @@ for condsel = 1:numel(R.condnames)
                     for swin = 1:size(swX,2)
                         A = swX(:,swin);
                         Env = abs(hilbert(A));
-                        [acf,lags,bounds] = autocorr(Env,1000);
+                        [acf,lags] = xcorr(Env,Env,1000,'coeff');
 %                         fft(acf)
-                        acfEnvcheck(j,swin) = any(abs(acf(100:end))>0.65);
-                        [acf,lags,bounds] = autocorr(acf,1000);
-                        acf2Envcheck(j,swin) = any(abs(acf(100:end))>0.65);
+                        acfEnvcheck(j,swin) = any(abs(acf(abs(lags)>100))>0.85);
+                        [acf,lags] = xcorr(acf,acf,1000,'coeff');
+                        acf2Envcheck(j,swin) = any(abs(acf(abs(lags)>300))>0.95);
                         
                     end
                         Env = abs(hilbert(xsims(j,:)));
