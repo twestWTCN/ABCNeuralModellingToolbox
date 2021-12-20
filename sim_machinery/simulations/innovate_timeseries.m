@@ -1,4 +1,4 @@
-function uc  = innovate_timeseries(R,m)
+function uc  = innovate_timeseries(R,m,p)
 
 fs = 1/R.IntP.dt;
 nyq = fs/2;
@@ -43,6 +43,16 @@ for condsel = 1:numel(R.condnames)
                 u = (sqrtm(m.uset.p.covar{nm})*randn(m.Cint(nm),R.IntP.nt)).*m.uset.p.scale(nm);
                 u = u';
                 um{nm} = u;
+            end
+            u = um;
+        case 'coloured'
+            for nm = 1:m.m
+                for mm = 1:m.Cint(nm)
+                    alpha =  m.uset.p.alpha(nm).*exp(p.int{nm}.alpha);
+                    u(mm,:) = ffGn(R.IntP.nt, (alpha+1)/2, sqrt(m.uset.p.covar{nm}), 0).*m.uset.p.scale(nm);
+                    u = u';
+                    um{nm} = u;
+                end
             end
             u = um;
             

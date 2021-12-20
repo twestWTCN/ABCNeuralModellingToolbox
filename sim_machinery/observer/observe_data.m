@@ -4,6 +4,7 @@ function [xsims_c R wflag] = observe_data(xstore,m,p,R)
 for condsel = 1:numel(R.condnames)
     xsims = xstore{condsel}(R.obs.outstates,:); % select simulation states
 %     xsims = xsims(R.obs.obsstates,:); % and states to be observed (or put into LF)
+
     % Delete burnin
     if size(xsims,2) > 5*round(R.obs.brn*(1/R.IntP.dt))
         xsims(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];

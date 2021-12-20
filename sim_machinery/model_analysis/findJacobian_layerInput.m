@@ -31,5 +31,5 @@ for p = 1:length(plist)
     Es(p) = e(end);
 end% J
 
-J = mean(Js,3);
-% J = Js(:,:,1);
+% J = mean(Js,3);
+J = Js(:,:,1);
