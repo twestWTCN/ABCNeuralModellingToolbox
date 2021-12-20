@@ -98,8 +98,7 @@ while ii <= R.SimAn.searchMax
             parl = (ji*parnum) + jj;
             pnew = par{parl};
             %% Simulate New Data
-            u = innovate_timeseries(R,m,pnew);
-            [r2,pnew,feat_sim] = computeSimData_160620(R,m,u,pnew,0,0);
+            [r2,pnew,feat_sim] = computeSimData_160620(R,m,[],pnew,0,0);
             % Adjust the score to account for set complexity
             
             [ACC,R2w] = computeObjective(R,r2);
@@ -163,8 +162,7 @@ while ii <= R.SimAn.searchMax
     
     % Simulate best data (plotting outside of parfor)
     pnew = samppar{ji_best(1)}{jj_best(1)};
-    u = innovate_timeseries(R,m);
-    [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,u,pnew,0,0);
+    [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,[],pnew,0,0);
     
     for L = 1:numel(i)
         for j = 1:numel(featbank{ji_best(L)}{jj_best(L)})

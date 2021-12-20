@@ -2,15 +2,21 @@ function [modelError,pnew,feat_sim,xsims,xsims_gl,wflag,R,errorVec,J] = computeS
 if nargin<6
     plotop = 0;
 end
-if isempty(uc) && simtime == 0
-    uc = innovate_timeseries(R,m);
-end
-
-if simtime ~= 0
-    R = setSimTime(R,simtime);
-    uc = innovate_timeseries(R,m);
-end
 wflag = 0;
+% generate noise processes
+try
+    if isempty(uc) && simtime == 0
+        uc = innovate_timeseries(R,m,pnew);
+    end
+
+    if simtime ~= 0
+        R = setSimTime(R,simtime);
+        uc = innovate_timeseries(R,m,pnew);
+    end
+catch
+    wflag = 0;
+    disp('Cant generate noise')
+end
 
 % legacy check
 if isfield(R.IntP,'compFx')
