@@ -1,5 +1,5 @@
 function [xsims_c R wflag] = observe_data(xstore,m,p,R)
-    wflag = 0;
+wflag = 0;
 
 for condsel = 1:numel(R.condnames)
     xsims = xstore{condsel}(R.obs.outstates,:); % select simulation states
@@ -22,12 +22,19 @@ for condsel = 1:numel(R.condnames)
     tvec_obs = R.IntP.tvec;
     tvec_obs(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
     R.IntP.tvec_obs = tvec_obs;
-    
+
     for i = 1:length(R.obs.gainmeth)
         switch R.obs.gainmeth{i}
             case 'obsnoise'
                 CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
                 xsims = xsims + randn(size(xsims)).*CN.*std(xsims,[],2); % SNR of target
+            case 'obsCnoise'
+                CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
+                alpha = R.obs.AlpNoise.*exp(p.obs.AlpNoise)';
+                for i = 1:size(xsims,1)
+                    U = ffGn(size(xsims,2),(alpha+1)/2, std(xsims(i,:)), 0).*CN;
+                    xsims(i,:) = xsims(i,:) + U;
+                end
             case 'leadfield'
                 LF = m.obs.LF.*exp(p.obs.LF);
                 LFF = zeros(m.m);
@@ -46,7 +53,7 @@ for condsel = 1:numel(R.condnames)
                 end
                 XM = mean(LM,2);
                 XV = std(LM,[],2);
-                xsims = (xsims-XM)./XV;            
+                xsims = (xsims-XM)./XV;
             case 'mixing'
                 %% REPLACE WITH DISTANCE MATRIX
                 mixdeg = m.obs.mixing(1).*exp(p.obs.mixing(1));
@@ -60,7 +67,7 @@ for condsel = 1:numel(R.condnames)
                 cortmix = [1-(mixdeg(1)*(m.m-1)) repmat(mixdeg(1),1,m.m-1)];
                 submix = ~eye(m.m-1,m.m).*repmat(mixdeg(1),m.m-1,m.m);
                 submix(logical(eye(size(submix)))) = 1-(mixdeg(2));
-                
+
                 mix = [cortmix; circshift(submix,1,2)];
                 %             m.m = 6;
                 %             dm = eye(m.m) + (~eye(m.m).*repmat(mixdeg(2),m.m,m.m));
@@ -80,10 +87,10 @@ for condsel = 1:numel(R.condnames)
                     xsims(i,:) = filtfilt(R.obs.highpass.fwts,1,x);
                 end
             case 'boring'
-                figure(100);
-                clf
-                plot(xsims'); shg
-%                 
+                %                 figure(100);
+                %                 clf
+                %                 plot(xsims'); shg
+                %
                 montoncheck = [];
                 for j = 1:size(xsims,1)
                     swX = slideWindow(xsims(j,:), floor(size(xsims(j,:),2)/3), 0);
@@ -95,16 +102,16 @@ for condsel = 1:numel(R.condnames)
                         acfEnvcheck(j,swin) = any(abs(acf(abs(lags)>100))>0.85);
                         [acf,lags] = xcorr(acf,acf,1000,'coeff');
                         acf2Envcheck(j,swin) = any(abs(acf(abs(lags)>300))>0.95);
-                        
+
                     end
-                        Env = abs(hilbert(xsims(j,:)));
-                        % Subsample
-                        Env = Env(1:100:end);
-                        [tau pc] = corr((1:size(Env,2))',Env','type','Kendall');
-                        montoncheck(j) = pc<0.05;
+                    Env = abs(hilbert(xsims(j,:)));
+                    % Subsample
+                    Env = Env(1:100:end);
+                    [tau pc] = corr((1:size(Env,2))',Env','type','Kendall');
+                    montoncheck(j) = pc<0.05;
                     %                     Xstab(i) = std(diff(abs(hilbert(xsims(i,:)))))<0.005;
                 end
-                
+
                 if any(acfEnvcheck(:)) || any(acf2Envcheck(:))
                     disp('SimFx is perfectly periodic!!')
                     wflag = 1;
@@ -115,9 +122,9 @@ for condsel = 1:numel(R.condnames)
                 if wflag == 0
                     a = 1;
                 end
-%                 pause(2)
+                %                 pause(2)
             case 'FANO'
-                
+
                 R.sim.fano(:,condsel) = computeFano(xsims,1/R.IntP.dt);
 
         end
@@ -132,14 +139,14 @@ end
 %        if any(abs(maxD)>1e4)
 %            wflag = 1;
 %                   disp('Scale Differeence of conditions is too large!')
-% 
+%
 %        end
 % end
 
-                if wflag == 0
-                    a = 1;
-%                     plot([xsims_c{1} xsims_c{2}]')
-                end
+if wflag == 0
+    a = 1;
+    %                     plot([xsims_c{1} xsims_c{2}]')
+end
 % if R.obs.norm
 %     % Normalise
 %     for i = 1:size(xstore,1)
