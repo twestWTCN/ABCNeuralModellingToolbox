@@ -190,36 +190,3 @@ for featN = 1:numel(R.data.datatype)
     end
     
 end
-% % %LABEL LOCATIONS
-% % % Top row
-% % labPos(:,1,1) = [0.182654676258993 0.938409854423292 0.0548561151079137 0.0313549832026876];
-% % labPos(:,2,2) = [0.395100719424461 0.936326987681971 0.0548561151079137 0.0313549832026876];
-% % labPos(:,3,3) = [0.603266187050362 0.93552071668533 0.0548561151079137 0.0313549832026876];
-% % labPos(:,4,4) = [0.7954964028777 0.935363941769317 0.0548561151079137 0.0313549832026876];
-% %
-% % % First Column
-% % labPos(:,1,1) =[0.0369352517985632 0.830414333706607 0.0548561151079137 0.0313549832026876];
-% % labPos(:,2,2) =[0.039633093525182 0.610929451287794 0.0548561151079137 0.0313549832026876];
-% % labPos(:,3,3) =[0.0425467625899302 0.392721164613662 0.0548561151079137 0.0313549832026876];
-% % labPos(:,4,4) =[0.0436618705035993 0.178992161254199 0.0548561151079137 0.0313549832026876];
-% %
-% % for i = 1:N
-% %     for j = 1:M
-% %         annotation(gcf,'textbox',...
-% %             labPos(:,i,j)',...
-% %             'String',R.chsim_name{i},...
-% %             'FontWeight','Bold',...
-% %             'LineStyle','none');
-% %     end
-% % end
-% % annotation(gcf,'textbox',...
-% %     [0.24 0.013 0.54 0.05],...
-% %     'String',{'Mean, Upper and Lower Quartile of the Posterior Distribution for the',' ABC Optimized Model Fit to Lesion Group Average CSD'},...
-% %     'HorizontalAlignment','center',...
-% %     'FitBoxToText','off',...
-% %     'FontWeight','Bold',...,
-% %     'FontSize',12,...
-% %     'LineStyle','none');
-% % % h = legend({partlabs{1},partlabs{2},partlabs{3},[partlabs{1} ' Mean'],[partlabs{2} ' Mean'],[partlabs{3}  ' mean'],[partlabs{1} ' Qrt.'],[partlabs{2} ' Qrt.'],[partlabs{3} ' Qrt']});
-% % % set(h,...
-% % %     'Position',[0.87 0.013 0.11 0.17]);
