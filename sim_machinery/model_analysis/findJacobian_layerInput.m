@@ -33,3 +33,6 @@ end% J
 
 % J = mean(Js,3);
 J = Js(:,:,1);
+for i = 1:size(Js,1)
+e(i) = max(real(eig(squeeze(Js(:,:,i)))));    
+end

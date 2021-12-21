@@ -3,8 +3,8 @@ wflag = 0;
 
 for condsel = 1:numel(R.condnames)
     xsims = xstore{condsel}(R.obs.outstates,:); % select simulation states
-%     xsims = xsims(R.obs.obsstates,:); % and states to be observed (or put into LF)
-
+    %     xsims = xsims(R.obs.obsstates,:); % and states to be observed (or put into LF)
+    
     % Delete burnin
     if size(xsims,2) > 5*round(R.obs.brn*(1/R.IntP.dt))
         xsims(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
@@ -22,7 +22,7 @@ for condsel = 1:numel(R.condnames)
     tvec_obs = R.IntP.tvec;
     tvec_obs(:,1:round(R.obs.brn*(1/R.IntP.dt))) = [];
     R.IntP.tvec_obs = tvec_obs;
-
+    
     for i = 1:length(R.obs.gainmeth)
         switch R.obs.gainmeth{i}
             case 'obsnoise'
@@ -67,7 +67,7 @@ for condsel = 1:numel(R.condnames)
                 cortmix = [1-(mixdeg(1)*(m.m-1)) repmat(mixdeg(1),1,m.m-1)];
                 submix = ~eye(m.m-1,m.m).*repmat(mixdeg(1),m.m-1,m.m);
                 submix(logical(eye(size(submix)))) = 1-(mixdeg(2));
-
+                
                 mix = [cortmix; circshift(submix,1,2)];
                 %             m.m = 6;
                 %             dm = eye(m.m) + (~eye(m.m).*repmat(mixdeg(2),m.m,m.m));
@@ -98,11 +98,11 @@ for condsel = 1:numel(R.condnames)
                         A = swX(:,swin);
                         Env = abs(hilbert(A));
                         [acf,lags] = xcorr(Env,Env,1000,'coeff');
-%                         fft(acf)
+                        %                         fft(acf)
                         acfEnvcheck(j,swin) = any(abs(acf(abs(lags)>100))>0.85);
                         [acf,lags] = xcorr(acf,acf,1000,'coeff');
                         acf2Envcheck(j,swin) = any(abs(acf(abs(lags)>300))>0.95);
-
+                        
                     end
                     Env = abs(hilbert(xsims(j,:)));
                     % Subsample
@@ -111,7 +111,7 @@ for condsel = 1:numel(R.condnames)
                     montoncheck(j) = pc<0.05;
                     %                     Xstab(i) = std(diff(abs(hilbert(xsims(i,:)))))<0.005;
                 end
-
+                
                 if any(acfEnvcheck(:)) || any(acf2Envcheck(:))
                     disp('SimFx is perfectly periodic!!')
                     wflag = 1;
@@ -124,17 +124,35 @@ for condsel = 1:numel(R.condnames)
                 end
                 %                 pause(2)
             case 'FANO'
-
+                
                 R.sim.fano(:,condsel) = computeFano(xsims,1/R.IntP.dt);
             case 'flatTail'
-
-               [f,fx] =  pwelch(xsims',1/R.IntP.dt,[],1/R.IntP.dt,1/R.IntP.dt);
-               tailSNR =  10.*log10(sum(f(fx<=48,:))./sum(f(fx>48 & fx<248,:)));
-               if any(tailSNR< 1) 
-                   wflag = 1;
-                   disp('TailSNR failed')
-               end
-        end 
+                
+                [f,fx] =  pwelch(xsims',1/R.IntP.dt,[],1/R.IntP.dt,1/R.IntP.dt);
+                tailSNR =  10.*log10(sum(f(fx<=48,:))./sum(f(fx>48 & fx<248,:)));
+                if any(tailSNR< 1)
+                    wflag = 1;
+                    disp('TailSNR failed')
+                end
+            case 'symmetrical'
+                for j = 1:size(xsims,1)
+                    X = (xsims(j,:) - mean(xsims(j,:)))./std(xsims(j,:));
+                    XL = abs(X(X<0)); XR = abs(X(X>0));
+                    skew(j) = abs(mean(XL)-mean(XR));
+                end
+%                 
+%                 figure(100);
+%                 clf
+%                 plot(xsims');
+%                 xlim([1 1.1]*10^4)
+%                 shg
+                
+                if any(skew>0.5)
+                    wflag = 1;
+                    disp('Siganals not symmetrical')
+                end
+                
+        end
     end
     xsims_c{condsel} = xsims;
 end
