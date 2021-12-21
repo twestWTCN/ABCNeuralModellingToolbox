@@ -26,8 +26,7 @@ parforArg = a.NumWorkers;
 %%
 figure(5)
 pnew = par{1};
-u = innovate_timeseries(Rmod,m);
-[r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec] = computeSimData_160620(Rmod,m,u,pnew,0,1);
+[r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec] = computeSimData_160620(Rmod,m,[],pnew,0,1);
 wfstr = ones(1,N);
 R.plot.flag= 0;
 
@@ -36,8 +35,7 @@ while wfstr(end)>0
     parfor jj = 1:N
         %     for jj = 1:N
         pnew = par{jj};
-        u = innovate_timeseries(Rmod,m);
-        [r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec,J] = computeSimData_160620(Rmod,m,u,pnew,0);
+        [r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec,J] = computeSimData_160620(Rmod,m,[],pnew,0);
         if ~any(isnan(J{1}))
             lyap(jj) = max(real(eig(J{1})));
         else

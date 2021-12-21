@@ -31,9 +31,9 @@ for condsel = 1:numel(R.condnames)
             case 'obsCnoise'
                 CN = (R.obs.Cnoise.*exp(p.obs.Cnoise))';
                 alpha = R.obs.AlpNoise.*exp(p.obs.AlpNoise)';
-                for i = 1:size(xsims,1)
-                    U = ffGn(size(xsims,2),(alpha+1)/2, std(xsims(i,:)), 0).*CN;
-                    xsims(i,:) = xsims(i,:) + U;
+                for ij = 1:size(xsims,1)
+                    U = ffGn(size(xsims,2),(alpha+1)/2, std(xsims(ij,:)), 0).*CN;
+                    xsims(ij,:) = xsims(ij,:) + U;
                 end
             case 'leadfield'
                 LF = m.obs.LF.*exp(p.obs.LF);
@@ -126,8 +126,15 @@ for condsel = 1:numel(R.condnames)
             case 'FANO'
 
                 R.sim.fano(:,condsel) = computeFano(xsims,1/R.IntP.dt);
+            case 'flatTail'
 
-        end
+               [f,fx] =  pwelch(xsims',1/R.IntP.dt,[],1/R.IntP.dt,1/R.IntP.dt);
+               tailSNR =  10.*log10(sum(f(fx<=48,:))./sum(f(fx>48 & fx<248,:)));
+               if any(tailSNR< 1) 
+                   wflag = 1;
+                   disp('TailSNR failed')
+               end
+        end 
     end
     xsims_c{condsel} = xsims;
 end
