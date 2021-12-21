@@ -48,11 +48,11 @@ for condsel = 1:numel(R.condnames)
         case 'coloured'
             for nm = 1:m.m
                 for mm = 1:m.Cint(nm)
-                    alpha =  m.uset.p.alpha(nm).*exp(p.int{nm}.alpha);
-                    u(mm,:) = ffGn(R.IntP.nt, (alpha+1)/2, sqrt(m.uset.p.covar{nm}), 0).*m.uset.p.scale(nm);
-                    u = u';
-                    um{nm} = u;
+                    alpha =  m.uset.p.alpha{nm}(mm).*exp(p.int{nm}.alpha(mm));
+                    u(mm,:) = ffGn(R.IntP.nt, (alpha+1)/2, sqrt(m.uset.p.covar{nm}(mm,mm)), 0).*m.uset.p.scale(nm);
                 end
+                u = u';
+                um{nm} = u;
             end
             u = um;
             

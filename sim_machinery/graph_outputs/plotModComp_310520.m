@@ -1,4 +1,4 @@
-function plotModComp_310520(R,cmap,daglist)
+function plotModComp_310520(R,cmap,daglist,modnames)
 % addpath('C:\Users\Tim\Documents\MATLAB_ADDONS\violin')
 % R.plot.confint = 'none';
 if nargin<2
@@ -23,7 +23,6 @@ end
 % This gets the joint space epsilon that you can use to compute exceedence
 % probability
 prct = 50;
-ACCbankcat = horzcat(ACCrep{:});
 [~,id] =  max(ACCmean);
 R.modcomp.modEvi.epspop = prctile(ACCrep{id},prct); % threshold becomes median of model fits
 
@@ -31,47 +30,16 @@ p = 0; % plot counter
 mni = 0; % Model counter
 for modID = numel(R.modcomp.modN):-1:1
     shortlab{modID} = sprintf('M%.f',R.modcomp.modN(modID)); % Make model label
-
     % Load in the precompute model iterations
     if nargin<3
         R.out.dag = sprintf([R.out.tag '_M%.0f'],modID);
     else
-        R.out.dag = daglist{modID}
+        R.out.dag = daglist{modID};
     end
-    load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_'  R.out.dag '.mat'])
-    permMod = varo; %i.e. permMod
 
-    if ~isfield(permMod.MAP,'S')
-        permMod.MAP.S = [0 0];
-        permMod.MAP.S_s = [0.125 0.125];
-    end
+     [Rout,~,~,~,permMod] = loadABCData_160620(R);   
+    R.data = Rout.data;
     
-%     load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\R_' R.out.tag '_' R.out.dag  '.mat'])
-     varo = loadABCData_160620(R);
-    %% Corrections to file structure to make compatible
-    if ~iscell(varo.data.feat_xscale)
-        X = varo.data.feat_xscale;
-        varo.data.feat_xscale = [];
-        varo.data.feat_xscale{1} = X;
-    end
-    if ~iscell(varo.data.feat_emp)
-        X = varo.data.feat_emp;
-        varo.data.feat_emp = [];
-        varo.data.feat_emp{1} = X;
-    end
-    if ~iscell(varo.data.datatype)
-        X = varo.data.datatype;
-        varo.data.datatype = [];
-        varo.data.datatype{1} = X;
-    end
-    
-    if ~isfield(varo,'chdat_name')
-        varo.chdat_name = varo.chsim_name;
-    end
-    %%
-    
-    tmp = varo;
-    R.data = tmp.data;
     if ~isempty(permMod)
         % save the model accuracies
         ACCrep = permMod.ACCrep;
@@ -87,7 +55,7 @@ for modID = numel(R.modcomp.modN):-1:1
         
         %% Plot Data Features with Bayesian confidence intervals
         for n = 1:numel(R.data.datatype)
-        h(n,1) = figure(n*10);
+        h(n,1) = subplot(2,2,n);
         end
         flag = 0;
 
@@ -103,65 +71,80 @@ for modID = numel(R.modcomp.modN):-1:1
         r2repSave{modID} = nan(size(ACCrep));
     end
 end
+
+figure(1)
+    legend([dl hl],['data',modnames(R.modcompplot.NPDsel)]);
+set(gcf,'Position',[488.0000  227.4000  611.4000  534.6000]); 
 %% Now Plot Results of Model Comparison
 %% Combine marginal posterior distribution from model evidence (normalize)
-% pmod = 1-pmod;
-pModDist = (pmod)./sum(pmod);
+pmodN = (pmod/0.5);
+pModDist = (pmodN)./sum(pmodN); % Normalized probability of exceeding the median of the best model
 
 figure(2)
-subplot(4,1,1)
-MSE = cellfun(@(x) x(~isnan(x) & ~isinf(x)  & x>-5),MSE,'UniformOutput',false);
+subplot(2,2,1)
+MSE = cellfun(@(x) x(~isnan(x) & ~isinf(x) & x>-5),MSE,'UniformOutput',false); % visualization only
 
-violin(MSE,'facecolor',cmap,'medc','k:','xlabel',shortlab); %,...
-%'bw',[0.025 0.1 0.1]); % 0.025 0.2 0.2 0.025 0.025 0.025 0.025 0.2 0.2]);
+% flatten and label for plotting
+X = []; G = [];
+for i = 1:numel(MSE)
+    X = [X MSE{i}];
+    G = [G repmat(i,size(MSE{i}))];
+end
+V = violinplot(X,G);
+for i = unique(G)
+    V(i).ViolinColor = cmap(i,:);
+    V(i).ViolinAlpha = 0.2;
+    V(i).ScatterPlot.MarkerFaceAlpha = 0.1;
+end
+a =gca;
+a.XTickLabel = modnames;
+a.XTickLabelRotation = 45;
 hold on
 plot([0 numel(R.modcomp.modN)+1],[R.modcomp.modEvi.epspop R.modcomp.modEvi.epspop],'k--')
-xlabel('Model'); ylabel('NMRSE'); grid on;
-% ylim([-1 0.4])
-a = gca; a.XTick = 1:numel(R.modcomp.modN);
-a.XTickLabel = shortlab;
+ylabel('R2 Error'); 
+grid on; box off; axis square
+xlim([0.5 numel(R.modcomp.modN)+0.5]);
+ylim([0.25 1])
 
-figure(2)
-subplot(4,1,1)
-h = findobj(gca,'Type','line');
-% legend(hl,{longlab{[R.modcompplot.NPDsel end]}})
-
-subplot(4,1,2)
-TlnK = (pModDist); % largest is the best
+% Now plot probabilities
+subplot(2,2,2)
 for i = 1:numel(R.modcomp.modN)
-        b = bar(i,-log10(1-pmod(i))); hold on
-%     b = bar(i,TlnK(i)); hold on
+        b = bar(i,pmodN(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN); grid on
-a.XTickLabel = shortlab;
-xlabel('Model'); ylabel('Model Probability -log10(1-P(M|D))')
-xlim([0.5 numel(R.modcomp.modN)+0.5]); ylim([0 0.5])
+a.XTickLabel = modnames;
+a.XTickLabelRotation = 45;
+ ylabel({'Marginal Probability';'P(M|D)'})
+xlim([0.5 numel(R.modcomp.modN)+0.5]);
+grid on; box off; axis square
 
-subplot(4,1,3)
-dklN =(numel(DKL)*DKL)/sum(DKL);
+subplot(2,2,3)
+dklN =(DKL)/sum(DKL);
 for i = 1:numel(R.modcomp.modN)
     b = bar(i,dklN(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
-a.XTickLabel = shortlab;
-grid on
-xlabel('Model'); ylabel('Normalized Divergence')
+a.XTickLabel = modnames;
+a.XTickLabelRotation = 45;
+grid on; box off; axis square
+ ylabel({'Normalized ';'Divergence (DKL)'})
 xlim([0.5 numel(R.modcomp.modN)+0.5]);% ylim([0 0.15])
-% subplot(3,1,3)
-% bar(DKL)
-% xlabel('Model'); ylabel('Joint KL Divergence')
+ylim([0 0.5])
 
-subplot(4,1,4)
-ACS = -log10(pModDist) - log10(dklN); % + log10(DKL/sum(DKL));
+subplot(2,2,4)
+ACS = pModDist -dklN; % + log10(DKL/sum(DKL));
 for i = 1:numel(R.modcomp.modN)
     b = bar(i,ACS(i)); hold on
     b.FaceColor = cmap(i,:);
 end
 a = gca; a.XTick = 1:numel(R.modcomp.modN);
-a.XTickLabel = shortlab;
-grid on
-xlabel('Model'); ylabel('Combined Score (ACS)')
-xlim([0.5 numel(R.modcomp.modN)+0.5]);% ylim([-1 1.75])
-set(gcf,'Position',[277   109   385   895]); 
+a.XTickLabel = modnames;
+a.XTickLabelRotation = 45;
+grid on; box off; axis square
+xlabel('Model'); ylabel({'Combined Score ';'P(M|D)-DKL'})
+xlim([0.5 numel(R.modcomp.modN)+0.5]);
+ylim([-0.3 0.5])
+    
+set(gcf,'Position',[488.0000  227.4000  611.4000  534.6000]); 

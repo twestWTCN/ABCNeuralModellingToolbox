@@ -141,6 +141,7 @@ for dt = 1:numel(R.data.datatype)
 end
 
 % Option to weight the respective features
+r2mean(isnan(r2mean)) = -inf;
 if isfield(R.objfx,'featweight')
     r2mean = r2mean.*R.objfx.featweight;
     r2mean(r2mean==0) = nan;
