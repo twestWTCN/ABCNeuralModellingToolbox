@@ -35,11 +35,12 @@ for condsel = 1:numel(R.condnames)
                     U = ffGn(size(xsims,2),(alpha+1)/2, std(xsims(ij,:)), 0).*CN;
                     xsims(ij,:) = xsims(ij,:) + U;
                 end
-            case 'leadfield'
+            case 'leadfieldOneSignal'
                 LF = m.obs.LF.*exp(p.obs.LF);
-                sigmix = repmat(1-LF,m.m,1).*eye(m.n);
-                sigmix = sigmix + (repmat(LF/(m.n-1),m.n,1).*~eye(m.n));
-                xsims = sigmix*xsims;
+                for i = 1:m.m
+                    xsims(i,:) = LF*xsims;
+                end
+                xsims = xsims*sigmix; % columns of xsim must be time points!
             case 'difference'
                 xsims = [xsims(:,1) diff(xsims,1,2)];
             case 'unitvar'
