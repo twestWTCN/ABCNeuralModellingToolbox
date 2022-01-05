@@ -82,7 +82,7 @@ for C = 1:O
                     F_scale(isnan(F_scale)) = [];
                 end
                 
-                if R.obs.logscale == 1
+                if R.obs.trans.logscale == 1
                     Pxy = log10(Pxy);
                 end
                 
