@@ -37,9 +37,9 @@ for condsel = 1:numel(R.condnames)
                 end
             case 'leadfield'
                 LF = m.obs.LF.*exp(p.obs.LF);
-                LFF = zeros(m.m);
-                LFF(eye(size(LFF))~=0) = LF;
-                xsims = LFF*xsims;
+                sigmix = repmat(1-LF,m.m,1).*eye(m.n);
+                sigmix = sigmix + (repmat(LF/(m.n-1),m.n,1).*~eye(m.n));
+                xsims = sigmix*xsims;
             case 'difference'
                 xsims = [xsims(:,1) diff(xsims,1,2)];
             case 'unitvar'

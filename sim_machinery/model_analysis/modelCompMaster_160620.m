@@ -43,7 +43,7 @@ for modID = modlist
         end
         R.out.dag = dagcon;
         % Load Config
-        load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\R_' R.out.tag '_' R.out.dag  '.mat'])
+        varo = load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\R_' R.out.tag '_' R.out.dag  '.mat'],'varo');
         
         % Replace with new version but maintain paths and tags
         tmp = varo;
