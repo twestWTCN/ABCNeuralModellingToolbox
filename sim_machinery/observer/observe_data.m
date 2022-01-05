@@ -37,10 +37,9 @@ for condsel = 1:numel(R.condnames)
                 end
             case 'leadfieldOneSignal'
                 LF = m.obs.LF.*exp(p.obs.LF);
-                for i = 1:m.m
-                    xsims(i,:) = LF*xsims;
+                for pl = 1:m.m
+                    xsims(pl,:) = LF*xsims;
                 end
-                xsims = xsims*sigmix; % columns of xsim must be time points!
             case 'difference'
                 xsims = [xsims(:,1) diff(xsims,1,2)];
             case 'unitvar'
