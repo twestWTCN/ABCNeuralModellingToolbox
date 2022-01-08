@@ -18,17 +18,18 @@ end
 if isempty(labelna)
     labelna = 'NPD';
 end
-
-
+if ~isfield(R.plot,'holdop')
+    R.plot.holdop = 0;
+end
 % Main Function Starts Here
 for C = 1:numel(R.condnames)
     for FN = 1:numel(R.data.datatype)
-
-% hold on
+        
+        % hold on
         switch R.data.datatype{FN}
             case {'CSD','NPD'}
-                                        figure(C*10 + FN)
-                clf
+                figure(C*10 + FN)
+                if ~R.plot.holdop; cla; end
                 NPD_data_n = datEmp{1}{FN};
                 
                 for L = 1:length(datSim)
@@ -52,7 +53,7 @@ for C = 1:numel(R.condnames)
                                 plot(F{FN},squeeze(imag(NPD_sim_n(C,i,j,1,:))),'b','linestyle','--','linewidth',lwid);
                             end
                             try
-                                plot(F{FN},squeeze(abs(NPD_data_n(C,i,j,1,:))),'color',featcolor,'linewidth',2); 
+                                plot(F{FN},squeeze(abs(NPD_data_n(C,i,j,1,:))),'color',featcolor,'linewidth',2);
                                 plot(F{FN},squeeze(imag(NPD_data_n(C,i,j,1,:))),'b','linewidth',2);
                             end
                             xlabel('Hz'); ylabel('Power'); %title(sprintf('Ch %1.f Pxx',i))
@@ -71,8 +72,8 @@ for C = 1:numel(R.condnames)
             case {'FANO','DURPDF','INTPDF'}
                 figure(10 + FN)
                 subplot(1,numel(R.condnames),C)
-                                cla
-
+                if ~R.plot.holdop; cla; end
+                
                 fano_data = datEmp{1}{FN};
                 plot(F{FN}(1:end),squeeze(fano_data(:,1,C)),'color',featcolor,'linewidth',2); hold on
                 
@@ -90,13 +91,13 @@ for C = 1:numel(R.condnames)
                 
                 if strcmp(R.data.datatype{FN},'DURPDF')
                     xlabel('Burst duration (ms)');
-                   ylabel('p.d.f') 
+                    ylabel('p.d.f')
                 end
                 
             case {'BRSTPROF','ENVPDF'}
-                                figure(10 + FN)
+                figure(10 + FN)
                 subplot(1,numel(R.condnames),C)
-                cla
+                if ~R.plot.holdop; cla; end
                 plot(F{FN},squeeze(datEmp{1}{FN}(:,:,C)),'color',featcolor,'linewidth',2); hold on
                 for L = 1:length(datSim)
                     fano_sim = squeeze(datSim{L}{FN}(:,:,C));
@@ -115,7 +116,7 @@ for C = 1:numel(R.condnames)
                     ylabel('Mean Duration');
                 elseif strcmp(R.data.datatype{FN},'ENVPDF')
                     xlabel('Burst amplitude');
-                   ylabel('p.d.f') 
+                    ylabel('p.d.f')
                 end
             otherwise
                 warning('Plotting for datafeature not defined!')
