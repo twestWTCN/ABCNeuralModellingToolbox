@@ -65,6 +65,9 @@ R.SimAn.minRank = ceil(size(pIndMap,1)*R.SimAn.minRankLambda); %Ensure rank of s
 % set initial batch of parameters from gaussian priors
 if isfield(R,'Mfit')
     Mfit = R.Mfit;
+    Mfit.prior.Sigma = Mfit.Sigma;
+    Mfit.prior.Mu = Mfit.Mu;
+    Mfit.DKL = 0; % Divergence is zero to begin
     rep =  R.SimAn.rep(1);
     par = postDrawCopula(R,Mfit,p,pIndMap,pSigMap,rep);
 else
@@ -73,10 +76,10 @@ else
     Mfit.Mu = ptmp(pMuMap);
     Mfit.Sigma = diag(ptmp(pSigMap).*R.SimAn.jitter);
     Mfit.prior = Mfit;
+    Mfit.DKL = 0; % Divergence is zero to begin
     par = postDrawMVN(R,Mfit,pOrg,pIndMap,pSigMap,rep);
 end
-
-R.Mfit.DKL = 0; % Divergence is zero to begin
+R.Mfit = Mfit;
 parPrec(:,1) = diag(Mfit.Sigma);
 itry = 0; cflag = 0;
 ii = 1; parOptBank = [];
