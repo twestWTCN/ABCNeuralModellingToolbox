@@ -28,7 +28,7 @@ R.modcomp.modEvi.epspop = prctile(ACCrep{id},prct); % threshold becomes median o
 
 p = 0; % plot counter
 mni = 0; % Model counter
-for modID = numel(R.modcomp.modN):-1:1
+for modID = 1:numel(R.modcomp.modN)
     shortlab{modID} = sprintf('M%.f',R.modcomp.modN(modID)); % Make model label
     % Load in the precompute model iterations
     if nargin<3

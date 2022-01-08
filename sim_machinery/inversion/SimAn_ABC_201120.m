@@ -20,9 +20,6 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % is also estimated and specified in R.mfit.Mu and R.mfit.Sigma.
 % There are several plotting functions which will track the progress of the
 % annealing.
-% TO DO:
-%
-%
 %
 % Timothy West (2018) - UCL CoMPLEX
 % / UCL, Wellcome Trust Centre for Human Neuroscience
@@ -91,10 +88,10 @@ while ii <= R.SimAn.searchMax
     % optimization here is prime.
     clear xsims_rep feat_sim_rep featbank ACCbank
     ji = 0;
-    parnum = (6*GPool.NumWorkers);
+    parnum =(4*GPool.NumWorkers);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-       parfor jj = 1:parnum % Replicates for each temperature
+      parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
@@ -309,7 +306,7 @@ while ii <= R.SimAn.searchMax
             disp('Feature plotting failed!')
         end
     end
-    disp({['Current R2: ' num2str(bestr2)];[' Temperature ' num2str(ii) ' K']; R.out.tag; ['Eps ' num2str(eps)]})
+    disp({['Current R2: ' num2str(bestr2(end))];[' Iterant ' num2str(ii) '']; R.out.tag; R.out.dag; ['Eps ' num2str(eps)]})
     
     %% Save data
     if rem(ii,1) == 0 || ii == 1
@@ -342,14 +339,12 @@ while ii <= R.SimAn.searchMax
         disp('Itry Exceeded: Convergence')
         saveSimABCOutputs(R,Mfit,m,parBank)
         if R.plot.flag == 1
-            H(1) = figure(1);
-            H(2) = figure(2);
-            H(3) = figure(3);
+            H = get(groot, 'Children'); % get all open figures
             saveFigure(H,[R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\convergenceFigures'])
         end
         return
     end
     
     ii = ii + 1;
-    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+    %%%     %%%     %%%     %%%     %%%     %%%  END   %%%  OF   %%% ITERANT  %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 end

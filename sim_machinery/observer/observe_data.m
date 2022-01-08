@@ -139,17 +139,18 @@ for condsel = 1:numel(R.condnames)
                     X = (xsims(j,:) - mean(xsims(j,:)))./std(xsims(j,:));
                     XL = abs(X(X<0)); XR = abs(X(X>0));
                     skew(j) = abs(mean(XL)-mean(XR));
+                    skew2(j) = abs(std(XL)-std(XR));
                 end
 %                 
 %                 figure(100);
 %                 clf
 %                 plot(xsims');
-%                 xlim([1 1.1]*10^4)
+% %                 xlim([1 1.1]*10^4)
 %                 shg
                 
-                if any(skew>0.5)
+                if any(skew>0.75) || any(skew2>0.5)
                     wflag = 1;
-                    disp('Siganals not symmetrical')
+                    disp('Signals not symmetrical')
                 end
                 
         end
