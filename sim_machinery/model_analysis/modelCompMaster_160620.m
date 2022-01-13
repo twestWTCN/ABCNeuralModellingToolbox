@@ -34,9 +34,9 @@ for modID = modlist
         switch R.analysis.dagtype
             case 'normal' % conventional model naming
                 if isfield(R.out,'tag2')
-                   dagcon = sprintf([R.out.tag2 '_M%.0f'],modID); % bugfix
+                    dagcon = sprintf([R.out.tag2 '_M%.0f'],modID); % bugfix
                 else
-                   dagcon = sprintf([R.out.tag '_M%.0f'],modID);
+                    dagcon = sprintf([R.out.tag '_M%.0f'],modID);
                 end
             case 'arbitrary' % used for confusion matrices
                 dagcon = daglist{modID};
@@ -72,16 +72,20 @@ for modID = modlist
             tmp.chdat_name = tmp.chsim_name;
         end
         %%
+        
+        tmp.objfx.featweight = R.objfx.featweight;
         R  = tmp;
         
         [Rmod,m,p,parBank] = loadABCData_160620(R);
+        if isfield(R.analysis,'comptype')
+            if strcmp(R.analysis.comptype,'switch')
+                Rmod.objfx.featweight = R.objfx.featweight;
+            end
+        end
         
         R.analysis.modEvi.eps = parBank(end,R.SimAn.minRank);
         R.analysis.BAA.flag = 0; % Turn off BAA flag (time-locked analysis)
-        %         parOptBank = parBank(1:end-1,parBank(end,:)>R.analysis.modEvi.eps);
-        
-        % R.parOptBank = parOptBank;
-                 R.out.dag = dagcon; %sprintf([R.out.tag '_M%.0f'],modID);
+        R.out.dag = dagcon; %sprintf([R.out.tag '_M%.0f'],modID);
         permMod = modelProbs_160620(R,m.x,m,p,Rmod);
         saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_' R.out.dag '.mat'],permMod)
         pause(10)
