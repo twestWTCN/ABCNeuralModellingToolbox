@@ -1,7 +1,6 @@
 function [nb,Apdf,normpdf,amp] = burstAmpHist(dataX,fsamp,bins,minbs,winmark,dataC)
 
 XH = abs(hilbert(dataX));
-eps = prctile(XH,75);
 burstinds = SplitVec(find(XH>prctile(XH,75)),'consecutive');
 if nargin>4
     if ~isempty(winmark)
@@ -15,6 +14,8 @@ segL = 1000*(cellfun('length',burstinds)/fsamp);
 
 burstinds(segL<minbs) = [];
 amp = 1000*(cellfun(@(a) max(XH(a)),burstinds)/fsamp);
+
+
 if numel(burstinds)>2
     [Apdf,nb] =  ksdensity(amp,bins);
 else

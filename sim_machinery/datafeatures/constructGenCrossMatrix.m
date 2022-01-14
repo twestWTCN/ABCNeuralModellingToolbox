@@ -198,39 +198,39 @@ if numel(R.data.datatype)>1
                     end
                     
                     
-                case {'BRSTPROF'}
-                    dataX = dataS{C}(datinds,:)';
-                    dataX = bandpass(dataX,[15 25],fsamp);
-                    dataX = (dataX-mean(dataX))./std(dataX);
-                    nAvg                = 1; % the time series is divided into nAvg segments to plot sem error bars
-                    minBurstDuration    = 0.1; % burst are only considered if longer than this duration (in s)
-                    xPerc               = R.data.feat_xscale{fcnt}; % vector of thresholds
-                    
-                    E = xPerc;
-                    try
-                        E = R.data.feat_xscale{strcmp(R.data.datatype,'BRSTPROF')};
-                    catch
-                        E = 5:85; % default percentiles
-                    end
-                    try
-                        XPDF = R.data.feat_xscale{strcmp(R.data.datatype,'ENVPDF')};
-                    catch
-                        XPDF = linspace(0,max(env(:),100)); % default percentiles
-                    end
-                    
-                    
-                    for i = 1:size(dataX,2)
-                        env = abs(hilbert(dataX(:,1)));
-                        [avgBurstDuration,semBurstDuration,avgPDF,semPDF] = burstDurWrapper(env,E,nAvg,1/fsamp,minBurstDuration,[],XPDF); % burst profile
-                    end
-                    avgBurstDuration(isnan(nbs)) = -20; % IS THIS OK?
-                    switch R.data.datatype{fcnt}
-                        case 'BRSTPROF'
-                            nbs(:,i,C) = avgBurstDuration;
-                        case 'ENVPDF'
-                            nbs(:,i,C) = avgPDF;
-                    end
-                    %                 nbs(isnan(nbs)) = -20; % IS THIS OK?
+% %                 case {'BRSTPROF'}
+% %                     dataX = dataS{C}(datinds,:)';
+% %                     dataX = bandpass(dataX,[15 25],fsamp);
+% %                     dataX = (dataX-mean(dataX))./std(dataX);
+% %                     nAvg                = 1; % the time series is divided into nAvg segments to plot sem error bars
+% %                     minBurstDuration    = 0.1; % burst are only considered if longer than this duration (in s)
+% %                     xPerc               = R.data.feat_xscale{fcnt}; % vector of thresholds
+% %                     
+% %                     E = xPerc;
+% %                     try
+% %                         E = R.data.feat_xscale{strcmp(R.data.datatype,'BRSTPROF')};
+% %                     catch
+% %                         E = 5:85; % default percentiles
+% %                     end
+% %                     try
+% %                         XPDF = R.data.feat_xscale{strcmp(R.data.datatype,'ENVPDF')};
+% %                     catch
+% %                         XPDF = linspace(0,max(env(:),100)); % default percentiles
+% %                     end
+% %                     
+% %                     
+% %                     for i = 1:size(dataX,2)
+% %                         env = abs(hilbert(dataX(:,1)));
+% %                         [avgBurstDuration,semBurstDuration,avgPDF,semPDF] = burstDurWrapper(env,E,nAvg,1/fsamp,minBurstDuration,[],XPDF); % burst profile
+% %                     end
+% %                     avgBurstDuration(isnan(nbs)) = -20; % IS THIS OK?
+% %                     switch R.data.datatype{fcnt}
+% %                         case 'BRSTPROF'
+% %                             nbs(:,i,C) = avgBurstDuration;
+% %                         case 'ENVPDF'
+% %                             nbs(:,i,C) = avgPDF;
+% %                     end
+% %                     %                 nbs(isnan(nbs)) = -20; % IS THIS OK?
             end
             feat_out{fcnt} = nbs;
             F{fcnt} = E;
