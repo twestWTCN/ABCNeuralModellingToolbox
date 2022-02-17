@@ -1,11 +1,12 @@
 function [J Es] =findJacobian_layerInput(R,x,uc,pc,m,condsel)
 % pertubations across delays
-plist = 0:0.025:0.3;
+plist = 0:0.025:0.1;
 
 
 ucm = {};
 for rm = 1:size(uc{condsel},2)
-    ucm{condsel}{rm} = zeros(R.IntP.bufferExt+ (plist(end)./R.IntP.dt),size(uc{condsel}{rm},2));
+%     ucm{condsel}{rm} = zeros(R.IntP.bufferExt+ (plist(end)./R.IntP.dt),size(uc{condsel}{rm},2));
+    ucm{condsel}{rm} = repmat(mean(uc{condsel}{rm}),R.IntP.bufferExt+ (plist(end)./R.IntP.dt),1);
 end
 X{1} = R.condnames{condsel};
 R.condnames = X;
@@ -17,7 +18,7 @@ for p = 1:length(plist)
     R.IntP.nt = R.IntP.bufferExt + (plist(p)./R.IntP.dt);
     fx = R.IntP.intFx(R,x,ucm,pc,m);
     fx = fx{1}(:,end);
-    eps=1.e-12;  % could be made better
+    eps=1e-12;  % could be made better
     xperturb= x;
     for i=1:n
         xperturb(i,:)=xperturb(i,:)+eps;
@@ -31,8 +32,8 @@ for p = 1:length(plist)
     Es(p) = e(end);
 end% J
 
-% J = mean(Js,3);
-J = Js(:,:,1);
+J = mean(Js,3); % average over delays
+% J = Js(:,:,1); % take the first delay
 for i = 1:size(Js,1)
 e(i) = max(real(eig(squeeze(Js(:,:,i)))));    
 end
