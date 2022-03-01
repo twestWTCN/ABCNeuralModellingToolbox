@@ -148,7 +148,7 @@ for condsel = 1:numel(R.condnames)
 % %                 xlim([1 1.1]*10^4)
 %                 shg
                 
-                if any(skew>0.75) || any(skew2>0.5)
+                if any(skew>1.0) || any(skew2>0.75)
                     wflag = 1;
                     disp('Signals not symmetrical')
                 end

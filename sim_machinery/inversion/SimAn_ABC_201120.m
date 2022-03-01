@@ -25,7 +25,7 @@ function [R,parBank] = SimAn_ABC_201120(R,p,m,parBank)
 % / UCL, Wellcome Trust Centre for Human Neuroscience
 %%%%%%%%%%%%%%%%%%%%%%
 %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
-    GPool = gcp;
+GPool = gcp;
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 ABCGraphicsDefaults
 %% Set Defaults
@@ -94,28 +94,28 @@ while ii <= R.SimAn.searchMax
     parnum =(4*GPool.NumWorkers);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-      parfor jj = 1:parnum % Replicates for each temperature
+        parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};
             %% Simulate New Data
             [r2,pnew,feat_sim] = computeSimData_160620(R,m,[],pnew,0,0);
             % Adjust the score to account for set complexity
-            
+
             [ACC,R2w] = computeObjective(R,r2);
             r2rep(jj) = R2w;
             ACCrep(jj) = ACC;
             par_rep{jj} = pnew;
             %         xsims_rep{jj} = xsims_gl; % This takes too much memory: !Modified to store last second only!
             feat_sim_rep{jj} = feat_sim;
-            
+
             %             fprintf(1,'\b\b%.0f',jj/parnum);
         end % End of batch replicates
         if rem(ji,4)
             disp(['Batch ' num2str(ji) ' proposal ' num2str(ii)])
         end
         % Retrieve fits
-        
+
         r2loop = r2rep; %ACCrep;
         % Delete failed simulations
         r2loop(r2loop==1) = -inf;
@@ -130,7 +130,7 @@ while ii <= R.SimAn.searchMax
                 parBank = [parBank parI(:,i) ];
             end
         end
-        
+
         % Save data features (for plotting reasons only)
         featbank{ji+1} = feat_sim_rep;
         ACCbank(:,ji+1) = ACCrep;
@@ -153,25 +153,25 @@ while ii <= R.SimAn.searchMax
         else
             ji = ji+1;
         end
-        
+
     end
-    
+
     %% Find the best draws (for plotting only)
     bestfeat = [];
     [b i] = maxk(ACCbank(:),12);
     [jj_best, ji_best] = ind2sub(size(ACCbank),i);
-    
+
     % Simulate best data (plotting outside of parfor)
     pnew = samppar{ji_best(1)}{jj_best(1)};
     [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,[],pnew,0,0);
-    
+
     for L = 1:numel(i)
         for j = 1:numel(featbank{ji_best(L)}{jj_best(L)})
             bestfeat{L}{j} = featbank{ji_best(L)}{jj_best(L)}{j};
         end
     end
     bestr2(ii) =  ACCbank(jj_best(1),ji_best(1));
-    
+
     %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % PARAMETER OPTIMIZATION BEGINS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -179,15 +179,15 @@ while ii <= R.SimAn.searchMax
     % icop(1)>itry: Try to form copula with Annealing or Percentile eps
     % icop(2)>itry>icop(1): Find eps to form minimum rank from parbank
     % icop(2)<itry: Try to force
-    
+
     %% Concatanate Batch Results and Decide Acceptance Level Epsilon
-    
+
     %% Find error threshold for temperature (epsilon) and do rejection sampling
     if size(ACClocbank,2)<2
         warning('No valid draws saved- either your simulator is broken (check computeSimData_#),you havent made enough draws, or your priors are very far away!')
-            A = nan(1,1);
+        A = nan(1,1);
     else
-            A = parOptBank(pIndMap,:);
+        A = parOptBank(pIndMap,:);
     end
     if size(A,2)>= R.SimAn.minRank
         B = eig(cov(A'));
@@ -218,7 +218,7 @@ while ii <= R.SimAn.searchMax
         cflag = 1;
         itry = 0;
     end
-    
+
     if itry==0
         % Compute expected gradient for next run
         delta_exp = eps_exp-eps_prior;
@@ -231,7 +231,7 @@ while ii <= R.SimAn.searchMax
         eps_prior = eps_act;
     end
     eps_rec(ii) = eps_act;
-    
+
     %% Compute Proposal Distribution
     if cflag == 1 && itry == 0 % estimate new copula
         [Mfit,cflag] = postEstCopula(parOptBank,Mfit,pIndMap,pOrg);
@@ -255,10 +255,10 @@ while ii <= R.SimAn.searchMax
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,0);
         Mfit.DKL = DKL;
     end
-    
+
     %% Draw from Proposal Distribution
     if cflag == 1
-        [par,MAP] = postDrawCopula(R,Mfit,pOrg,pIndMap,pSigMap,rep);
+        [par,MAP] = postDrawCopulaPerm(R,Mfit,pOrg,pIndMap,pSigMap,rep);
         Mfit.MAP = MAP;
         R.Mfit = Mfit;
     elseif cflag == 0
@@ -284,6 +284,7 @@ while ii <= R.SimAn.searchMax
         if isfield(R.plot,'outFeatFx')
             %% Plot Data Features Outputs
             try
+                clf
                 R.plot.outFeatFx({R.data.feat_emp},bestfeat,R.data.feat_xscale,R,1,[])
                 drawnow; %shg
             catch
@@ -310,7 +311,7 @@ while ii <= R.SimAn.searchMax
         end
     end
     disp({['Current R2: ' num2str(bestr2(end))];[' Iterant ' num2str(ii) '']; R.out.tag; R.out.dag; ['Eps ' num2str(eps)]})
-    
+
     %% Save data
     if rem(ii,1) == 0 || ii == 1
         saveSimABCOutputs(R,Mfit,m,parBank)
@@ -318,25 +319,25 @@ while ii <= R.SimAn.searchMax
             saveSimAnFigures(R,ii)
         end
     end
-    
+
     try
         RFLAG = (numel(unique(eps_rec(end-R.SimAn.convIt.eqN:end))) == 1);
     catch
         RFLAG = 0;
     end
-    
+
     % This is for intermittent plot updates
     if isfield(R.plot,'updateperiod')
         if ~rem(ii,R.plot.updateperiod)
             a= 1;
             R.plot.flag = 1;
             ABCGraphicsDefaults
-            
+
         else
             R.plot.flag = 0;
         end
     end
-    
+
     % Check convergence
     if (abs(delta_act) < R.SimAn.convIt.dEps && abs(delta_act)~=0) || RFLAG
         disp('Itry Exceeded: Convergence')
@@ -347,7 +348,7 @@ while ii <= R.SimAn.searchMax
         end
         return
     end
-    
+
     ii = ii + 1;
     %%%     %%%     %%%     %%%     %%%     %%%  END   %%%  OF   %%% ITERANT  %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 end
