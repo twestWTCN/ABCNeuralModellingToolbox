@@ -15,7 +15,7 @@ switch getenv('computername')
         R.path.datapath_pedrosa = 'D:\DATA\DP_BUA_thalamomuscular\preproc\'
      case 'OPAL'
         gitpath =  'C:\Users\ndcn0903\Documents\GitHub'; % points towards github repos
-        %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
+                spmpath = 'C:\Users\ndcn0903\Documents\GitHub\spm12'; % points towrds
     otherwise
         error('You need to setup your ABCAddPaths! Add paths for your computer...')
 end

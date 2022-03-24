@@ -29,7 +29,7 @@ for C = 1:numel(R.condnames)
         switch R.data.datatype{FN}
             case {'CSD','NPD'}
                 figure(C*10 + FN)
-                if ~R.plot.holdop; cla; end
+                if ~R.plot.holdop; clf; end
                 NPD_data_n = datEmp{1}{FN};
                 
                 for L = 1:length(datSim)
@@ -72,7 +72,7 @@ for C = 1:numel(R.condnames)
             case {'FANO','DURPDF','INTPDF'}
                 figure(10 + FN)
                 subplot(1,numel(R.condnames),C)
-                if ~R.plot.holdop; cla; end
+                if ~R.plot.holdop; clf; end
                 
                 fano_data = datEmp{1}{FN};
                 plot(F{FN}(1:end),squeeze(fano_data(:,1,C)),'color',featcolor,'linewidth',2); hold on
@@ -97,7 +97,7 @@ for C = 1:numel(R.condnames)
             case {'BRSTPROF','ENVPDF'}
                 figure(10 + FN)
                 subplot(1,numel(R.condnames),C)
-                if ~R.plot.holdop; cla; end
+                if ~R.plot.holdop; clf; end
                 plot(F{FN},squeeze(datEmp{1}{FN}(:,:,C)),'color',featcolor,'linewidth',2); hold on
                 for L = 1:length(datSim)
                     fano_sim = squeeze(datSim{L}{FN}(:,:,C));

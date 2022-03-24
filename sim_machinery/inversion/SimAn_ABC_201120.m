@@ -284,7 +284,6 @@ while ii <= R.SimAn.searchMax
         if isfield(R.plot,'outFeatFx')
             %% Plot Data Features Outputs
             try
-                clf
                 R.plot.outFeatFx({R.data.feat_emp},bestfeat,R.data.feat_xscale,R,1,[])
                 drawnow; %shg
             catch
