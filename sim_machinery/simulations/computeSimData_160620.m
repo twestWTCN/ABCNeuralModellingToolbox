@@ -1,4 +1,4 @@
-function [modelError,pnew,feat_sim,xsims,xsims_gl,wflag,R,errorVec,J] = computeSimData_160620(R,m,uc,pnew,simtime,plotop)
+function [modelError,pnew,feat_sim,xsims,xsims_gl,wflag,R,errorVec,J,Es] = computeSimData_160620(R,m,uc,pnew,simtime,plotop)
 if nargin<6
     plotop = 0;
 end
@@ -28,7 +28,7 @@ end
 %% Simulate New Data
 % Integrate in time master fx function
 try
-    [xsims,dum1,wflag,J] = R.IntP.intFx(R,m.x,uc,pnew,m);
+    [xsims,dum1,wflag,J,Es] = R.IntP.intFx(R,m.x,uc,pnew,m);
 catch
     disp('Simulation failed!')
     xsims{1} = nan(1,3);

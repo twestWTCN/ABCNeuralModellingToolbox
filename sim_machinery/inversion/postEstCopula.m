@@ -11,7 +11,7 @@ W = W./sum(W);
 clear copU
 for i = 1:size(pIndMap,1)
     x = parOptBank(pIndMap(i),:); % choose row of parameter values
-    bwid(i) = KSDensityCVWidth(x,x,W,[-2 1],25,'cdf');
+    bwid(i) = KSDensityCVWidth(x,x,W,[-2 2],25,'cdf');
     copU(i,:) = ksdensity(x,x,'function','cdf','Weights',W,'width',bwid(i)); % KS density estimate per parameter
     xf(i,:) = x;
 end

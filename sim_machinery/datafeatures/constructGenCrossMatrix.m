@@ -184,7 +184,7 @@ if numel(R.data.datatype)>1
                     end
                     dataX = bandpass(dataC,frqband,fsamp);
                     dataX = (dataX-mean(dataX))./std(dataX);
-                    minbs = (2/25)*fsamp;
+                    minbs = (2/R.obs.trans.bursts.frq(1))*fsamp;
                     for i = 1:size(dataX,2)
                         switch R.data.datatype{fcnt}
                             case 'ENVPDF'
