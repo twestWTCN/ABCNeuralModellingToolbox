@@ -1,6 +1,8 @@
 function genplotter_200420(datEmp,datSim,F,R,bestn,labelna)
 if isempty(datEmp)
-    datEmp = {zeros(size(datSim{1}))};
+    for FN = 1:numel(R.data.datatype)
+        datEmp{1}{FN} = zeros(size(datSim{1}{FN}));
+    end
 end
 if ~isfield(R.plot,'featcolor')
     featcolor = [1 0 0];
