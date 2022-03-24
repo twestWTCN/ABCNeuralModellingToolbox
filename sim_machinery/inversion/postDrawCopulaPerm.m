@@ -1,4 +1,4 @@
-function [par,MAP] = postDrawCopula(R,Mfit,pOrg,pIndMap,pSigMap,rep,permScale)
+function [par,MAP] = postDrawCopulaPerm(R,Mfit,pOrg,pIndMap,pSigMap,rep,permScale)
 if nargin<7
 permScale = 0;
 end

@@ -22,6 +22,7 @@ if isempty(labelna)
 end
 if ~isfield(R.plot,'holdop')
     R.plot.holdop = 0;
+    clf
 end
 % Main Function Starts Here
 for C = 1:numel(R.condnames)
@@ -31,7 +32,7 @@ for C = 1:numel(R.condnames)
         switch R.data.datatype{FN}
             case {'CSD','NPD'}
                 figure(C*10 + FN)
-                if ~R.plot.holdop; cla; end
+                if ~R.plot.holdop; clf; end
                 NPD_data_n = datEmp{1}{FN};
                 
                 for L = 1:length(datSim)
