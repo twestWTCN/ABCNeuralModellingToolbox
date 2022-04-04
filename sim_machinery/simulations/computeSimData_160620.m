@@ -14,7 +14,7 @@ try
         uc = innovate_timeseries(R,m,pnew);
     end
 catch
-    wflag = 0;
+    wflag = 1;
     disp('Cant generate noise')
 end
 
