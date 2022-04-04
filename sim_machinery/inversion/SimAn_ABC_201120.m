@@ -65,11 +65,12 @@ R.SimAn.minRank = ceil(size(pIndMap,1)*R.SimAn.minRankLambda); %Ensure rank of s
 % set initial batch of parameters from gaussian priors
 if isfield(R,'Mfit')
     Mfit = R.Mfit;
-    Mfit.prior.Sigma = Mfit.Sigma;
-    Mfit.prior.Mu = Mfit.Mu;
+    Mfit.prior = Mfit;
+    %     Mfit.prior.Sigma = Mfit.Sigma;
+    %     Mfit.prior.Mu = Mfit.Mu;
     Mfit.DKL = 0; % Divergence is zero to begin
     rep =  R.SimAn.rep(1);
-    par = postDrawCopula(R,Mfit,p,pIndMap,pSigMap,rep);
+    par = postDrawCopula(R,Mfit,p,pIndMap,pSigMap,rep,0); % permScale is large!
 else
     rep = R.SimAn.rep(1);
     ptmp = spm_vec(p);
@@ -99,9 +100,12 @@ while ii <= R.SimAn.searchMax
             parl = (ji*parnum) + jj;
             pnew = par{parl};
             %% Simulate New Data
-            [r2,pnew,feat_sim] = computeSimData_160620(R,m,[],pnew,0,0);
+            r2 = []; feat_sim = [];
+            for RzRep = 1:R.SimAn.RealzRep
+                [r2(RzRep),pnew,feat_sim] = computeSimData_160620(R,m,[],pnew,0,0);
+            end
             % Adjust the score to account for set complexity
-
+            r2 = mean(r2);
             [ACC,R2w] = computeObjective(R,r2);
             r2rep(jj) = R2w;
             ACCrep(jj) = ACC;
