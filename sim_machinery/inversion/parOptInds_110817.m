@@ -1,4 +1,4 @@
-function [pInd,pMu,pSig] = parOptInds_110817(R,p,MN,set)
+function [pInd,pMu,pSig,pIndMap,pMuMap,pSigMap] = parOptInds_110817(R,p,MN,set)
 % This function will find the indices of the parameters to be optimized.
 % Parameters will only be added if there expected values are non neglible
 % (i.e. > -32).
@@ -97,40 +97,7 @@ for i = 1:length(plist)
     end
 end
 
+pIndMap = spm_vec(pInd); % in flat form
+pMuMap = spm_vec(pMu);
+pSigMap = spm_vec(pSig);
 
-% vX = []
-% f   = fieldnames(p);
-% for i = 1:numel(f)
-%     j = 1;
-%     for j = 1:numel(p.(f{i}))
-%         if iscell(p.(f{i}))
-%             X = reshape(p.(f{i}){j},[],1);
-%             for k = 0:size(X,1)-1
-%             vX = [vX; X repmat(i,size(X)) repmat(j,size(X))];
-%             vfield{i,j+k} = ['p.' f{i} '{' num2str(j) '}']
-%             end
-%         end
-%         if isnumeric(p.(f{i}))
-%             X = p.(f{i})(j)
-%             vX = [vX; X i j];
-%             vfield{i,j} = ['p.' f{i} '(' num2str(j) ')']
-%         end
-%         if isstruct(p.(f{i}))
-%         end
-%
-%
-%     end
-%
-% end
-%     X = spm_vec({p.(f{i})});
-%     vX = [vX; X repmat(i,size(X))];
-% end
-% pvec = full(spm_vec(p));
-%
-% for i = 1:length(plist)
-%     ip = strmatch(plist{i}(2:3),f)
-%         for j = 1:numel(p.(f{7}))
-%
-%
-%
-%

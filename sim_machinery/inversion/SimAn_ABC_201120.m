@@ -54,12 +54,8 @@ eps_act = eps_prior;
 delta_act = 0.05;
 
 % Compute indices of parameters to be optimized
-[pInd,pMu,pSig] = parOptInds_110817(R,p,m.m); % in structure form
+[pInd,pMu,pSig,pIndMap,pMuMap,pSigMap] = parOptInds_110817(R,p,m.m); % in structure form
 
-% Form descriptives
-pIndMap = spm_vec(pInd); % in flat form
-pMuMap = spm_vec(pMu);
-pSigMap = spm_vec(pSig);
 R.SimAn.minRank = ceil(size(pIndMap,1)*R.SimAn.minRankLambda); %Ensure rank of sample is large enough to compute copula
 
 % set initial batch of parameters from gaussian priors
