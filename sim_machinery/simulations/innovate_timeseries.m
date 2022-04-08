@@ -57,8 +57,12 @@ for condsel = 1:numel(R.condnames)
             u = um;
             
         case 'constant'
-            u = repmat(m.uset.p.scale,m.m,R.IntP.nt);
-            u = u';
+            for nm = 1:m.m
+                u = repmat(m.uset.p.scale,m.m,R.IntP.nt);
+                u = u';
+                um{nm} = u;
+            end
+            u = um;
         case 'zero'
             u= zeros(m.m,R.IntP.nt)';
         case 'white+beta'
