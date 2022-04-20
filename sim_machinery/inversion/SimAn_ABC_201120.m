@@ -44,7 +44,9 @@ end
 if ~isfield(R.SimAn,'minRankLambda')
     R.SimAn.minRankLambda = 3;
 end
-
+if ~isfield(R.SimAn,'RealzRep')
+    R.SimAn.RealzRep = 1; % default to 1 repetition
+end
 pOrg = p; % Record prior parameters.
 
 % Set Fixed Initialization Parameters
