@@ -51,9 +51,10 @@ for featN = 1:numel(R.data.datatype)
                 if strncmp(R.data.datatype{featN},'CSD',3)
                     partlabs ={'Abs','Imag','Real'}; msr = 'CSD';
                     
-                    CSD_mean = prctile(CSD_bank,50,5);
-                    CSD_std(:,:,:,:,1)  = prctile(CSD_bank,50,5)-prctile(CSD_bank,25,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
-                    CSD_std(:,:,:,:,2)  = prctile(CSD_bank,75,5)-prctile(CSD_bank,50,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
+                    CSD_mean = median(CSD_bank,5);
+                    CSD_std(:,:,:,:,1)  = prctile(real(CSD_bank),50,5)-prctile(real(CSD_bank),25,5) + sqrt(-1)*prctile(imag(CSD_bank),50,5)-prctile(imag(CSD_bank),25,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
+                    CSD_std(:,:,:,:,2)  = prctile(real(CSD_bank),75,5)-prctile(real(CSD_bank),50,5) + sqrt(-1)*prctile(imag(CSD_bank),75,5)-prctile(imag(CSD_bank),50,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
+                    
                 elseif strncmp(R.data.datatype{featN},'NPD',3)
                     partlabs ={'Instant','Forward','Backward'}; msr = 'NPD';
                     CSD_mean = prctile(CSD_bank,50,5);

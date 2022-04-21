@@ -72,7 +72,10 @@ for modID = modlist
             tmp.chdat_name = tmp.chsim_name;
         end
         %%
-        
+        if ~isfield(R.objfx,'featweight')
+            R.objfx.featweight = ones(size(R.data.datatype));
+            warning('No feature weight specified so treating equally')
+        end
         tmp.objfx.featweight = R.objfx.featweight;
         R  = tmp;
         

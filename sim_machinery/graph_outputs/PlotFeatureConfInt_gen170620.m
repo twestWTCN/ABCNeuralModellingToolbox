@@ -41,19 +41,19 @@ for featN = 1:numel(R.data.datatype)
                         end
                     end
                 end
-                
+
                 if axflag == 0
                     figure(fighan(featN,cond))
                 elseif axflag == 1
                     axes(fighan(featN,cond))
                 end
-                
+
                 if strncmp(R.data.datatype{featN},'CSD',3)
                     partlabs ={'Abs','Imag','Real'}; msr = 'CSD';
-                    
-                    CSD_mean = prctile(CSD_bank,50,5);
-                    CSD_std(:,:,:,:,1)  = prctile(CSD_bank,50,5)-prctile(CSD_bank,25,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
-                    CSD_std(:,:,:,:,2)  = prctile(CSD_bank,75,5)-prctile(CSD_bank,50,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
+
+                    CSD_mean = median(CSD_bank,5);
+                    CSD_std(:,:,:,:,1)  = prctile(real(CSD_bank),50,5)-prctile(real(CSD_bank),25,5) + sqrt(-1)*prctile(imag(CSD_bank),50,5)-prctile(imag(CSD_bank),25,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
+                    CSD_std(:,:,:,:,2)  =prctile(real(CSD_bank),75,5)-prctile(real(CSD_bank),50,5) + sqrt(-1)*prctile(imag(CSD_bank),75,5)-prctile(imag(CSD_bank),50,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
                 elseif strncmp(R.data.datatype{featN},'NPD',3)
                     partlabs ={'Instant','Forward','Backward'}; msr = 'NPD';
                     CSD_mean = prctile(CSD_bank,50,5);
@@ -96,7 +96,7 @@ for featN = 1:numel(R.data.datatype)
                             [hl, hp] = boundedline(F(:,lr),real(Y(:,lr)),real(B(:,:,lr)),'cmap',cmap,'alpha','transparency',alpval);
                             hl(1).LineWidth = 2; %hl(2).LineWidth = 1; %hl(3).LineWidth = 1;
                             hl(1).LineStyle = '-';% hl(2).LineStyle = '--';% hl(3).LineStyle = '--';
-                            
+
                             [hl, hp] = boundedline(F(:,lr),imag(Y(:,lr)),imag(B(:,:,lr)),'cmap',cmap,'alpha','transparency',alpval);
                             hl(1).LineWidth = 2; %hl(2).LineWidth = 1; %hl(3).LineWidth = 1;
                             hl(1).LineStyle = '--';% hl(2).LineStyle = '--';% hl(3).LineStyle = '--';
@@ -104,14 +104,14 @@ for featN = 1:numel(R.data.datatype)
                                 hout = outlinebounds(hl, hp);
                                 set(hout(1),'LineWidth',1,'LineStyle','--'); %set(hout(2),'LineWidth',1);% set(hout(3),'LineWidth',1);
                             end
-                            
+
                             hold on
                             for L = lr
                                 dl = plot(R.data.feat_xscale{featN},real(squeeze(R.data.feat_emp{featN}(cond,i,j,L,:))),'color',[0 0 0],'LineWidth',1.5); hold on
                                 dl = plot(R.data.feat_xscale{featN},imag(squeeze(R.data.feat_emp{featN}(cond,i,j,L,:))),'color',[0 0 0],'LineWidth',1.5,'LineStyle','--'); hold on
                             end
-                            
-                            
+
+
                         else
                             [hl, hp] = boundedline(F(:,lr),abs(Y(:,lr)),abs(B(:,:,lr)),'cmap',cmap,'alpha','transparency',alpval);
                             hl(1).LineWidth = 2; %hl(2).LineWidth = 1; %hl(3).LineWidth = 1;
@@ -120,7 +120,7 @@ for featN = 1:numel(R.data.datatype)
                                 hout = outlinebounds(hl, hp);
                                 set(hout(1),'LineWidth',1,'LineStyle','--'); %set(hout(2),'LineWidth',1);% set(hout(3),'LineWidth',1);
                             end
-                            
+
                             hold on
                             for L = lr
                                 dl = plot(R.data.feat_xscale{featN},q.*abs(squeeze(R.data.feat_emp{featN}(cond,i,j,L,:))),'color',[0 0 0],'LineWidth',1.5); hold on
@@ -156,7 +156,7 @@ for featN = 1:numel(R.data.datatype)
             for ii = 1:size(list,2)
                 for i = 1:N
                     fanobank(:,i,ii) = permMod.feat_rep{list(ii)}{featN}(:,i);
-                    
+
                 end
             end
             cond = 1;
@@ -165,20 +165,20 @@ for featN = 1:numel(R.data.datatype)
             elseif axflag == 1
                 axes(fighan(featN,cond))
             end
-            
+
             fanomean = prctile(fanobank,50,3);
             fano_std(:,:,1)  = prctile(fanobank,50,3)-prctile(fanobank,25,3); % %prctile(CSD_bank,5,5); %std(fanobank,1,3); %
             fano_std(:,:,2)  = prctile(fanobank,75,3)-prctile(fanobank,50,3); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %std(fanobank,1,3); %
-            
+
             F =  R.data.feat_xscale{featN};
-            
+
             [hl, hp] = boundedline(F(1:end),fanomean(:,1),squeeze(fano_std(:,1,:)),'cmap',cmap,'alpha','transparency',alpval);
             hl(1).LineWidth = 2; %hl(2).LineWidth = 1; %hl(3).LineWidth = 1;
             hl(1).LineStyle = '-';% hl(2).LineStyle = '--';% hl(3).LineStyle = '--';
-            
+
             hold on
             dl = plot(F(1:end),R.data.feat_emp{featN} ,'color',[0 0 0],'LineWidth',1.5); hold on
-            
+
             if isfield(R.plot,'feat')
                 axis(R.plot.feat(featN).axlim);
                 xlabel(R.plot.feat(featN).axtit{1});
@@ -188,5 +188,5 @@ for featN = 1:numel(R.data.datatype)
             legend([dl hl],{'Empirical','Fitted'})
 
     end
-    
+
 end

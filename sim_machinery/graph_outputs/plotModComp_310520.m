@@ -61,7 +61,9 @@ for modID = 1:numel(R.modcomp.modN)
 
         if ismember(modID,R.modcompplot.NPDsel)
             p = p +1;
-            [hl(p), hp, dl, flag] = PlotFeatureConfInt_gen170620(R,permMod,h, cmap(modID,:));
+%             [hl(p), hp, dl, flag] = PlotFeatureConfInt_gen170620(R,permMod,h, cmap(modID,:));
+            [hl(p), hp, dl, flag] = PlotFeatureConfInt_gen190521(R,permMod,h, cmap(modID,:));
+            
         end
         % hl(modID) = plot(1,1);
         if ~flag
