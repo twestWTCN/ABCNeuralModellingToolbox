@@ -12,7 +12,7 @@ switch getenv('computername')
     case 'DESKTOP-0HO6J14'
         gitpath =  'D:\GITHUB'; % points towards github repos
         %         spmpath = 'C:\Users\timot\Documents\GitHub\spm12'; % points towrds
-        R.path.datapath_pedrosa = 'D:\DATA\DP_BUA_thalamomuscular\preproc\'
+        R.path.datapath_pedrosa = 'D:\Data\DP_Tremor_ThalamoMuscular\'
      case 'OPAL'
         gitpath =  'C:\Users\ndcn0903\Documents\GitHub'; % points towards github repos
                 spmpath = 'C:\Users\ndcn0903\Documents\GitHub\spm12'; % points towrds

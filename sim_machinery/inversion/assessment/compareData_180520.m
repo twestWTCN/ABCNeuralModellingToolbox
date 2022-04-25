@@ -55,7 +55,7 @@ for dt = 1:numel(R.data.datatype)
                             case 'absolute'
                                 yfx = squeeze(abs(DatSim(C,i,j,1,:)));
                                 ffx = squeeze(abs(DatEmp(C,i,j,1,:)));
-                                    r(1) = R.objfx.errorFx(yfx,ffx);
+                                r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);
                             case 'magnitude'
                                 yfx = squeeze((DatSim(C,i,j,1,:)));
@@ -66,73 +66,68 @@ for dt = 1:numel(R.data.datatype)
                     end
                 end
             end
-
+            
             switch R.objfx.specspec
                 case 'auto'
                     for C = 1:numel(R.condnames)
-                        r2mean(C) = nanmean(diag(squeeze(r2loop(C,:,:))));
+                        r2mean(C,dt) = nanmean(diag(squeeze(r2loop(C,:,:))));
                     end
-                    r2mean(dt) = mean(r2mean);
-                    
                 case 'cross'
                     for C = 1:numel(R.condnames)
                         r2C = squeeze(r2loop(C,:,:));
                         X = triu(r2C);
                         X(X==0) = [];
-                        r2mean(C) = nanmean(X);
+                        r2mean(C,dt) = nanmean(X);
                     end
-                    r2mean(dt) = mean(r2mean);
                 case 'cross_only'
                     for C = 1:numel(R.condnames)
                         r2C = squeeze(r2loop(C,:,:));
-                        r2mean(C) = nanmean(r2C(logical(~eye(j).*(triu(r2C)~=0))));
+                        r2mean(C,dt) = nanmean(r2C(logical(~eye(j).*(triu(r2C)~=0))));
                     end
                     r2mean(dt) = nanmean(r2mean);
                 case 'npd_only'
                     for C = 1:numel(R.condnames)
                         r2C = squeeze(r2loop(C,:,:));
-                        r2mean(C) = nanmean(r2C(logical(~eye(j))));
+                        r2mean(C,dt) = nanmean(r2C(logical(~eye(j))));
                     end
-                    r2mean(dt) = nanmean(r2mean);
                 case 'npd'
                     for C = 1:numel(R.condnames)
                         r2C = squeeze(r2loop(C,:,:));
-                        r2mean(C) = nanmean(r2C(:));
+                        r2mean(C,dt) = nanmean(r2C(:));
                     end
-                    r2mean(dt) = nanmean(r2mean);
-                    
             end
             
         case 'time' % time courses
-%             TCemp  = R.data.feat_emp{1}; % empirical
-%             TCsim  = sim_dat{1}; % simulated
-%             
-%             for i = 1:size(TCemp,1)
-%                 try
-%                     yfx = TCsim(i,:);
-%                     ffx = TCemp(i,:);
-%                     if size(yfx,1)<size(yfx,2)
-%                         yfx = yfx';
-%                     end
-%                     if size(ffx,1)<size(ffx,2)
-%                         ffx = ffx';
-%                     end
-%                     r = rsquare(yfx,ffx);
-%                     r2loop(i) = r;
-%                 catch
-%                     r2loop(i) = -32;
-%                 end
-%             end
-%             r2mean(dt) = mean(r2loop);
+            %             TCemp  = R.data.feat_emp{1}; % empirical
+            %             TCsim  = sim_dat{1}; % simulated
+            %
+            %             for i = 1:size(TCemp,1)
+            %                 try
+            %                     yfx = TCsim(i,:);
+            %                     ffx = TCemp(i,:);
+            %                     if size(yfx,1)<size(yfx,2)
+            %                         yfx = yfx';
+            %                     end
+            %                     if size(ffx,1)<size(ffx,2)
+            %                         ffx = ffx';
+            %                     end
+            %                     r = rsquare(yfx,ffx);
+            %                     r2loop(i) = r;
+            %                 catch
+            %                     r2loop(i) = -32;
+            %                 end
+            %             end
+            %             r2mean(dt) = mean(r2loop);
         case 'none'
             r2mean(dt) = NaN;
         case {'FANO','DURPDF','BRSTPROF','ENVPDF','INTPDF'}
             r2loop = [];
             for C = 1:numel(R.condnames)
-                r2loop(:,C) = R.objfx.errorFx(DatSim(:,R.datinds),DatEmp);
+                r2loop = R.objfx.errorFx(DatSim(:,R.datinds),DatEmp);
+                r2mean(C,dt) = nanmean(r2loop(:));
             end
-            r2mean(dt) = nanmean(r2loop(:));
-%             fprintf('Fano error is: %0.3f  ',r2mean(dt))
+            
+            %             fprintf('Fano error is: %0.3f  ',r2mean(dt))
     end
 end
 
@@ -141,6 +136,6 @@ if isfield(R.objfx,'featweight')
     r2mean = r2mean.*R.objfx.featweight;
     r2mean(r2mean==0) = nan;
 end
-errorVec = [nanmean(r2mean(:)) r2mean]; %sum(r2mean);
+errorVec = [nanmean(r2mean,2) r2mean]; %sum(r2mean);
 r2mean = nanmean(r2mean(:));
 
