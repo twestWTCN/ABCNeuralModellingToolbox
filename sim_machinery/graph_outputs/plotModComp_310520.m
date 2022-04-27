@@ -22,7 +22,7 @@ end
 
 % This gets the joint space epsilon that you can use to compute exceedence
 % probability
-prct = 75;
+prct = 50;
 [~,id] =  max(ACCmean);
 % R.modcomp.modEvi.epspop = prctile(ACCrep{id},prct); % threshold becomes median of model fits
 R.modcomp.modEvi.epspop = prctile(ACCmean,prct); % threshold becomes median of model fits
@@ -55,8 +55,10 @@ for modID = 1:numel(R.modcomp.modN)
         MSE{modID} = permMod.r2rep;
         
         %% Plot Data Features with Bayesian confidence intervals
-        for n = 1:numel(R.data.datatype)
-            h(n,1) = figure(n);
+        for n = 1:numel(R.condnames)
+            for f = 1:numel(R.data.datatype)
+            h(f,n) = figure(n);
+            end
         end
         flag = 0;
         
@@ -100,9 +102,10 @@ figure(1)
 if nargin<4
     modnames = shortlab;
 end
+if exist('dl','var')
 legend([dl hl],['data',modnames(R.modcompplot.NPDsel)]);
-
 set(gcf,'Position',[488.0000  227.4000  611.4000  534.6000]);
+end
 %% Now Plot Results of Model Comparison
 
 figure(2)

@@ -45,7 +45,7 @@ while wfstr(end)>0
         %         R.plot.outFeatFx({Rmod.data.feat_emp},{feat_sim},Rmod.data.feat_xscale,R,1,[])
         wfstr(jj) = any(wflag);
         r2rep{jj} = r2;
-        errorVecrep(:,jj) = errorVec;
+        errorVecrep(:,:,jj) = errorVec;
         dklrep{jj} = dkl;
         accrep{jj} = ACC;
         par_rep{jj} = pnew;
