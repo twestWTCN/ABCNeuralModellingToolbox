@@ -108,7 +108,7 @@ set(gcf,'Position',[488.0000  227.4000  611.4000  534.6000]);
 end
 %% Now Plot Results of Model Comparison
 
-figure(2)
+figure(3)
 subplot(2,2,1)
 MSE = cellfun(@(x) x(~isnan(x) & ~isinf(x) & x>-5),MSE,'UniformOutput',false); % visualization only
 

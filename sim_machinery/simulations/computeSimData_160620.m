@@ -92,7 +92,7 @@ if sum(isnan(vertcat(xsims{1}(:),xsims{1}(:)) )) == 0 && wflag == 0
 else
     disp('Sim Output contains NaNs!')
     modelError = -inf;
-    errorVec = repmat(-inf,numel(R.data.datatype)+1,1);
+    errorVec = repmat(-inf,numel(R.data.datatype)+1,numel(R.condnames));
     maxGlInd =1;
     xsims_gl{1} = NaN;
     feat_sim{1} = NaN;
