@@ -1,6 +1,6 @@
-function [J Es] =findJacobian_layerInput(R,x,uc,pc,m,condsel)
+function [J Es Js] =findJacobian_layerInput(R,x,uc,pc,m,condsel)
 % pertubations across delays
-plist = 0:0.01:0.1;
+plist = 0:0.01:0.05;
 
 
 ucm = {};
@@ -18,7 +18,7 @@ for p = 1:length(plist)
     R.IntP.nt = R.IntP.bufferExt + (plist(p)./R.IntP.dt);
     fx = R.IntP.intFx(R,x,ucm,pc,m);
     fx = fx{1}(:,end);
-    eps=1e-10;  % could be made better
+    eps=exp(-4); 
     xperturb= x;
     for i=1:n
         xperturb(i,:)=xperturb(i,:)+eps;
