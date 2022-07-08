@@ -8,6 +8,12 @@ if ~isfield(R.analysis,'dagtype')
     R.analysis.dagtype = 'normal';
 end
 
+% default to 1 realization of stochastic process
+if ~isfield(R.SimAn,'RealzRep')
+R.SimAn.RealzRep = 1;
+end
+
+
 %% Setup for parallelisation (multiple MATLAB sessions)
 try
     load([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\WorkingPermModList'])
@@ -77,15 +83,20 @@ for modID = modlist
             warning('No feature weight specified so treating equally')
         end
         tmp.objfx.featweight = R.objfx.featweight;
+        tmp.SimAn.RealzRep = R.SimAn.RealzRep;
         R  = tmp;
         
         [Rmod,m,p,parBank] = loadABCData_160620(R);
         if isfield(R.analysis,'comptype')
             if strcmp(R.analysis.comptype,'switch')
                 Rmod.objfx.featweight = R.objfx.featweight;
+                Rmod.SimAn.RealzRep = R.SimAn.RealzRep;
             end
         end
-        
+        % default to 1 realization of stochastic process
+        if ~isfield(Rmod.SimAn,'RealzRep')
+            Rmod.SimAn.RealzRep = 1;
+        end
         R.analysis.modEvi.eps = parBank(end,R.SimAn.minRank);
         R.analysis.BAA.flag = 0; % Turn off BAA flag (time-locked analysis)
         R.out.dag = dagcon; %sprintf([R.out.tag '_M%.0f'],modID);

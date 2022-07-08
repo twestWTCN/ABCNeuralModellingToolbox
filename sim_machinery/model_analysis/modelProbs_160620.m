@@ -6,6 +6,7 @@ elseif ~isfield(R.analysis.BAA,'flag')
 end
 R.plot.flag= 1;
 
+
 %% Compute KL Divergence
 [KL DKL,Rmod,Rmod.Mfit] = KLDiv(Rmod,Rmod.Mfit,p,m,1);
 N = R.analysis.modEvi.N;
@@ -35,7 +36,17 @@ while wfstr(end)>0
     parfor jj = 1:N
         %     for jj = 1:N
         pnew = par{jj};
-        [r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec,J] = computeSimData_160620(Rmod,m,[],pnew,0);
+        r2 = []; feat_sim = []; errorVec = [];
+        for RzRep = 1:Rmod.SimAn.RealzRep
+            [r2(:,RzRep),pnew,feat_sim{RzRep},xsims,xsims_gl,wflag,~,errorVec(:,:,RzRep),J] = computeSimData_160620(Rmod,m,[],pnew,0);
+        end
+
+        if Rmod.SimAn.RealzRep>1
+            % now collapse summaries
+            r2 = mean(r2,2);
+            errorVec = mean(errorVec,3);
+            feat_sim = averageFeatCells_BUV2(feat_sim);
+        end
         if ~any(isnan(J{1}))
             lyap(jj) = max(real(eig(J{1})));
         else

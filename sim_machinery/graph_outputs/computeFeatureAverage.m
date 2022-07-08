@@ -6,9 +6,11 @@ for feat = 1:numel(R.data.datatype)
     Xtmp = [];
     % now collect terms of feature
     for rep = 1:numel(feat_rep)
-        if ~isnan(feat_rep{rep}{1})
+        if ~any(isnan(feat_rep{rep}{1}(:)))
             if ndims(feat_rep{rep}{feat})>2
                 Xtmp(:,:,:,:,:,rep) = feat_rep{rep}{feat}(1,1,1,R.siminds,:);
+            elseif ~any(size(feat_rep{rep}{feat})==1)
+                Xtmp(:,:,:,:,:,rep) = feat_rep{rep}{feat}(1,:);
             else
                 Xtmp(:,:,rep) = feat_rep{rep}{feat};
             end
