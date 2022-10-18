@@ -1,7 +1,7 @@
-function [nb,kpdf,lnpdf,segL] = burstDurHist(dataX,fsamp,bins,minbs,winmark,dataC)
+function [nb,kpdf,lnpdf,segL] = burstDurHist(dataX,fsamp,bins,minbs,winmark,dataC,epsThresh)
 
 XH = abs(hilbert(dataX));
-burstinds = SplitVec(find(XH>prctile(XH,75)),'consecutive');
+burstinds = SplitVec(find(XH>prctile(XH,epsThresh)),'consecutive');
 if nargin>4
     if ~isempty(winmark)
         burstinds = edgeCorrect(burstinds,winmark);

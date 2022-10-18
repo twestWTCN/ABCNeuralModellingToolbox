@@ -1,7 +1,7 @@
-function [nb,Apdf,normpdf,bint] = burstIntHist(dataX,fsamp,bins,minbs,winmark)
+function [nb,Apdf,normpdf,bint] = burstIntHist(dataX,fsamp,bins,minbs,winmark,epsThresh)
 
 XH = abs(hilbert(dataX));
-burstinds = SplitVec(find(XH>prctile(XH,75)),'consecutive');
+burstinds = SplitVec(find(XH>prctile(XH,epsThresh)),'consecutive');
 if nargin>4
     if ~isempty(winmark)
         burstinds = edgeCorrect(burstinds,winmark);

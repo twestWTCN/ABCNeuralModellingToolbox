@@ -11,6 +11,9 @@ N = fix(N); %Ensure integer
 if ~isfield(R.obs.trans,'polydetrend')
     R.obs.trans.polydetrend = 0;
 end
+if ~isfield(R.obs.trans,'burstThresh')
+    R.obs.trans.burstThresh = 75; % default burst threshold
+end
 
 % Construct NPD matrix from data - take mean across channel replicates
 O = numel(R.condnames);
@@ -184,57 +187,25 @@ if numel(R.data.datatype)>1
                             frqband = [15 25];
                         end
                     catch
-                            frqband = [15 25];
+                        frqband = [15 25];
+                        warning('No custom freq band given for bursts- defaulting to 15-25 Hz band!')
                     end
                     dataX = bandpass(dataC,frqband,fsamp);
                     dataX = (dataX-mean(dataX))./std(dataX);
                     minbs = (2/frqband(2))*fsamp;
+                    epsThresh = R.obs.trans.burstThresh;
                     for i = 1:size(dataX,2)
                         switch R.data.datatype{fcnt}
                             case 'ENVPDF'
-                                [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC);
+                                [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC,epsThresh);
                             case 'DURPDF'
-                                [E,nbs(:,i,C)] = burstDurHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC);
+                                [E,nbs(:,i,C)] = burstDurHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC,epsThresh);
                             case 'INTPDF'
-                                [E,nbs(:,i,C)] = burstIntHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark);
+                                [E,nbs(:,i,C)] = burstIntHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,epsThresh);
                                 
                         end
                     end
                     
-                    
-                    % %                 case {'BRSTPROF'}
-                    % %                     dataX = dataS{C}(datinds,:)';
-                    % %                     dataX = bandpass(dataX,[15 25],fsamp);
-                    % %                     dataX = (dataX-mean(dataX))./std(dataX);
-                    % %                     nAvg                = 1; % the time series is divided into nAvg segments to plot sem error bars
-                    % %                     minBurstDuration    = 0.1; % burst are only considered if longer than this duration (in s)
-                    % %                     xPerc               = R.data.feat_xscale{fcnt}; % vector of thresholds
-                    % %
-                    % %                     E = xPerc;
-                    % %                     try
-                    % %                         E = R.data.feat_xscale{strcmp(R.data.datatype,'BRSTPROF')};
-                    % %                     catch
-                    % %                         E = 5:85; % default percentiles
-                    % %                     end
-                    % %                     try
-                    % %                         XPDF = R.data.feat_xscale{strcmp(R.data.datatype,'ENVPDF')};
-                    % %                     catch
-                    % %                         XPDF = linspace(0,max(env(:),100)); % default percentiles
-                    % %                     end
-                    % %
-                    % %
-                    % %                     for i = 1:size(dataX,2)
-                    % %                         env = abs(hilbert(dataX(:,1)));
-                    % %                         [avgBurstDuration,semBurstDuration,avgPDF,semPDF] = burstDurWrapper(env,E,nAvg,1/fsamp,minBurstDuration,[],XPDF); % burst profile
-                    % %                     end
-                    % %                     avgBurstDuration(isnan(nbs)) = -20; % IS THIS OK?
-                    % %                     switch R.data.datatype{fcnt}
-                    % %                         case 'BRSTPROF'
-                    % %                             nbs(:,i,C) = avgBurstDuration;
-                    % %                         case 'ENVPDF'
-                    % %                             nbs(:,i,C) = avgPDF;
-                    % %                     end
-                    % %                     %                 nbs(isnan(nbs)) = -20; % IS THIS OK?
             end
             feat_out{fcnt} = nbs;
             F{fcnt} = E;
@@ -243,3 +214,40 @@ if numel(R.data.datatype)>1
 end
 
 meanconf = [];
+
+
+%%% SCRIPT GRAVE
+%% USED TO WORK OUT BURST PROFILES (B.DUCHET CODE)
+% %                 case {'BRSTPROF'}
+% %                     dataX = dataS{C}(datinds,:)';
+% %                     dataX = bandpass(dataX,[15 25],fsamp);
+% %                     dataX = (dataX-mean(dataX))./std(dataX);
+% %                     nAvg                = 1; % the time series is divided into nAvg segments to plot sem error bars
+% %                     minBurstDuration    = 0.1; % burst are only considered if longer than this duration (in s)
+% %                     xPerc               = R.data.feat_xscale{fcnt}; % vector of thresholds
+% %
+% %                     E = xPerc;
+% %                     try
+% %                         E = R.data.feat_xscale{strcmp(R.data.datatype,'BRSTPROF')};
+% %                     catch
+% %                         E = 5:85; % default percentiles
+% %                     end
+% %                     try
+% %                         XPDF = R.data.feat_xscale{strcmp(R.data.datatype,'ENVPDF')};
+% %                     catch
+% %                         XPDF = linspace(0,max(env(:),100)); % default percentiles
+% %                     end
+% %
+% %
+% %                     for i = 1:size(dataX,2)
+% %                         env = abs(hilbert(dataX(:,1)));
+% %                         [avgBurstDuration,semBurstDuration,avgPDF,semPDF] = burstDurWrapper(env,E,nAvg,1/fsamp,minBurstDuration,[],XPDF); % burst profile
+% %                     end
+% %                     avgBurstDuration(isnan(nbs)) = -20; % IS THIS OK?
+% %                     switch R.data.datatype{fcnt}
+% %                         case 'BRSTPROF'
+% %                             nbs(:,i,C) = avgBurstDuration;
+% %                         case 'ENVPDF'
+% %                             nbs(:,i,C) = avgPDF;
+% %                     end
+% %                     %                 nbs(isnan(nbs)) = -20; % IS THIS OK?
