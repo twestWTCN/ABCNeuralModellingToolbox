@@ -13,7 +13,7 @@ end
 segL = 1000*(cellfun('length',burstinds)/fsamp);
 
 burstinds(segL<minbs) = [];
-amp = 1000*(cellfun(@(a) max(XH(a)),burstinds)/fsamp);
+amp = (cellfun(@(a) max(XH(a)),burstinds));
 
 
 if numel(burstinds)>2

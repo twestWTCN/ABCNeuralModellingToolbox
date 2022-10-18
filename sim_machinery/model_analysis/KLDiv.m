@@ -1,13 +1,13 @@
 function [KL,DKL,R,Mfit] = KLDiv(R,Mfit,p,m,npflag)
 %% Resample parameters
 % Compute indices of optimised parameter
-pVec = spm_vec(p);
-pInd = parOptInds_110817(R,p,m.m); % in structure form
-pIndMap = spm_vec(pInd); % in flat form
-
-precInd = parOptIndsPrec_110817(R,p,m.m,2);
-precIndMap = spm_vec(precInd);
-p = pVec(pIndMap);
+% pVec = spm_vec(p);
+% pInd = parOptInds_110817(R,p,m.m); % in structure form
+% pIndMap = spm_vec(pInd); % in flat form
+% 
+% precInd = parOptIndsPrec_110817(R,p,m.m,2);
+% precIndMap = spm_vec(precInd);
+% p = pVec(pIndMap);
 
 % R.SimAn.minRank = ceil(size(pIndMap,1)*1.1);
 % xf = zeros(size(pIndMap,1),size(parOptBank,2));

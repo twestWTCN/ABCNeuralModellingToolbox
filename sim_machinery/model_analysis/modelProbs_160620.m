@@ -46,6 +46,10 @@ while wfstr(end)>0
             r2 = mean(r2,2);
             errorVec = mean(errorVec,3);
             feat_sim = averageFeatCells_BUV2(feat_sim);
+        else
+            r2 = r2(:,1);
+            feat_sim = feat_sim{1};
+            errorVec = squeeze(errorVec(:,:,1));
         end
         if ~any(isnan(J{1}))
             lyap(jj) = max(real(eig(J{1})));
@@ -56,20 +60,20 @@ while wfstr(end)>0
         %         R.plot.outFeatFx({Rmod.data.feat_emp},{feat_sim},Rmod.data.feat_xscale,R,1,[])
         wfstr(jj) = any(wflag);
         r2rep{jj} = r2;
-        errorVecrep(:,:,jj) = errorVec;
+        errorVecrep(:,jj) = errorVec;
         dklrep{jj} = dkl;
         accrep{jj} = ACC;
         par_rep{jj} = pnew;
         feat_rep{jj} = feat_sim;
         disp(jj); %
         if ~R.analysis.BAA.flag
-            ppm.increment();
             xsims_rep{jj} = [];
         else
             xsims_rep{jj} = xsims_gl;
         end
+        ppm.increment();
     end
-    
+
     if ~R.analysis.BAA.flag
         wfstr(end) = 0;
     end
@@ -92,9 +96,9 @@ R.analysis.modEvi.eps = prctile(permMod.r2rep,50);
 % Do some basic plotting
 if ~R.analysis.BAA.flag
     % Temporary EPS
-    
+
     eps = R.analysis.modEvi.eps; % temporary (calculated later from whole model family)
-    
+
     figure
     r2bank = permMod.r2rep;
     [h r] = hist(r2bank,50); %D is your data and 140 is number of bins.
@@ -104,18 +108,18 @@ if ~R.analysis.BAA.flag
     xL = 2:2:length(r); % list of indices
     set(gca,'XTick',xL)
     set(gca,'XTickLabel',strsplit(num2str(xD,2),' '))
-    
+
     legend('show');
     ylabel('P(D-D*)'); xlabel('D-D*');
     hold on
     Yval = get(gca,'YLim');
-    
+
     tmp = abs(xD-eps);
     [idx idx] = min(tmp); %index of closest value
     epsm = xL(xD==xD(idx)); %closest value
-    
+
     plot([epsm epsm],Yval,'B--','linewidth',3)
-    
+
     Pmod = numel(r2bank(r2bank>eps))/R.analysis.modEvi.N;
     annotation(gcf,'textbox',...
         [0.28 0.81 0.19 0.09],...
