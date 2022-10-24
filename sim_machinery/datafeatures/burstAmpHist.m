@@ -1,4 +1,4 @@
-function [nb,Apdf,normpdf,amp] = burstAmpHist(dataX,fsamp,bins,minbs,winmark,dataC,epsThresh)
+function [nb,Apdf,normpdf,amp,burstinds,XH] = burstAmpHist(dataX,fsamp,bins,minbs,winmark,dataC,epsThresh)
 
 XH = abs(hilbert(dataX));
 burstinds = SplitVec(find(XH>prctile(XH,epsThresh)),'consecutive');
@@ -31,18 +31,18 @@ if nargout>2
         warning('Not enough data to fit a distribution!')
     end
 end
-
-if nargin>6
-    plotBurstConstruction(fsamp,dataC,dataX,XH,burstinds)
-    figure
-    H = histogram(amp,bins,'Normalization','pdf'); hold on
-    H.FaceColor = [131 131 131]/256;
-    plot(nb,Apdf,'LineWidth',1.5,'Color',H.FaceColor.*0.4)
-    
-    a = gca;
-        a.YTickLabel = {};
-   a.Color = 'none';
-   box off; axis square
-    xlabel('Amplitude (Z)')
-    ylabel('pdf')
-end
+% % 
+% % if nargin>7
+% %     plotBurstConstruction(fsamp,dataC,dataX,XH,burstinds)
+% %     figure
+% %     H = histogram(amp,bins,'Normalization','pdf'); hold on
+% %     H.FaceColor = [131 131 131]/256;
+% %     plot(nb,Apdf,'LineWidth',1.5,'Color',H.FaceColor.*0.4)
+% %     
+% %     a = gca;
+% %         a.YTickLabel = {};
+% %    a.Color = 'none';
+% %    box off; axis square
+% %     xlabel('Amplitude (Z)')
+% %     ylabel('pdf')
+% % end
