@@ -1,5 +1,7 @@
 function [nb,Apdf,normpdf,amp,burstinds,XH] = burstAmpHist(dataX,fsamp,bins,minbs,winmark,dataC,epsThresh)
-
+if nargin<7
+    epsThresh = 75;
+end
 XH = abs(hilbert(dataX));
 burstinds = SplitVec(find(XH>prctile(XH,epsThresh)),'consecutive');
 if nargin>4
