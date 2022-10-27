@@ -1,5 +1,7 @@
 function [nb,kpdf,lnpdf,segL] = burstDurHist(dataX,fsamp,bins,minbs,winmark,dataC,epsThresh)
-
+if nargin<7
+    epsThresh = 75;
+end
 XH = abs(hilbert(dataX));
 burstinds = SplitVec(find(XH>prctile(XH,epsThresh)),'consecutive');
 if nargin>4
@@ -28,18 +30,18 @@ if nargout>2
     end
 end
 
-if nargin>6
-    plotBurstConstruction(fsamp,dataC,dataX,XH,burstinds)
-    figure
-    H = histogram(segL,bins,'Normalization','pdf'); hold on
-    H.FaceColor = [65 138 179]/256;
-    plot(nb,kpdf,'LineWidth',1.5,'Color',H.FaceColor.*0.4)
-    
-    a = gca;
-    a.YTickLabel = {};
-    a.Color = 'none';
-    box off; axis square
-    xlabel('Duration (ms)')
-    ylabel('pdf')
-    xlim([0 800])
-end
+% % if nargin>6
+% %     plotBurstConstruction(fsamp,dataC,dataX,XH,burstinds)
+% %     figure
+% %     H = histogram(segL,bins,'Normalization','pdf'); hold on
+% %     H.FaceColor = [65 138 179]/256;
+% %     plot(nb,kpdf,'LineWidth',1.5,'Color',H.FaceColor.*0.4)
+% %     
+% %     a = gca;
+% %     a.YTickLabel = {};
+% %     a.Color = 'none';
+% %     box off; axis square
+% %     xlabel('Duration (ms)')
+% %     ylabel('pdf')
+% %     xlim([0 800])
+% % end
