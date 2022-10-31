@@ -194,7 +194,7 @@ if numel(R.data.datatype)>1
                     dataX = (dataX-mean(dataX))./std(dataX);
                     minbs = (2/frqband(2))*fsamp;
                     epsThresh = R.obs.trans.burstThresh;
-                    for i = 1:size(dataX,2)
+                        for i = 1:size(dataX,2)
                         switch R.data.datatype{fcnt}
                             case 'ENVPDF'
                                 [E,nbs(:,i,C)] = burstAmpHist(dataX(:,i)',fsamp,R.data.feat_xscale{fcnt},minbs,winmark,dataC,epsThresh);
