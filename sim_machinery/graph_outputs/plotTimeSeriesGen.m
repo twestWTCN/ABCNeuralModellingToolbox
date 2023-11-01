@@ -10,7 +10,7 @@ for cond = 1:numel(condname)
             X = data{cond}(ch,:);
             X = normalize(X);
             X = X-(step*(ch-1));
-            t = linspace(0,size(X,2)./fsample,size(X,2));
+            t = linspace(1./fsample,size(X,2)./fsample,size(X,2));
             plot(t,X)
             hold on
         end

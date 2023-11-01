@@ -66,8 +66,8 @@ for featN = 1:numel(R.data.datatype)
                     CSD_std(:,:,:,:,2)  = prctile(CSD_bank,75,5)-prctile(CSD_bank,50,5); %std(CSD_bank,1,5); %prctile(CSD_bank,5,5); %
                 end
                 % F = repmat(R.frqz',1,3);
-                F = linspace(min(R.frqz),max(R.frqz),size(CSD_mean,1));
-                F = repmat(F',1,3);
+%                 F = linspace(min(R.frqz),max(R.frqz),size(CSD_mean,1));
+                F = repmat(R.frqz',1,3);
                 k = 0;
                 for i = 1:N
                     for j = 1:M
