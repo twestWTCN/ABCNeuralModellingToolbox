@@ -124,7 +124,11 @@ for C = 1:numel(R.condnames)
             case 'time'
                     figure(10+ FN)
                      if ~R.plot.holdop; clf; end
-                plot(F,datEmp{1}{1},'color',featcolor,'linewidth',2); hold on
+                LP = plot(F,datEmp{1}{1},'linewidth',2); hold on
+                for i = 1:numel(LP)
+                    LP(i).Color = featcolor(i,:);
+                end
+                
                 
                 for L = 1:length(datSim)
                     xtmp = datSim{L}{1};
@@ -135,7 +139,12 @@ for C = 1:numel(R.condnames)
                         lwid = 0.5;
                     end
                     
-                    plot(F,xtmp,'color',featcolor,'linestyle','--','linewidth',lwid);
+                    LP = plot(F,xtmp,'linestyle','--','linewidth',lwid);
+                for i = 1:numel(LP)
+                    LP(i).Color = featcolor(i,:);
+                end
+                                    
+                    
                 end
 
             otherwise
