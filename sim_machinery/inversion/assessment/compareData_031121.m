@@ -104,26 +104,27 @@ for dt = 1:numel(R.data.datatype)
             end
             
         case 'time' % time courses
-            %             TCemp  = R.data.feat_emp{1}; % empirical
-            %             TCsim  = sim_dat{1}; % simulated
-            %
-            %             for i = 1:size(TCemp,1)
-            %                 try
-            %                     yfx = TCsim(i,:);
-            %                     ffx = TCemp(i,:);
-            %                     if size(yfx,1)<size(yfx,2)
-            %                         yfx = yfx';
-            %                     end
-            %                     if size(ffx,1)<size(ffx,2)
-            %                         ffx = ffx';
-            %                     end
-            %                     r = rsquare(yfx,ffx);
-            %                     r2loop(i) = r;
-            %                 catch
-            %                     r2loop(i) = -32;
-            %                 end
-            %             end
-            %             r2mean(dt) = mean(r2loop);
+                        TCemp  = R.data.feat_emp{1}; % empirical
+                        TCsim  = sim_dat{1}; % simulated
+            
+                        for i = 1:size(TCemp,1)
+                            try
+                                yfx = TCsim(i,:);
+                                ffx = TCemp(i,:);
+
+                                if size(yfx,1)<size(yfx,2)
+                                    yfx = yfx';
+                                end
+                                if size(ffx,1)<size(ffx,2)
+                                    ffx = ffx';
+                                end
+                                r = R.objfx.errorFx(yfx,ffx);
+                                r2loop(i) = r;
+                            catch
+                                r2loop(i) = -32;
+                            end
+                        end
+                        r2mean(dt) = mean(r2loop);
         case 'none'
             r2mean(dt) = NaN;
         case {'FANO','DURPDF','BRSTPROF','ENVPDF','INTPDF'}

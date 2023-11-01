@@ -121,6 +121,23 @@ for C = 1:numel(R.condnames)
                     xlabel('Burst amplitude');
                     ylabel('p.d.f')
                 end
+            case 'time'
+                    figure(10+ FN)
+                     if ~R.plot.holdop; clf; end
+                plot(F,datEmp{1}{1},'color',featcolor,'linewidth',2); hold on
+                
+                for L = 1:length(datSim)
+                    xtmp = datSim{L}{1};
+                    
+                    if L == bestn
+                        lwid = 2;
+                    else
+                        lwid = 0.5;
+                    end
+                    
+                    plot(F,xtmp,'color',featcolor,'linestyle','--','linewidth',lwid);
+                end
+
             otherwise
                 warning('Plotting for datafeature not defined!')
                 
