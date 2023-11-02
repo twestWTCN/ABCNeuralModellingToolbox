@@ -195,7 +195,7 @@ while ii <= R.SimAn.searchMax
         B = eig(cov(A'));
         C = B/sum(B);
         eRank = sum(cumsum(C)>0.01);
-        R.SimAn.minRank = ceil(eRank*4);
+        R.SimAn.minRank = ceil(eRank*R.SimAn.minRankLambda);
         fprintf('effective rank of optbank is %.0f\n',eRank)
     end
     if size(parOptBank,2)> R.SimAn.minRank-1
@@ -236,7 +236,9 @@ while ii <= R.SimAn.searchMax
 
     %% Compute Proposal Distribution
     if cflag == 1 && itry == 0 % estimate new copula
+%         [Mfit,cflag] = postEstCopulaMhlD(parOptBank,Mfit,pIndMap,pOrg);
         [Mfit,cflag] = postEstCopula(parOptBank,Mfit,pIndMap,pOrg);
+        
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
         Mfit.DKL = DKL;
     elseif cflag == 0 && itry == 0% estimate mv Normal Distribution
