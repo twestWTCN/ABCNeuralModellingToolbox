@@ -104,8 +104,8 @@ for dt = 1:numel(R.data.datatype)
             end
             
         case 'time' % time courses
-                        TCemp  = R.data.feat_emp{1}; % empirical
-                        TCsim  = sim_dat{1}; % simulated
+                        TCemp  = R.data.feat_emp{dt}; % empirical
+                        TCsim  = sim_dat{dt}; % simulated
             
                         for i = 1:size(TCemp,1)
                             try
