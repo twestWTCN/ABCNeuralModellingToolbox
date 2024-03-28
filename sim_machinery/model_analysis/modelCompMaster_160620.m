@@ -39,10 +39,14 @@ for modID = modlist
         % Get Model Name
         switch R.analysis.dagtype
             case 'normal' % conventional model naming
-                if isfield(R.out,'tag2')
-                    dagcon = sprintf([R.out.tag2 '_M%.0f'],modID); % bugfix
+                if ~isfield(R.out,'tagexpression')
+                    if isfield(R.out,'tag2')
+                        dagcon = sprintf([R.out.tag2 '_M%.0f'],modID); % bugfix
+                    else
+                        dagcon = sprintf([R.out.tag '_M%.0f'],modID);
+                    end
                 else
-                    dagcon = sprintf([R.out.tag '_M%.0f'],modID);
+                    dagcon = sprintf([R.out.tagexpression],modID);
                 end
             case 'arbitrary' % used for confusion matrices
                 dagcon = daglist{modID};

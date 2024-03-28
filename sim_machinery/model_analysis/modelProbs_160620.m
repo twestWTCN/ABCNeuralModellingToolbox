@@ -4,6 +4,11 @@ if ~isfield(R.analysis,'BAA')
 elseif ~isfield(R.analysis.BAA,'flag')
     R.analysis.BAA.flag = 0;
 end
+
+if ~isfield(R.analysis,'fullDataFeat')
+    R.analysis.fullDataFeat = 0; % this is if you want the simulated features to be computed
+end
+
 R.plot.flag= 1;
 
 
@@ -21,7 +26,7 @@ pSigMap = spm_vec(pSig);
 [par,MAP] = postDrawCopula(Rmod,Rmod.Mfit,p,pIndMap,pSigMap,N);
 
 a = gcp;
-ppm = ParforProgMon('Model Probability Calculation',N,1);
+% ppm = ParforProgMon('Model Probability Calculation',N,1);
 parforArg = a.NumWorkers;
 
 %%
@@ -36,9 +41,9 @@ while wfstr(end)>0
     parfor jj = 1:N
         %     for jj = 1:N
         pnew = par{jj};
-        r2 = []; feat_sim = []; errorVec = [];
+        r2 = []; feat_sim = []; errorVec = []; xsims_gl = []; wflag = [];
         for RzRep = 1:Rmod.SimAn.RealzRep
-            [r2(:,RzRep),pnew,feat_sim{RzRep},xsims,xsims_gl,wflag,~,errorVec(:,:,RzRep),J] = computeSimData_160620(Rmod,m,[],pnew,0);
+            [r2(:,RzRep),pnew,feat_sim{RzRep},~,xsims_gl,wflag,~,errorVec(:,:,RzRep),J] = computeSimData_160620(Rmod,m,[],pnew,0);
         end
 
         if Rmod.SimAn.RealzRep>1
@@ -71,7 +76,8 @@ while wfstr(end)>0
         else
             xsims_rep{jj} = xsims_gl;
         end
-        ppm.increment();
+         fclose('all');
+        % ppm.increment();
     end
 
     if ~R.analysis.BAA.flag
@@ -82,7 +88,11 @@ delete(ppm);
 permMod.r2rep = [r2rep{:}];
 permMod.par_rep = par_rep;
 permMod.errorVec_rep = errorVecrep;
-permMod.feat_rep = feat_rep;
+if R.analysis.fullDataFeat == 1
+    permMod.feat_rep = feat_rep;
+end
+permMod.feat_Mean = cellfun(@(x) x{1},feat_rep,'UniformOutput',false);
+permMod.feat_SEM = cellfun(@(x) x{1},feat_rep,'UniformOutput',false);
 permMod.DKL = DKL;
 permMod.KL = KL;
 permMod.lyap = lyap;
