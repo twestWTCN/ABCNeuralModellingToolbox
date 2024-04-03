@@ -44,16 +44,16 @@ ylim([R.SimAn.pOptBound.*0.25])
 xlabel('parameter')
 ylabel('Posterior')
 
-% i = 0;
-% for L =R.SimAn.pOptList
-%     X = eval(['p' L{1}]);
-%     for ip = 1:numel(X)
-%         i = i + 1;
-%         realList{i} = [L{1}(2:end) ' ' num2str(ip)];
-%     end
-% end
+i = 0;
+for L =R.SimAn.pOptList
+    X = eval(['p' L{1}]);
+    for ip = 1:numel(X)
+        i = i + 1;
+        realList{i} = [L{1}(2:end) ' ' num2str(ip)];
+    end
+end
 
-% a = gca;
-% a.XTickLabel = realList;
-% a.XTickLabelRotation = 45;
+a = gca;
+a.XTickLabel = realList;
+a.XTickLabelRotation = 45;
 % 

@@ -94,6 +94,7 @@ for modID = modlist
         if isfield(R.analysis,'comptype')
             if strcmp(R.analysis.comptype,'switch')
                 Rmod.objfx.featweight = R.objfx.featweight;
+                Rmod.objfx.errorFx = R.objfx.errorFx; 
                 Rmod.SimAn.RealzRep = R.SimAn.RealzRep;
             end
         end

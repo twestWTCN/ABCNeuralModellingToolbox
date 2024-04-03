@@ -26,7 +26,7 @@ pSigMap = spm_vec(pSig);
 [par,MAP] = postDrawCopula(Rmod,Rmod.Mfit,p,pIndMap,pSigMap,N);
 
 a = gcp;
-% ppm = ParforProgMon('Model Probability Calculation',N,1);
+ppm = ParforProgMon('Model Probability Calculation',N,1);
 parforArg = a.NumWorkers;
 
 %%
@@ -77,7 +77,7 @@ while wfstr(end)>0
             xsims_rep{jj} = xsims_gl;
         end
          fclose('all');
-        % ppm.increment();
+        ppm.increment();
     end
 
     if ~R.analysis.BAA.flag
@@ -91,8 +91,14 @@ permMod.errorVec_rep = errorVecrep;
 if R.analysis.fullDataFeat == 1
     permMod.feat_rep = feat_rep;
 end
-permMod.feat_Mean = cellfun(@(x) x{1},feat_rep,'UniformOutput',false);
-permMod.feat_SEM = cellfun(@(x) x{1},feat_rep,'UniformOutput',false);
+for i = 1:size(feat_rep{1},2)
+    xsel = cellfun(@(x) any(isnan(x{1})),feat_rep,'UniformOutput',false);
+    xt = cellfun(@(x) x{i},feat_rep([xsel{:}]==0),'UniformOutput',false);
+    xt = cat(1,xt{:});
+    permMod.feat_M{i} = mean(xt,1);
+    permMod.feat_STD{i} = std(xt,[],1);
+    permMod.feat_SEM{i} = std(xt,[],1)./sqrt(size(xt,1));
+end
 permMod.DKL = DKL;
 permMod.KL = KL;
 permMod.lyap = lyap;
