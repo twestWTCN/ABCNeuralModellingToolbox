@@ -57,3 +57,4 @@ a = gca;
 a.XTickLabel = realList;
 a.XTickLabelRotation = 45;
 % 
+axis normal

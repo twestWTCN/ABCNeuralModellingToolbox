@@ -24,42 +24,42 @@ for dt = 1:numel(R.data.datatype)
                         switch R.objfx.feattype
                             case 'complex'
                                 if i~=j
-                                    yfx = (squeeze(imag(DatSim(C,ic,jc,1,:))));
-                                    ffx = (squeeze(imag(DatEmp(C,ic,jc,1,:))));
+                                    yfx = (squeeze(imag(DatSim(C,ic,jc,1,:)))); % model
+                                    ffx = (squeeze(imag(DatEmp(C,ic,jc,1,:)))); % data
                                     r(1) = R.objfx.errorFx(yfx,ffx);
                                     
-                                    yfx = (squeeze(real(DatSim(C,i,j,1,:))));
-                                    ffx = (squeeze(real(DatEmp(C,ic,jc,1,:))));
+                                    yfx = (squeeze(real(DatSim(C,i,j,1,:)))); % model
+                                    ffx = (squeeze(real(DatEmp(C,ic,jc,1,:)))); % data
                                     r(2) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = mean(r);
                                     
                                 else
-                                    yfx = squeeze(abs(DatSim(C,ic,jc,1,:)));
-                                    ffx = squeeze(abs(DatEmp(C,ic,jc,1,:)));
+                                    yfx = squeeze(abs(DatSim(C,ic,jc,1,:))); % model
+                                    ffx = squeeze(abs(DatEmp(C,ic,jc,1,:))); % data
                                     r(1) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1);
                                 end
                             case 'imaginary'
                                 if i~=j
-                                    yfx = (squeeze(imag(DatSim(C,ic,jc,1,:))));
-                                    ffx = (squeeze(imag(DatEmp(C,ic,jc,1,:))));
+                                    yfx = (squeeze(imag(DatSim(C,ic,jc,1,:)))); % model
+                                    ffx = (squeeze(imag(DatEmp(C,ic,jc,1,:)))); % data
                                     r(1) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ic,jc) = r(1); %mean(r);
                                     
                                 else
-                                    yfx = squeeze(abs(DatSim(C,ic,jc,1,:)));
-                                    ffx = squeeze(abs(DatEmp(C,ic,jc,1,:)));
+                                    yfx = squeeze(abs(DatSim(C,ic,jc,1,:))); % model
+                                    ffx = squeeze(abs(DatEmp(C,ic,jc,1,:))); % data
                                     r(1) = R.objfx.errorFx(yfx,ffx);
                                     r2loop(C,ii,jc) = r(1);
                                 end
                             case 'absolute'
-                                yfx = squeeze(abs(DatSim(C,ic,jc,1,:)));
-                                ffx = squeeze(abs(DatEmp(C,ic,jc,1,:)));
+                                yfx = squeeze(abs(DatSim(C,ic,jc,1,:))); % model
+                                ffx = squeeze(abs(DatEmp(C,ic,jc,1,:))); % data
                                 r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);
                             case 'magnitude'
-                                yfx = squeeze((DatSim(C,ic,jc,1,:)));
-                                ffx = squeeze((DatEmp(C,ic,jc,1,:)));
+                                yfx = squeeze((DatSim(C,ic,jc,1,:))); % model
+                                ffx = squeeze((DatEmp(C,ic,jc,1,:))); % data
                                 r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);  %r(1);
                         end

@@ -10,7 +10,6 @@ f   = fieldnames(X);
 bCnt = 0;
 pfldnm = {};
 for fn = f' % go through fields
-    fn
     ldb = 0; %bug check flag
     Y = X.(fn{1});
     % If numeric

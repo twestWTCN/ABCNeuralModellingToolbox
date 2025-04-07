@@ -1,4 +1,5 @@
 function modID = modelCompMaster_160620(R,modlist,WML,daglist)
+
 if nargin>2
     save([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\WorkingPermModList'],'WML')
 end
@@ -12,7 +13,6 @@ end
 if ~isfield(R.SimAn,'RealzRep')
 R.SimAn.RealzRep = 1;
 end
-
 
 %% Setup for parallelisation (multiple MATLAB sessions)
 try
@@ -86,6 +86,7 @@ for modID = modlist
             R.objfx.featweight = ones(size(R.data.datatype));
             warning('No feature weight specified so treating equally')
         end
+        
         tmp.objfx.featweight = R.objfx.featweight;
         tmp.SimAn.RealzRep = R.SimAn.RealzRep;
         R  = tmp;
@@ -107,7 +108,7 @@ for modID = modlist
         R.out.dag = dagcon; %sprintf([R.out.tag '_M%.0f'],modID);
         permMod = modelProbs_160620(R,m.x,m,p,Rmod);
         saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\modeProbs_' R.out.tag '_' R.out.dag '.mat'],permMod)
-        pause(10)
+        % pause(10)
         closeMessageBoxes
         close all
     end
