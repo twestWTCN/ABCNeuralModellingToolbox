@@ -37,9 +37,9 @@ MAP = spm_unvec(MAP,pOrg);
 
 if R.plot.flag == 1
     if ~ishandle(3)
-        figure(3)
+        figure(200)
     else
-        set(groot,'CurrentFigure',3);  clf
+        set(groot,'CurrentFigure',200);  clf
     end
     clf
     cflag= 1;

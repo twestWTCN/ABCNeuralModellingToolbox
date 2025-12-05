@@ -27,7 +27,7 @@ function [R,parBank,Mfit] = SimAn_ABC_032824b(R,p,m,parBank)
 %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 GPool = gcp;
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
-ABCGraphicsDefaults
+ABCGraphicsDefaults(R)
 %% Set Defaults
 if nargin<4
     parBank = [];
@@ -239,7 +239,7 @@ while ii <= R.SimAn.searchMax
     %% Compute Proposal Distribution
     if cflag == 1 && itry == 0 % estimate new copula
         %         [Mfit,cflag] = postEstCopulaMhlD(parOptBank,Mfit,pIndMap,pOrg);
-        [Mfit,cflag] = postEstCopula(parOptBank,Mfit,pIndMap,pOrg);
+        [Mfit,cflag] = postEstCopula_080425(parOptBank,Mfit,pIndMap,pOrg);
 
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
         Mfit.DKL = DKL;
@@ -305,7 +305,7 @@ while ii <= R.SimAn.searchMax
             pmean = p;
         end
         try
-            set(groot,'CurrentFigure',2);  clf
+            set(groot,'CurrentFigure',100);  clf
             optProgPlot(1:ii,bestr2,pmean,banksave,eps_rec,bestr2,pInd,pSig,R,kldHist,r2Hist)
             drawnow;%shg
         end

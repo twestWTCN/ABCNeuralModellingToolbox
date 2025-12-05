@@ -32,7 +32,7 @@ parforArg = a.NumWorkers;
 %%
 figure(5)
 pnew = par{1};
-[r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec] = computeSimData_160620(Rmod,m,[],pnew,0,1);
+[r2,pnew,feat_sim,xsims,xsims_gl,wflag,~,errorVec] = computeSimData_160620(Rmod,m,[],pnew,0,0);
 wfstr = ones(1,N);
 R.plot.flag= 0;
 
@@ -65,7 +65,7 @@ while wfstr(end)>0
         %         R.plot.outFeatFx({Rmod.data.feat_emp},{feat_sim},Rmod.data.feat_xscale,R,1,[])
         wfstr(jj) = any(wflag);
         r2rep{jj} = r2;
-        errorVecrep(:,jj) = errorVec;
+        errorVecrep(:,:,jj) = errorVec;
         dklrep{jj} = dkl;
         accrep{jj} = ACC;
         par_rep{jj} = pnew;
@@ -91,6 +91,7 @@ permMod.errorVec_rep = errorVecrep;
 if R.analysis.fullDataFeat == 1
     permMod.feat_rep = feat_rep;
 end
+if R.condN == 1
 for i = 1:size(feat_rep{1},2)
     xsel = cellfun(@(x) any(isnan(x{1})),feat_rep,'UniformOutput',false);
     xt = cellfun(@(x) x{i},feat_rep([xsel{:}]==0),'UniformOutput',false);
@@ -98,6 +99,7 @@ for i = 1:size(feat_rep{1},2)
     permMod.feat_M{i} = mean(xt,1);
     permMod.feat_STD{i} = std(xt,[],1);
     permMod.feat_SEM{i} = std(xt,[],1)./sqrt(size(xt,1));
+end
 end
 permMod.DKL = DKL;
 permMod.KL = KL;

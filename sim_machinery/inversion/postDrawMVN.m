@@ -5,7 +5,7 @@ x1 = mvnrnd(Mfit.Mu',Mfit.Sigma',rep)';
 % x1 = x1(pIndMap,:);
 % Plot the mv normal dist
 if R.plot.flag == 1
-            set(groot,'CurrentFigure',3); 
+            set(groot,'CurrentFigure',200); 
     clf
     plotProposalDist(R,Mfit,x1,pIndMap,cflag)
 end

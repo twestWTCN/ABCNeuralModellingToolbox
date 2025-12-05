@@ -1,9 +1,9 @@
-function u0 = KSDensityCVWidth(x,xf,W,range,n,fx)
+function u0 = KSDensityCVWidth_080425(x,xf,W,range,n,fx)
 % Compute using default
 [f1,x1,u1] = ksdensity(x,xf,'function','pdf','Weights',W);
 % try other bandwidths
 uu = logspace(log10(u1.*10^range(1)),log10(u1.*10^range(2)),n);
-uu = max(min(uu, 5 * std(x)), 0.05 * std(x)); 
+uu = max(min(uu, 5 * std(x)), 0.05 * std(x));
 v = zeros(size(uu));
 % using same partition each time reduces variation 
 cp = cvpartition(length(x),'kfold',6);

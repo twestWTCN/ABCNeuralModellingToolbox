@@ -120,12 +120,12 @@ function genplotter_051124(datEmp, datSim, F, R, bestn, labelna)
                     xlim(R.plot.feat(FN).axlim(1:2));
                 case 'time'
                     if ~R.plot.holdop; cla; end
-                    LP = plot(F{FN}, datEmp{1}{FN}, 'linewidth', 2); hold on;
+                    LP = plot(F{FN}, datEmp{1}{FN}(:,:,C), 'linewidth', 2); hold on;
                     for i = 1:numel(LP)
                         LP(i).Color = featcolor{1}(i, :);
                     end
                     for L = 1:length(datSim)
-                        xtmp = datSim{L}{FN};
+                        xtmp = datSim{L}{FN}(:,:,C);
                         lwid = (L == bestn) * 1.5 + 0.5;
                         LP = plot(F{FN}, xtmp, 'linestyle', '--', 'linewidth', lwid);
                         for i = 1:numel(LP)

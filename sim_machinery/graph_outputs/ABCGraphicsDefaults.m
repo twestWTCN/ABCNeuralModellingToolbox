@@ -1,7 +1,10 @@
-function ABCGraphicsDefaults
+function ABCGraphicsDefaults(R)
 set(0,'DefaultAxesFontName','Arial', ...
       'DefaultAxesFontSize', 12)
-  figure(2)
+for i = 1:R.condN
+    figure(i)
+end
   figure(11)
   figure(22)
-  figure(3)
+  figure(100)
+    figure(200)
