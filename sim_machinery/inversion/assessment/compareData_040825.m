@@ -1,4 +1,4 @@
-function [r2mean,errorVec] = compareData_031121(R,sim_dat)
+function [r2mean,errorVec] = compareData_040825(R,sim_dat)
 
 if ~isfield(R.objfx,'errorFx')
     R.objfx.errorFx = @fxSSE;
