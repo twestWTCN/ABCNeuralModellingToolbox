@@ -155,6 +155,20 @@ for condsel = 1:numel(R.condnames)
                     wflag = 1;
                     disp('Signals not symmetrical')
                 end
+            case 'bistable'
+                for j = 1:size(xsims,1)
+                    % Sample skewness and kurtosis
+                    g1 = skewness(xsims(j,:), 0);        % unbiased skewness
+                    g2 = kurtosis(xsims(j,:), 0) - 3;    % excess kurtosis
+
+                    % Bimodality Coefficient
+                    BC(j) = (g1.^2 + 1) ./ (g2 + 3);
+                end
+                if any(BC>0.6)
+                    wflag = 1;
+                    disp('Signals are bistable')
+                end
+
 
         end
     end

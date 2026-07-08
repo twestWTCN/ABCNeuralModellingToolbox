@@ -98,7 +98,7 @@ while ii <= R.SimAn.searchMax
     parnum = (4*GPool.NumWorkers);
     samppar = {}; ACCbank = []; featbank = [];
     while ji < floor(rep/parnum)
-        parfor jj = 1:parnum % Replicates for each temperature
+       parfor jj = 1:parnum % Replicates for each temperature
             % Get sample Parameters
             parl = (ji*parnum) + jj;
             pnew = par{parl};

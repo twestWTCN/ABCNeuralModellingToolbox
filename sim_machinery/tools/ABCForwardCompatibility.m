@@ -15,5 +15,5 @@ if ~isfield(R.IntP,'fsample')
 end
 
 if flag
-    warning('You appear to be using old/incomplete specifications. Filled with defaults!')
+    warning('You appear to be using old/incomplete model specifications. Updated Fields!')
 end

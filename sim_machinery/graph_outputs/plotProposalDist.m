@@ -71,6 +71,7 @@ axis square
 
 subplot(2,2,4)
 title('3D Draws')
+if numel(QL)>2
 z1 = pardraw(QL(3),:);
 scatter3(x1,y1,z1)
 xlim(R.SimAn.pOptBound.*0.2)
@@ -80,5 +81,5 @@ axis square
 
 xlabel('M1->STR A'); ylabel('STR Gain'); zlabel('M1->STR D');
 set(get(gca,'children'),'marker','.')
-
+end
 % set(gcf,'Position',[2.5000  272.0000  903.0000  728.0000])

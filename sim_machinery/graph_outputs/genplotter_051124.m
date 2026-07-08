@@ -58,13 +58,15 @@ function genplotter_051124(datEmp, datSim, F, R, bestn, labelna)
     for C = 1:numel(R.condnames)
         figure(C);
         if ~R.plot.holdop; cla; end
+        if ~R.plot.holdop; clf; end
         for FN = 1:numPlots
             if DFLAG == 1
                 subplot(numRows, numCols, FN);
             end
+                               
             switch R.data.datatype{FN}
-                case {'CSD', 'NPD'}
-                    NPD_data_n = datEmp{1}{FN};
+                case {'CSD'}
+                    CSD_data_n = datEmp{1}{FN};
                     for L = 1:length(datSim)
                         NPD_sim_n = datSim{L}{FN};
                         lwid = (L == bestn) * 1.5 + 0.5; % Line width adjustment
@@ -79,8 +81,8 @@ function genplotter_051124(datEmp, datSim, F, R, bestn, labelna)
                                     plot(F{FN}, squeeze(imag(NPD_sim_n(C, i, j, 1, :))), 'b', 'linestyle', '--', 'linewidth', lwid);
                                 end
                                 try
-                                    plot(F{FN}, squeeze(abs(NPD_data_n(C, i, j, 1, :))), 'color', featcolor{2}(i,:), 'linewidth', 2);
-                                    plot(F{FN}, squeeze(imag(NPD_data_n(C, i, j, 1, :))), 'b', 'linewidth', 2);
+                                    plot(F{FN}, squeeze(abs(CSD_data_n(C, i, j, 1, :))), 'color', featcolor{2}(i,:), 'linewidth', 2);
+                                    plot(F{FN}, squeeze(imag(CSD_data_n(C, i, j, 1, :))), 'b', 'linewidth', 2);
                                 end
                                 xlabel(R.plot.feat(FN).axtit{2});
                                 ylabel(R.plot.feat(FN).axtit{1});
@@ -94,6 +96,40 @@ function genplotter_051124(datEmp, datSim, F, R, bestn, labelna)
                             end
                         end
                     end
+                case {'NPD'}
+                    NPD_data_n = datEmp{1}{FN};
+                    for L = 1:length(datSim)
+                        NPD_sim_n = datSim{L}{FN};
+                        lwid = (L == bestn) * 1.5 + 0.5; % Line width adjustment
+                        [N, M] = size(NPD_sim_n, 2:3);
+                        k = 0;
+                        for i = 1:N
+                            for j = 1:M
+                                k = k + 1;
+                                subplot(numRows, numCols, sub2ind([numCols numRows],j,i));
+                                hold on
+
+                                try
+                                    plot(F{FN}, squeeze(NPD_sim_n(C, i, j, 1, :)), 'color', featcolor{1}(1,:), 'linestyle', '--', 'linewidth', lwid); hold on;
+                                end
+                                try
+                                    plot(F{FN}, squeeze(NPD_data_n(C, i, j, 1, :)), 'color', featcolor{2}(1,:), 'linewidth', 2);
+                                end
+                                xlabel(R.plot.feat(FN).axtit{2});
+                                ylabel(R.plot.feat(FN).axtit{1});
+                                xlim(R.plot.feat(FN).axlim(1:2));
+                                axis square;
+                                if i == 1
+                                    title(R.chsim_name{j});
+                                elseif j == 1
+                                    ylabel(R.chsim_name{i});
+                                end
+                            end
+                        end
+                    end
+
+
+
                 case {'FANO', 'DURPDF', 'INTPDF'}
                     if ~R.plot.holdop; cla; end
                     fano_data = datEmp{1}{FN};
@@ -141,4 +177,8 @@ function genplotter_051124(datEmp, datSim, F, R, bestn, labelna)
             end
         end
     end
+
+    set(gcf,'Position',[569.0000  223.4000  940.0000  700.8000])
 end
+
+

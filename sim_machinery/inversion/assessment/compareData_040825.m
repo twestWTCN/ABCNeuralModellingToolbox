@@ -62,6 +62,8 @@ for dt = 1:numel(R.data.datatype)
                                 ffx = squeeze((DatEmp(C,ic,jc,1,:))); % data
                                 r(1) = R.objfx.errorFx(yfx,ffx);
                                 r2loop(C,ic,jc) = r(1);  %r(1);
+                            otherwise
+                                error('No valid data type for comparison!')
                         end
                     end
                 end

@@ -108,8 +108,9 @@ for C = 1:O
                     Pxy = smoothdata(Pxy,'gaussian',gwid);
                 end
                 
-                if R.obs.trans.norm == 1
+                if R.obs.trans.norm == 1 || R.obs.trans.normAuto == 1
                     Pxy = (Pxy-nanmean(Pxy))./nanstd(Pxy);
+                    Pxy = Pxy - min(Pxy);
                 end
                 if R.obs.trans.zerobase == 1
                     Pxy = Pxy - min(Pxy);

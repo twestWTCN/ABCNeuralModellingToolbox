@@ -72,5 +72,5 @@ for condsel = 1:numel(R.condnames)
             u(2,:) = tx;
             u = u';
     end
-    uc{condsel} = u;
+uc{condsel} = u;
 end
