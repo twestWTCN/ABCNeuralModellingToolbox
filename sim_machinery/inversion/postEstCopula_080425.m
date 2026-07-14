@@ -10,9 +10,20 @@ W = W ./ sum(W);
 % First form kernel density estimates for each optimized
 % parameter
 clear copU
+% Pre-compute per-parameter bandwidth floors from the prior covariance if
+% available.  This prevents bwid from collapsing when samples cluster,
+% which would cause the copula icdf to produce near-identical draws on the
+% next iteration even after Mfit.Sigma has been floored.
+
+priorStd   = sqrt(abs(diag(Mfit.prior.Sigma)));
+bwidFloor  = 0.1 * priorStd';   % 20 % of prior std per parameter
+
 for i = 1:size(pIndMap,1)
     x = parOptBank(pIndMap(i),:); % choose row of parameter values
     bwid(i) = KSDensityCVWidth(x,x,W,[-1 1],25,'cdf');
+    % Apply floor: never let bandwidth drop below 1 % of prior std (or
+    % 1 % of the sample IQR as a fallback when no prior is available).
+    bwid(i) = max(bwid(i), bwidFloor(i));
     copU(i,:) = ksdensity(x,x,'function','cdf','Weights',W,'width',bwid(i)); % KS density estimate per parameter
     xf(i,:) = x;
 end

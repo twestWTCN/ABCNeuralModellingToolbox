@@ -60,7 +60,7 @@ if ~isfield(R.SimAn,'RealzRep')
     R.SimAn.RealzRep = 1; % default to 1 repetition
 end
 if ~isfield(R.SimAn,'sigmaAlpha')
-    R.SimAn.sigmaAlpha = 0.1; % prior covariance smoothing strength (0=none, 1=full prior)
+    R.SimAn.sigmaAlpha = 0.01; % minimum posterior variance as a fraction of prior variance
 end
 pOrg = p; % Record prior parameters.
 
@@ -252,14 +252,13 @@ while ii <= R.SimAn.searchMax
     if cflag == 1 && itry == 0 % estimate new copula
         [Mfit,cflag] = postEstCopula_080425(parOptBank,Mfit,pIndMap,pOrg);
 
-        % FIX (2): Regularise Mfit.Sigma toward the prior covariance.
-        % The copula draw uses xf/ks/Rho directly, but Mfit.Sigma feeds into
-        % KLDiv (Gaussian approximation) and the GA sampleFitness on the
-        % next iteration.  Without regularisation the sample covariance can
-        % collapse to near-zero, causing the KLD penalty to diverge and the
-        % precision to grow exponentially.
-        alpha = R.SimAn.sigmaAlpha;
-        Mfit.Sigma = (1 - alpha) * Mfit.Sigma + alpha * Mfit.prior.Sigma;
+        % FIX (2a): Hard eigenvalue floor on Mfit.Sigma.
+        % Additive mixing overshoots in both directions depending on prior
+        % scale.  An eigenvalue floor is monotone: the posterior can
+        % concentrate freely down to sigmaAlpha * min(prior variance), but
+        % no further.  This prevents the KLD Gaussian approximation and the
+        % pSigMap values written into every drawn particle from collapsing.
+        Mfit.Sigma = floorSigma(Mfit.Sigma, Mfit.prior.Sigma, R.SimAn.sigmaAlpha);
 
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
         Mfit.DKL = DKL;
@@ -278,9 +277,8 @@ while ii <= R.SimAn.searchMax
         Mfit.Mu = wmean(xs,Ws,2);
         Mfit.Sigma = weightedcov(xs',W);
 
-        % FIX (2): same regularisation for the MVN fallback path
-        alpha = R.SimAn.sigmaAlpha;
-        Mfit.Sigma = (1 - alpha) * Mfit.Sigma + alpha * Mfit.prior.Sigma;
+        % FIX (2a): same eigenvalue floor for the MVN fallback path
+        Mfit.Sigma = floorSigma(Mfit.Sigma, Mfit.prior.Sigma, R.SimAn.sigmaAlpha);
 
         R.Mfit = Mfit;
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,0);
@@ -385,3 +383,4 @@ while ii <= R.SimAn.searchMax
     ii = ii + 1;
     %%%     %%%     %%%     %%%     %%%  END   %%%  OF   %%% ITERANT  %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 end
+
