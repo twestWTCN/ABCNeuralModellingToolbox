@@ -1,0 +1,387 @@
+function [R,parBank,Mfit] = SimAn_ABC_140726(R,p,m,parBank)
+%%%% APROXIMATE BAYESIAN COMPUTATION for
+%%%% HIGH DIMENSIONAL DYNAMICAL MODELS
+% ---- 25/03/20---------------------------
+% This annealing function uses approximate Bayesian computation in order to
+% estimate the posterior parameter distributions, using a shifting epsilon
+% that moves with a cooling schedule.
+% Notes
+% This version collapses parameter resamples into a single function
+% adapted for generic usage
+% ic - starting conditions
+% u - external input (can be empty
+% p - structure of parameters
+% m - structure of model specfications
+% R - settings for annealing, plotting, integration etc.
+%
+% This function will output R at each annealing loop (assigned into 'base'
+% workspace. The field R.mfit is appended with the Rho (correlation matrix) and nu
+% (degrees of freedom) of the estimated copula. Multivariate Gaussian
+% is also estimated and specified in R.mfit.Mu and R.mfit.Sigma.
+% There are several plotting functions which will track the progress of the
+% annealing.
+%
+% Timothy West (2018) - UCL CoMPLEX
+% / UCL, Wellcome Trust Centre for Human Neuroscience
+%
+% v140726: Fix exponential precision growth:
+%   (1) minRank is floored at its initial value so the eRank feedback loop
+%       cannot cause progressive collapse of the sample bank size.
+%   (2) Mfit.Sigma is regularised toward the prior covariance after each
+%       copula/MVN fit to prevent the Gaussian approximation used in the
+%       KLD from becoming degenerate.
+%%%%%%%%%%%%%%%%%%%%%%
+%%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+GPool = gcp;
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
+R = ABCForwardCompatibility(R);
+ABCGraphicsDefaults(R)
+%% Set Defaults
+if nargin<4
+    parBank = [];
+end
+if ~isfield(R.plot,'flag')
+    R.plot.flag = 1; % plotting is default behaviour
+end
+if ~isfield(R.plot,'save')
+    R.plot.save = 0; % not saving plots is default behaviour
+end
+
+if isempty(m)
+    m.m = 1;
+end
+if ~isfield(R.plot,'updateflag')
+    R.plot.updateflag = 0;
+end
+if ~isfield(R.SimAn,'minRankLambda')
+    R.SimAn.minRankLambda = 3;
+end
+if ~isfield(R.SimAn,'RealzRep')
+    R.SimAn.RealzRep = 1; % default to 1 repetition
+end
+if ~isfield(R.SimAn,'sigmaAlpha')
+    R.SimAn.sigmaAlpha = 0.1; % prior covariance smoothing strength (0=none, 1=full prior)
+end
+pOrg = p; % Record prior parameters.
+
+% Set Fixed Initialization Parameters
+eps_prior = -200; % prior eps (needed for gradient approximation);
+eps_exp = -12;
+eps_act = eps_prior;
+delta_act = 0.05;
+
+% Compute indices of parameters to be optimized
+[pInd,pMu,pSig,pIndMap,pMuMap,pSigMap] = parOptInds_110817(R,p,m.m); % in structure form
+
+R.SimAn.minRank = ceil(size(pIndMap,1)*R.SimAn.minRankLambda); %Ensure rank of sample is large enough to compute copula
+
+% FIX (1): Record the initial minRank as a hard floor.
+% The eRank-adaptive update is allowed to decrease minRank, but never
+% below this value.  Without this floor, converging samples reduce eRank,
+% which reduces minRank, which allows an even tighter sample bank on the
+% next iteration — a runaway positive-feedback loop.
+minRankFloor = R.SimAn.minRank;
+
+% set initial batch of parameters from gaussian priors
+if isfield(R,'Mfit')
+    Mfit = R.Mfit;
+    Mfit.prior = Mfit;
+    Mfit.DKL = 0; % Divergence is zero to begin
+    rep =  R.SimAn.rep(1);
+    par = postDrawCopula(R,Mfit,p,pIndMap,pSigMap,rep,0); % permScale is large!
+else
+    rep = R.SimAn.rep(1);
+    ptmp = spm_vec(p);
+    Mfit.Mu = ptmp(pMuMap);
+    Mfit.Sigma = diag(ptmp(pSigMap).*R.SimAn.jitter);
+    Mfit.prior = Mfit;
+    Mfit.DKL = 0; % Divergence is zero to begin
+    par = postDrawMVN(R,Mfit,pOrg,pIndMap,pSigMap,rep);
+end
+R.Mfit = Mfit;
+parPrec(:,1) = diag(Mfit.Sigma);
+itry = 0; cflag = 0;
+ii = 1; parOptBank = [];
+%%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+%% Main Annealing Loop (Maxmizes the objective function)
+while ii <= R.SimAn.searchMax
+    %% Batch Loop for Replicates for Generation of Pseudodata
+    % This is where the heavy work is done. This is run inside parfor. Any
+    % optimization here is prime.
+    clear xsims_rep feat_sim_rep featbank ACCbank
+    ji = 0;
+    parnum = (4*GPool.NumWorkers);
+    samppar = {}; ACCbank = []; featbank = [];
+    while ji < floor(rep/parnum)
+       parfor jj = 1:parnum % Replicates for each temperature
+            % Get sample Parameters
+            parl = (ji*parnum) + jj;
+            pnew = par{parl};
+            %% Simulate New Data
+            r2 = []; feat_sim = [];
+            for RzRep = 1:R.SimAn.RealzRep
+                [r2(RzRep),pnew,feat_sim] = computeSimData_160620(R,m,[],pnew,0,0);
+            end
+            % Adjust the score to account for set complexity
+            r2 = mean(r2);
+            [ACC,R2w] = computeObjective(R,r2);
+            r2rep(jj) = R2w;
+            ACCrep(jj) = ACC;
+            par_rep{jj} = pnew;
+            feat_sim_rep{jj} = feat_sim;
+        end % End of batch replicates
+        if rem(ji,4)
+            disp(['Batch ' num2str(ji) ' proposal ' num2str(ii)])
+        end
+        % Retrieve fits
+
+        r2loop =r2rep;
+        % Delete failed simulations
+        r2loop(r2loop==1) = -inf;
+        r2loop(isnan(r2loop)==1) = -inf;
+        r2loop(imag(r2loop)==1) = -inf;
+        r2loop(isinf(r2loop)==1) = -inf;
+        % Append succesful replicates to bank of params and fits
+        %(parameter table, with fits)
+        for i = 1:numel(r2loop)
+            if ~isinf(r2loop(i))
+                parI(:,i) = [full(spm_vec(par_rep{i})); r2loop(i)]';
+                parBank = [parBank parI(:,i) ];
+            end
+        end
+
+        % Save data features (for plotting reasons only)
+        featbank{ji+1} = feat_sim_rep;
+        ACCbank(:,ji+1) = ACCrep;
+        samppar{ji+1} = par_rep;
+        % Clip parBank to the best (keeps size manageable
+        if ~isempty(parBank)
+            [dum V] = sort(parBank(end,:),'descend');
+            if size(parBank,2)>2^10
+                parBank = parBank(:,V(1:2^10));
+            else
+                parBank = parBank(:,V);
+            end
+            ACClocbank = computeObjective(R,parBank(end,:));
+            parOptBank = parBank(:,ACClocbank>eps_exp);
+            if size(parOptBank,2)> R.SimAn.minRank-1
+                break
+            else
+                ji = ji+1;
+            end
+        else
+            ji = ji+1;
+        end
+
+    end
+
+    %% Find the best draws (for plotting only)
+    bestfeat = [];
+    [b i] = maxk(ACCbank(:),12);
+    [jj_best, ji_best] = ind2sub(size(ACCbank),i);
+
+    % Simulate best data (plotting outside of parfor)
+    pnew = samppar{ji_best(1)}{jj_best(1)};
+    [~,~,~,~,xsims_gl_best] = computeSimData_160620(R,m,[],pnew,0,0);
+
+    for L = 1:numel(i)
+        for j = 1:numel(featbank{ji_best(L)}{jj_best(L)})
+            bestfeat{L}{j} = featbank{ji_best(L)}{jj_best(L)}{j};
+        end
+    end
+    bestr2(ii) =  parBank(end,ji_best(1));
+
+    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % PARAMETER OPTIMIZATION BEGINS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    %% Concatanate Batch Results and Decide Acceptance Level Epsilon
+
+    %% Find error threshold for temperature (epsilon) and do rejection sampling
+    if size(ACClocbank,2)<2
+        warning('No valid draws saved- either your simulator is broken (check computeSimData_#),you havent made enough draws, or your priors are very far away!')
+        A = nan(1,1);
+    else
+        A = parOptBank(pIndMap,:);
+    end
+    if size(A,2)>= R.SimAn.minRank
+        B = eig(cov(A'));
+        C = B/sum(B);
+        eRank = sum(cumsum(C)>0.01);
+        % FIX (1): Floor minRank so the eRank feedback loop cannot cause
+        % progressive collapse.  Allow adaptive decrease (faster copula
+        % fitting when samples converge) but never go below minRankFloor.
+        R.SimAn.minRank = max(ceil(eRank*R.SimAn.minRankLambda), minRankFloor);
+        fprintf('effective rank of optbank is %.0f (minRank set to %.0f, floor %.0f)\n', ...
+            eRank, R.SimAn.minRank, minRankFloor)
+    end
+    if size(parOptBank,2)> R.SimAn.minRank-1
+        disp('Bank is large taking new subset to form eps')
+        parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+        optimalIndices = find(selectIndicesGA(R,parOptBank,pIndMap,pOrg));
+        parOptBank = parOptBank(:,optimalIndices);
+        ACClocbank = computeObjective(R,parOptBank(end,:));
+        cflag = 1; % copula flag (enough samples)
+        itry = 0;  % set counter to 0
+    else
+        disp('Recomputing eps from parbank')
+        parOptBank = parBank(:,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+        optimalIndices = find(selectIndicesGA(R,parOptBank,pIndMap,pOrg));
+        parOptBank = parOptBank(:,optimalIndices);
+        ACClocbank = computeObjective(R,parOptBank(end,:));
+        cflag = 1;
+        itry = 0;
+    end
+    eps_act = prctile(ACClocbank(end,:),25);
+    if itry==0
+        % Compute expected gradient for next run
+        delta_exp = eps_exp-eps_prior;
+        fprintf('Expected gradient was %0.2f \n',delta_exp)
+        delta_act = eps_act-eps_prior;
+        fprintf('Actual gradient was %0.2f \n',delta_act)
+        delta_actPerc= 100*((eps_act-eps_prior)/eps_prior);
+        eps_exp = eps_act + delta_act;
+        fprintf('Exp-Act gradient was %0.2f \n',delta_exp-delta_act)
+        % Save eps history and make actual eps new prior eps
+        eps_prior = eps_act;
+    end
+    eps_rec(ii) = eps_act;
+
+    %% Compute Proposal Distribution
+    if cflag == 1 && itry == 0 % estimate new copula
+        [Mfit,cflag] = postEstCopula_080425(parOptBank,Mfit,pIndMap,pOrg);
+
+        % FIX (2): Regularise Mfit.Sigma toward the prior covariance.
+        % The copula draw uses xf/ks/Rho directly, but Mfit.Sigma feeds into
+        % KLDiv (Gaussian approximation) and the GA sampleFitness on the
+        % next iteration.  Without regularisation the sample covariance can
+        % collapse to near-zero, causing the KLD penalty to diverge and the
+        % precision to grow exponentially.
+        alpha = R.SimAn.sigmaAlpha;
+        Mfit.Sigma = (1 - alpha) * Mfit.Sigma + alpha * Mfit.prior.Sigma;
+
+        [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
+        Mfit.DKL = DKL;
+    elseif cflag == 0 && itry == 0 % estimate mv Normal Distribution
+        % Set Weights
+        if size(parOptBank,2)>R.SimAn.minRank
+            s = parOptBank(end,:);
+            xs = parOptBank(pIndMap,:);
+        else
+            s = parBank(end,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+            xs = parBank(pIndMap,intersect(1:R.SimAn.minRank,1:size(parBank,2)));
+        end
+        W = ((s(end,:)-1).^-1);
+        W = W./sum(W);
+        Ws = repmat(W,size(xs,1),1); % added 03/2020 as below wasnt right dim (!)
+        Mfit.Mu = wmean(xs,Ws,2);
+        Mfit.Sigma = weightedcov(xs',W);
+
+        % FIX (2): same regularisation for the MVN fallback path
+        alpha = R.SimAn.sigmaAlpha;
+        Mfit.Sigma = (1 - alpha) * Mfit.Sigma + alpha * Mfit.prior.Sigma;
+
+        R.Mfit = Mfit;
+        [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,0);
+        Mfit.DKL = DKL;
+    end
+
+    %% Draw from Proposal Distribution
+    if cflag == 1
+        [par,MAP] = postDrawCopulaPerm(R,Mfit,pOrg,pIndMap,pSigMap,rep);
+        Mfit.MAP = MAP;
+        R.Mfit = Mfit;
+    elseif cflag == 0
+        par = postDrawMVN(R,Mfit,pOrg,pIndMap,pSigMap,rep);
+    end
+    try
+        kldHist(ii) = R.SimAn.scoreweight(2)*R.Mfit.DKL;
+        r2Hist(ii) = mean(R.SimAn.scoreweight(2).*r2rep);
+    catch
+        kldHist(ii) = NaN;
+        r2Hist(ii) = NaN;
+    end
+    saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\klHist_' R.out.tag '_' R.out.dag '.mat'],kldHist)
+    parPrec(:,ii+1) = diag(Mfit.Sigma);
+    deltaPrec(ii) = mean(diff(parPrec(:,[ii ii+1]),[],2));
+    parHist(ii) = averageCell(par);
+    saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag  '\' R.out.dag '\parHist_' R.out.tag '_' R.out.dag '.mat'],parHist)
+    banksave{ii} = parBank(end,parBank(end,:)>eps_act);
+    saveMkPath([R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag  '\' R.out.dag '\bankSave_' R.out.tag '_' R.out.dag '.mat'],banksave)
+    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%    %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+    %%%%%%%%%%%%%%% SAVE PROGRESS, PLOTTING ETC. %%%%%%%%%%%%%%%%%%%%%%%%%%
+    if R.plot.flag ==1
+        if isfield(R.plot,'outFeatFx')
+            %% Plot Data Features Outputs
+            try
+                set(groot,'CurrentFigure',11);  clf
+
+                R.plot.outFeatFx({R.data.feat_emp},bestfeat,R.data.feat_xscale,R,1,[])
+                drawnow;
+            catch
+                disp('Time series plotting failed!')
+            end
+        end
+        %% Plot parameters changes and tracking of fit
+        if isfield(Mfit,'Rho')
+            pmean = Mfit.Pfit;
+        else
+            pmean = p;
+        end
+        try
+            set(groot,'CurrentFigure',100);  clf
+            optProgPlot(1:ii,bestr2,pmean,banksave,eps_rec,bestr2,pInd,pSig,R,kldHist,r2Hist)
+            drawnow;
+        end
+        %% Plot example time series
+        try
+            set(groot,'CurrentFigure',22);
+            plotTimeSeriesGen(xsims_gl_best,1./R.IntP.dt,R.chsim_name,R.condnames)
+        catch
+            disp('Feature plotting failed!')
+        end
+    end
+    disp({['Current R2: ' num2str(bestr2(end))];[' Iterant ' num2str(ii) '']; R.out.tag; R.out.dag; ['Eps ' num2str(delta_actPerc)]})
+
+    %% Save data
+    if rem(ii,1) == 0 || ii == 1
+        saveSimABCOutputs(R,Mfit,m,parBank)
+        if R.plot.save == 1
+            saveSimAnFigures(R,ii)
+        end
+    end
+
+    try
+        RFLAG = (numel(unique(eps_rec(end-R.SimAn.convIt.eqN:end))) == 1);
+          meanGrad=  mean(diff(eps_rec(end-R.SimAn.convIt.eqN:end))); % gradient over past N samples
+    catch
+        meanGrad = eps_act;
+        RFLAG = 0;
+    end
+
+    % This is for intermittent plot updates
+    if isfield(R.plot,'updateperiod')
+        if ~rem(ii,R.plot.updateperiod)
+            a= 1;
+            R.plot.flag = 1;
+            ABCGraphicsDefaults
+        else
+            R.plot.flag = 0;
+        end
+    end
+
+    % Check convergence
+    if (abs(meanGrad) < R.SimAn.convIt.dEps && abs(delta_act)~=0) || RFLAG || ii>R.SimAn.convIt.MaxIt
+        disp('Itry Exceeded: Convergence')
+        saveSimABCOutputs(R,Mfit,m,parBank)
+        if R.plot.save == 1
+            H = get(groot, 'Children'); % get all open figures
+            saveFigure(H,[R.path.rootn '\outputs\' R.path.projectn '\'  R.out.tag '\' R.out.dag '\convergenceFigures'])
+        end
+        return
+    end
+
+    ii = ii + 1;
+    %%%     %%%     %%%     %%%     %%%  END   %%%  OF   %%% ITERANT  %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
+end
