@@ -358,7 +358,8 @@ while ii <= R.SimAn.searchMax
 
     try
         RFLAG = (numel(unique(eps_rec(end-R.SimAn.convIt.eqN:end))) == 1);
-          meanGrad=  mean(diff(eps_rec(end-R.SimAn.convIt.eqN:end))); % gradient over past N samples
+        epsWin   = eps_rec(end-R.SimAn.convIt.eqN:end);
+        meanGrad = mean(diff(epsWin)) / (abs(mean(epsWin)) + eps); % fractional change per step (unitless)
     catch
         meanGrad = eps_act;
         RFLAG = 0;
