@@ -52,8 +52,8 @@ if sum(isnan(vertcat(xsims{1}(:),xsims{1}(:)) )) == 0 && wflag == 0
                 xsims_gl{gl} =xsims;
             end
             % Run Data Transform d
-            if isfield(R.obs,'transFx')
-                [~, feat_sim{gl}, wflag(2)] = R.obs.transFx(xsims_gl{gl},R.siminds,R.IntP.fsample,R.obs.SimOrd,R);
+            if isfield(R.obs,'transFx')           
+                [~, feat_sim{gl}, wflag(2)] = R.obs.transFx(xsims_gl{gl},R.siminds,R.IntP.fsample,R.obs.SimOrd,R,m);
             else
                 feat_sim{gl} = xsims_gl{gl}; % else take raw time series
             end
