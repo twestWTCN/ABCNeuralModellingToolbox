@@ -37,7 +37,18 @@ try
     Mfit.tbr2 = parOptBank(end,1); % get best fit
     Mfit.Pfit = spm_unvec(mean(parOptBank,2),pOrg);
     Mfit.BPfit = spm_unvec(parOptBank(1:end-1,1),pOrg);
-    Mfit.Rho = Rho;
+    % Shrink the copula correlation matrix toward the identity.
+    % Strong correlations in Rho cause copularnd to generate near-collinear
+    % samples; shrinking by a fixed 10 % preserves the correlation structure
+    % while preventing rank deficiency.
+    if isfield(Mfit,'rhoAlpha')
+        ra = Mfit.rhoAlpha;
+    else
+        ra = 0.1;
+    end
+    Rho       = (1 - ra) * Rho + ra * eye(size(Rho));
+    Rho       = (Rho + Rho') / 2;  % enforce symmetry
+    Mfit.Rho  = Rho;
     %     Mfit_hist = Mfit;
     %%% Plot posterior, Rho, and example 2D/3D random draws from copulas
 %     if R.plot.flag == 1

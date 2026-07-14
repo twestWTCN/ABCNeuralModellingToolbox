@@ -62,6 +62,9 @@ end
 if ~isfield(R.SimAn,'sigmaAlpha')
     R.SimAn.sigmaAlpha = 0.01; % minimum posterior variance as a fraction of prior variance
 end
+if ~isfield(R.SimAn,'rhoAlpha')
+    R.SimAn.rhoAlpha = 0.1; % shrinkage of Mfit.Sigma correlation toward identity (0=none, 1=diagonal)
+end
 pOrg = p; % Record prior parameters.
 
 % Set Fixed Initialization Parameters
@@ -250,6 +253,7 @@ while ii <= R.SimAn.searchMax
 
     %% Compute Proposal Distribution
     if cflag == 1 && itry == 0 % estimate new copula
+        Mfit.rhoAlpha = R.SimAn.rhoAlpha; % pass shrinkage strength into copula estimator
         [Mfit,cflag] = postEstCopula_080425(parOptBank,Mfit,pIndMap,pOrg);
 
         % FIX (2a): Hard eigenvalue floor on Mfit.Sigma.
@@ -259,6 +263,7 @@ while ii <= R.SimAn.searchMax
         % no further.  This prevents the KLD Gaussian approximation and the
         % pSigMap values written into every drawn particle from collapsing.
         Mfit.Sigma = floorSigma(Mfit.Sigma, Mfit.prior.Sigma, R.SimAn.sigmaAlpha);
+        Mfit.Sigma = shrinkCorr(Mfit.Sigma, R.SimAn.rhoAlpha);
 
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,1);
         Mfit.DKL = DKL;
@@ -279,6 +284,7 @@ while ii <= R.SimAn.searchMax
 
         % FIX (2a): same eigenvalue floor for the MVN fallback path
         Mfit.Sigma = floorSigma(Mfit.Sigma, Mfit.prior.Sigma, R.SimAn.sigmaAlpha);
+        Mfit.Sigma = shrinkCorr(Mfit.Sigma, R.SimAn.rhoAlpha);
 
         R.Mfit = Mfit;
         [KL,DKL,R] = KLDiv(R,Mfit,pOrg,m,0);
@@ -383,4 +389,3 @@ while ii <= R.SimAn.searchMax
     ii = ii + 1;
     %%%     %%%     %%%     %%%     %%%  END   %%%  OF   %%% ITERANT  %%%     %%%     %%%     %%%     %%%     %%%     %%%     %%%
 end
-
