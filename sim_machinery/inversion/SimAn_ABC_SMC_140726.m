@@ -386,9 +386,11 @@ else
     W = W ./ sum(W);
 end
 
-% Per-parameter bandwidth floor from prior covariance
+% Per-parameter bandwidth floor: 1% of prior std.
+% Prevents bwid collapsing when samples cluster, but kept small so the
+% copula does not stay artificially wide when the posterior concentrates.
 priorStd  = sqrt(abs(diag(Mfit.prior.Sigma)));
-bwidFloor = 0.1 * priorStd';
+bwidFloor = 0.01 * priorStd';
 
 for i = 1:size(pIndMap, 1)
     x       = parOptBank(pIndMap(i), :);
@@ -446,26 +448,35 @@ fitFcn = @(idx) sampleFitnessSMC(idx, R, parBank, pIndMap, pOrg, W);
 
 %% -----------------------------------------------------------------------
 function fitness = sampleFitnessSMC(indices, R, parBank, pIndMap, pOrg, W)
-% SAMPLEFITNESSSMC  Fitness using IS-weighted mean score and KLD.
+% SAMPLEFITNESSSMC  GA fitness for sample selection.
+%
+% meanError uses raw scores (not IS-weighted): the GA's job is to find
+% high-quality diverse particles, which is score-driven.  IS weights
+% corrupt this when prior and posterior are offset because they are
+% inversely related to scores — near-prior particles get high IS weights
+% but low scores, causing the GA to select a spread-out, low-quality set.
+%
+% IS weights ARE used for the KLD diversity term so the penalty correctly
+% reflects posterior-vs-prior divergence after IS correction.
 selected = find(indices);
 if numel(selected) < R.SimAn.minRank
     fitness = inf;
     return
 end
 parOptBank = parBank(:, selected);
-Wsel       = W(selected);
-Wsel       = Wsel / (sum(Wsel) + eps);
 
-% IS-weighted mean score
-meanError = Wsel * parOptBank(end,:)';
+% Score-based mean error (selection criterion)
+meanError = mean(parOptBank(end,:));
 
-% IS-weighted Mu and Sigma for KLD
-xs              = parOptBank(pIndMap,:);
-Ws              = repmat(Wsel, size(xs,1), 1);
-Mfit_tmp.prior  = R.Mfit.prior;
-Mfit_tmp.Mu     = wmean(xs, Ws, 2);
-Mfit_tmp.Sigma  = weightedcov(xs', Wsel);
-[~, DKL, ~]    = KLDiv(R, Mfit_tmp, pOrg, [], 0);
+% IS-weighted Mu and Sigma for the KLD diversity term only
+Wsel           = W(selected);
+Wsel           = Wsel / (sum(Wsel) + eps);
+xs             = parOptBank(pIndMap,:);
+Ws             = repmat(Wsel, size(xs,1), 1);
+Mfit_tmp.prior = R.Mfit.prior;
+Mfit_tmp.Mu    = wmean(xs, Ws, 2);
+Mfit_tmp.Sigma = weightedcov(xs', Wsel);
+[~, DKL, ~]   = KLDiv(R, Mfit_tmp, pOrg, [], 0);
 
 fitness = -(R.SimAn.scoreweight(1)*meanError - R.SimAn.scoreweight(2)*DKL);
 
